@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es6",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "declaration": true,
+        "outDir": "dist"
+    },
+    "include": [
+        "src/engine/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+}

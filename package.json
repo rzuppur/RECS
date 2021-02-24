@@ -1,0 +1,19 @@
+{
+    "name": "@rzuppur/recs",
+    "description": "Minimal entity component system for game development in JS/TS",
+    "author": "Reino Zuppur",
+    "version": "0.1.0",
+    "licence": "MIT",
+    "scripts": {
+        "build": "tsc",
+        "run": "cd src && static-server -z"
+    },
+    "devDependencies": {
+        "static-server": "^2.2.1",
+        "typescript": "^4.1.2"
+    },
+    "main": "dist/index.js",
+    "files": [
+        "dist"
+    ]
+}
