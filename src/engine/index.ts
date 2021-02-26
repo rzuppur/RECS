@@ -1,7 +1,12 @@
-import Manager from "./manager.js";
+import Logger from "./utils/logger.js";
+import Manager, { Query } from "./manager.js";
+import System from "./systems/index.js";
 import DisplaySystem from "./systems/display/index.js";
 import PointerSystem from "./systems/input/pointer.js";
-import Logger from "./utils/logger.js";
+import ComponentData from "./components/index.js";
+import DrawableData from "./components/drawableData.js";
+import PointableData from "./components/pointableData.js";
+import WorldLocationData from "./components/worldLocationData.js";
 
 const log = new Logger("engine");
 
@@ -63,3 +68,14 @@ export class Engine {
         console.timeEnd("engineTick");
     }
 }
+
+export {
+    Manager,
+    System,
+    Query,
+    ComponentData,
+    PointableData,
+    WorldLocationData,
+    DrawableData,
+    DisplaySystem,
+};
