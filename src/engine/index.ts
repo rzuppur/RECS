@@ -5,7 +5,7 @@ import Logger from "./utils/logger.js";
 
 const log = new Logger("engine");
 
-export default class Engine {
+export class Engine {
     private step: number = 0;
     private readonly boundTick = this.tick.bind(this);
     private lastTickTime: number = -1;

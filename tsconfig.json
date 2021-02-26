@@ -6,8 +6,8 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
-        "declaration": true,
-        "outDir": "dist"
+        "moduleResolution": "Node",
+        "declaration": true
     },
     "include": [
         "src/engine/**/*"
@@ -15,5 +15,5 @@
     "exclude": [
         "node_modules",
         "dist"
-    ],
+    ]
 }

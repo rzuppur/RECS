@@ -1,4 +1,4 @@
-import Engine from "../engine/index.js";
+import { Engine } from "../engine";
 import Manager from "../engine/manager.js";
 import WorldLocationData from "../engine/components/worldLocationData.js";
 import DrawableData from "../engine/components/drawableData.js";
