@@ -11,7 +11,7 @@ export default {
     input: "src/engine/index.ts",
     output: {
         dir: "dist",
-        format: "cjs",
+        format: "es",
         plugins: [terser()],
     },
     plugins,
