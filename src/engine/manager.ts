@@ -121,6 +121,10 @@ export default class Manager {
         this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entityId));
     }
 
+    public removeComponent(entityId: string, componentKey: string): void {
+        console.warn("removeComponent: not implemented");
+    }
+
     public getEntityComponents(entityId: string): EntityComponents {
         const entity = this.entities.get(entityId);
         if (!entity) log.fail(`entity does not exist: ${entityId}`);

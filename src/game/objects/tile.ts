@@ -9,11 +9,6 @@ export class TileSystem extends System {
         super(["tile"]);
     }
 
-    public initialize(query: Query): boolean {
-        super.initialize(query);
-        return true;
-    }
-
     public tick(dt: number): void {
         this.query.getMatching().forEach(entityMatch => {
             const p = entityMatch.get("pointable") as PointableData;
