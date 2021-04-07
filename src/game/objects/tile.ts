@@ -10,10 +10,10 @@ export class TileSystem extends System {
     }
 
     public tick(dt: number): void {
-        this.query.getMatching().forEach(entityMatch => {
-            const p = entityMatch.get("pointable") as PointableData;
-            const d = entityMatch.get("drawable") as DrawableData;
-            const t = entityMatch.get("tile");
+        this.query.getMatching().forEach((components, entity) => {
+            const p = components.get("pointable") as PointableData;
+            const d = components.get("drawable") as DrawableData;
+            const t = components.get("tile");
 
             if (p.clicked) {
                 t.clicked = true;

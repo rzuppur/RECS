@@ -134,15 +134,15 @@ export default class PointerSystem extends System {
     public tick(dt: number): void {
         if (this.pointerDragging) this.resetDelta();
 
-        this.query.getMatching().forEach(entityMatch => {
-            const pointableComponent = entityMatch.get("pointable") as PointableData;
+        this.query.getMatching().forEach((components, entity) => {
+            const pointableComponent = components.get("pointable") as PointableData;
             if (!this.pointerActive) {
                 pointableComponent.clicked = false;
                 pointableComponent.hovered = false;
                 return;
             }
 
-            const wL = entityMatch.get("worldLocation") as WorldLocationData;
+            const wL = components.get("worldLocation") as WorldLocationData;
             if (wL) {
                 pointableComponent.hovered = pointInBox(this.pointerX, this.pointerY, wL.x, wL.y, pointableComponent.width, pointableComponent.height);
                 if (this.pointerClicked) {

@@ -46,16 +46,16 @@ class MySystem extends System {
 
     public initialize(query: Query): boolean {
         // Add custom initialization code here IF needed
-      
+
         super.initialize(query);
         return true;
     }
 
     public tick(dt: number /* ms since last tick */): void {
-        this.query.getMatching().forEach(entityMatch => {
-            const p = entityMatch.get("pointable") as PointableData;
+        this.query.getMatching().forEach((components, entity) => {
+            const p = components.get("pointable") as PointableData;
             if (p.clicked) {
-                console.log("clicked");
+                console.log("clicked", entity);
             }
         });
     }

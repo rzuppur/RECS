@@ -27,9 +27,9 @@ export default class DisplaySystem extends System {
     public tick(dt: number): void {
         this.canvas.clear();
 
-        this.query.getMatching().forEach(entityMatch => {
-            const wL = entityMatch.get("worldLocation") as WorldLocationData;
-            const d = entityMatch.get("drawable") as DrawableData;
+        this.query.getMatching().forEach((components, entity) => {
+            const wL = components.get("worldLocation") as WorldLocationData;
+            const d = components.get("drawable") as DrawableData;
             if (d.type === "RECT") {
                 if (d.strokeColor) {
                     this.canvas.drawRectStroke(wL.x, wL.y, d.width, d.height, d.strokeColor, d.strokeWidth ?? 1);
