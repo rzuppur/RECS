@@ -1,11 +1,11 @@
-import System from "../index.js";
-import { Query } from "../../manager";
-import PointableData from "../../components/pointableData.js";
-import Logger from "../../utils/logger.js";
-import { pointInBox } from "../../utils/boundingBox.js";
+import System from "../index";
+import Manager, { Query } from "../../manager";
+import PointableData from "../../components/pointableData";
+import Logger from "../../utils/logger";
+import { pointInBox } from "../../utils/boundingBox";
 import WorldLocationData from "../../components/worldLocationData";
 
-const log = new Logger("pointerInputSystem");
+const log = new Logger("PointerInputSystem");
 
 export default class PointerSystem extends System {
     private pointerLastX: number = 0;
@@ -115,7 +115,7 @@ export default class PointerSystem extends System {
         this.pointerDeltaY = 0;
     }
 
-    public initialize(query: Query): boolean {
+    public initialize(query: Query, manager: Manager): boolean {
         document.addEventListener("mousedown", this.mouseDownHandler.bind(this), false);
         document.addEventListener("mousemove", this.mouseMoveHandler.bind(this), false);
         document.addEventListener("mouseup", this.mouseUpHandler.bind(this), false);
@@ -126,7 +126,7 @@ export default class PointerSystem extends System {
         document.addEventListener("touchend", this.touchEndHandler.bind(this), false);
         document.addEventListener("touchcancel", this.touchEndHandler.bind(this), false);
 
-        super.initialize(query);
+        super.initialize(query, manager);
 
         return true;
     }

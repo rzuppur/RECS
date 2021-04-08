@@ -1,11 +1,11 @@
-import System from "./systems/index.js";
-import ComponentData from "./components/index.js";
-import Logger from "./utils/logger.js";
+import System from "./systems/index";
+import ComponentData from "./components/index";
+import Logger from "./utils/logger";
 
 type EntityComponents = Map<string, ComponentData>; // key: component name
 type EntitiesMap = Map<string, EntityComponents>; // key: entity id
 
-const log = new Logger("manager");
+const log = new Logger("Manager");
 
 const generateUuid = (): string => {
     return performance.now().toString(36).replace(".", "") + Math.random().toString(36).slice(-4);
@@ -94,7 +94,7 @@ export default class Manager {
             this.queries.set(queryKey, query);
             log.info(`created query: ${queryKey}`);
         }
-        const success = system.initialize(this.queries.get(queryKey));
+        const success = system.initialize(this.queries.get(queryKey), this);
         if (success) {
             log.info(`registered system: ${key}`);
         } else {

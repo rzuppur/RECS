@@ -1,4 +1,4 @@
-import {Query} from "../manager.js";
+import Manager, {Query} from "../manager";
 
 export default abstract class System {
     protected query: Query;
@@ -18,8 +18,10 @@ export default abstract class System {
 
     /**
      * Called by manager.ts -> registerSystem
+     *
+     * Returns boolean indicating success
      */
-    public initialize(query: Query): boolean {
+    public initialize(query: Query, manager: Manager): boolean {
         this.query = query;
         return true;
     }

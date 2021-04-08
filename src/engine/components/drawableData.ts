@@ -1,4 +1,4 @@
-import ComponentData from "./index.js";
+import ComponentData from "./index";
 
 interface Sizeable extends ComponentData {
     width: number;

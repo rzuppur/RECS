@@ -1,7 +1,7 @@
 import ComponentData from "./index";
 
-export default interface WorldLocationData extends ComponentData {
-    /* Absolute position in 2D game world */
+export default interface ScreenLocationData extends ComponentData {
+    /* Position on screen from top left corner */
     x: number;
     y: number;
 

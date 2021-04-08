@@ -1,14 +1,15 @@
-import Logger from "./utils/logger.js";
-import Manager, { Query } from "./manager.js";
-import System from "./systems/index.js";
-import DisplaySystem from "./systems/display/index.js";
-import PointerSystem from "./systems/input/pointer.js";
-import ComponentData from "./components/index.js";
-import DrawableData from "./components/drawableData.js";
-import PointableData from "./components/pointableData.js";
-import WorldLocationData from "./components/worldLocationData.js";
+import Logger from "./utils/logger";
+import Manager, { Query } from "./manager";
+import System from "./systems/index";
+import DisplaySystem from "./systems/display/index";
+import PointerSystem from "./systems/input/pointer";
+import ComponentData from "./components/index";
+import DrawableData from "./components/drawableData";
+import PointableData from "./components/pointableData";
+import ScreenLocationData from "./components/screenLocationData";
+import WorldLocationData from "./components/worldLocationData";
 
-const log = new Logger("engine");
+const log = new Logger("Engine");
 
 export class Engine {
     private step: number = 0;
@@ -33,8 +34,8 @@ export class Engine {
     }
 
     private registerDefaultSystems(): void {
-        this.manager.registerComponent("worldLocation");
         this.manager.registerComponent("screenLocation");
+        this.manager.registerComponent("worldLocation");
         this.manager.registerComponent("pointable");
         this.manager.registerComponent("drawable");
 
@@ -75,6 +76,7 @@ export {
     Query,
     ComponentData,
     PointableData,
+    ScreenLocationData,
     WorldLocationData,
     DrawableData,
     DisplaySystem,

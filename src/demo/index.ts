@@ -1,11 +1,11 @@
 import { Engine } from "../engine";
-import Manager from "../engine/manager.js";
-import WorldLocationData from "../engine/components/worldLocationData.js";
-import DrawableData from "../engine/components/drawableData.js";
-import DisplaySystem from "../engine/systems/display/index.js";
-import Logger from "../engine/utils/logger.js";
+import Manager from "../engine/manager";
+import WorldLocationData from "../engine/components/worldLocationData";
+import DrawableData from "../engine/components/drawableData";
+import DisplaySystem from "../engine/systems/display/index";
+import Logger from "../engine/utils/logger";
 
-const log = new Logger("game");
+const log = new Logger("Game");
 
 class Game {
     private readonly engine: Engine;

@@ -1,6 +1,6 @@
-import Logger from "../../utils/logger.js";
+import Logger from "../../utils/logger";
 
-const log = new Logger("canvas");
+const log = new Logger("Canvas");
 
 export default class Canvas {
     private parentEl: HTMLElement;

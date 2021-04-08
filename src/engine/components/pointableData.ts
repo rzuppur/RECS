@@ -1,4 +1,4 @@
-import ComponentData from "./index.js";
+import ComponentData from "./index";
 
 export default interface PointableData extends ComponentData {
     width: number;
