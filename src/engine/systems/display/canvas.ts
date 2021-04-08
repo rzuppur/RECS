@@ -108,7 +108,7 @@ export default class Canvas {
         } else if (drawable.type === "SPRITE") {
             this.drawSprite(x + (drawable.offsetX ?? 0), y + (drawable.offsetY ?? 0), drawable.width, drawable.height, drawable.imageSrc);
         } else {
-            log.warning(`Unknown drawable type: ${drawable}`);
+            log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
         }
 
         return this;
