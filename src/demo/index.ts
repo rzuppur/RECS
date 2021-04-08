@@ -3,18 +3,13 @@ import Manager from "../engine/manager.js";
 import WorldLocationData from "../engine/components/worldLocationData.js";
 import DrawableData from "../engine/components/drawableData.js";
 import DisplaySystem from "../engine/systems/display/index.js";
-import Tile, {TileSystem} from "./objects/tile.js";
-import Bush from "./objects/bush.js";
 import Logger from "../engine/utils/logger.js";
 
 const log = new Logger("game");
 
 class Game {
-    private engine: Engine;
-    private manager: Manager;
-
-    private tiles: Tile[][] = [];
-    private bushes: Bush[][] = [];
+    private readonly engine: Engine;
+    private readonly manager: Manager;
 
     constructor() {
         log.new();
@@ -22,27 +17,7 @@ class Game {
         this.manager = this.engine.manager;
 
         const displaySystem = this.manager.getSystem("display") as DisplaySystem;
-        displaySystem.disableSmoothing();
-
-        this.createWorld();
-        //this.debugPerformance();
-    }
-
-    private createWorld(): void {
-        this.manager.registerComponent("tile");
-        this.manager.registerSystem("tile", new TileSystem());
-
-        const size = 16;
-        const tileSizePx = 50;
-
-        for (let x = 0; x < size; x++) {
-            this.tiles[x] = [];
-            this.bushes[x] = [];
-            for (let y = 0; y < size; y++) {
-                this.tiles[x][y] = new Tile(this.manager, x, y, tileSizePx);
-                if (Math.random() < 0.1) this.bushes[x][y] = new Bush(this.manager, x, y, tileSizePx);
-            }
-        }
+        this.debugPerformance();
     }
 
     private debugPerformance(): void {

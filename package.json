@@ -8,7 +8,7 @@
         "build": "rimraf dist && cross-env NODE_ENV=production rollup --config",
         "prepublishOnly": "yarn run build",
         "publish": "npm publish",
-        "run": "cross-env NODE_ENV=dev rollup --config"
+        "run": "cross-env NODE_ENV=dev rollup --config -w"
     },
     "devDependencies": {
         "@rollup/plugin-node-resolve": "^11.2.0",
