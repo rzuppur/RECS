@@ -1,4 +1,4 @@
-import { Engine } from "../engine";
+import {Engine, ScreenLocationData} from "../engine";
 import Manager from "../engine/manager";
 import WorldLocationData from "../engine/components/worldLocationData";
 import DrawableData from "../engine/components/drawableData";
@@ -51,6 +51,18 @@ class Game {
             }
         }
         log.info(`${n} created`);
+
+        const fpsCounter = this.manager.createEntity();
+        this.manager.setComponent(fpsCounter, "screenLocation", {
+            x: 10,
+            y: 30,
+        } as ScreenLocationData);
+        this.manager.setComponent(fpsCounter, "drawable", {
+            type: "TEXT",
+            content: "FPS: NaN",
+            color: "#fff",
+            size: 20,
+        } as DrawableData)
     }
 }
 

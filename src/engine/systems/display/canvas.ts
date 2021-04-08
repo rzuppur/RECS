@@ -1,4 +1,5 @@
 import Logger from "../../utils/logger";
+import DrawableData from "../../components/drawableData";
 
 const log = new Logger("Canvas");
 
@@ -92,6 +93,24 @@ export default class Canvas {
         }
         const image = this.spriteMap.get(imageSrc);
         this.canvas2dContext.drawImage(image, x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr);
+        return this;
+    }
+
+    public draw(x: number, y: number, drawable: DrawableData): Canvas {
+        if (drawable.type === "RECT") {
+            if (drawable.strokeColor) {
+                this.drawRectStroke(x, y, drawable.width, drawable.height, drawable.strokeColor, drawable.strokeWidth ?? 1);
+            } else {
+                this.drawRect(x, y, drawable.width, drawable.height, drawable.color);
+            }
+        } else if (drawable.type === "TEXT") {
+            this.drawText(x, y, drawable.content, drawable.size ?? 16, drawable.color ?? "#fff");
+        } else if (drawable.type === "SPRITE") {
+            this.drawSprite(x + (drawable.offsetX ?? 0), y + (drawable.offsetY ?? 0), drawable.width, drawable.height, drawable.imageSrc);
+        } else {
+            log.warning(`Unknown drawable type: ${drawable}`);
+        }
+
         return this;
     }
 }

@@ -1,27 +1,25 @@
 import Logger from "../../utils/logger";
 import System from "../index";
 import Canvas from "./canvas";
-import WorldLocationData from "../../components/worldLocationData";
 import DrawableData from "../../components/drawableData";
+import ScreenLocationData from "../../components/screenLocationData";
 
-const log = new Logger("DrawWorldSystem");
+const log = new Logger("DrawScreenSystem");
 
-export default class DrawWorldSystem extends System {
+export default class DrawScreenSystem extends System {
     private canvas: Canvas;
     constructor(canvas: Canvas) {
-        super(["drawable", "worldLocation"]);
+        super(["drawable", "screenLocation"]);
         log.new();
 
         this.canvas = canvas;
     }
 
     public tick(dt: number): void {
-        this.canvas.clear();
-
         this.query.getMatching().forEach((components, entity) => {
-            const wL = components.get("worldLocation") as WorldLocationData;
+            const sL = components.get("screenLocation") as ScreenLocationData;
             const d = components.get("drawable") as DrawableData;
-            this.canvas.draw(wL.x, wL.y, d);
+            this.canvas.draw(sL.x, sL.y, d);
         });
     }
 }

@@ -3,6 +3,7 @@ import Manager, {Query} from "../../manager";
 import Canvas from "./canvas";
 import DrawWorldSystem from "./drawWorld";
 import Logger from "../../utils/logger";
+import DrawScreenSystem from "./drawScreen";
 
 const log = new Logger("DisplaySystem");
 
@@ -23,6 +24,9 @@ export default class DisplaySystem extends System {
 
         const drawWorldSystem = new DrawWorldSystem(this.canvas);
         manager.registerSystem("drawWorld", drawWorldSystem);
+
+        const drawScreenSystem = new DrawScreenSystem(this.canvas);
+        manager.registerSystem("drawScreen", drawScreenSystem);
 
         return true;
     }
