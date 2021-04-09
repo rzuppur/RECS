@@ -24,6 +24,7 @@ interface DrawableText extends Sizeable {
     content: string;
     color?: string;
     size?: number;
+    font?: string;
 }
 
 type DrawableData = DrawableRect | DrawableSprite | DrawableText;

@@ -74,9 +74,9 @@ export default class Canvas {
         return this;
     }
 
-    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF"): Canvas {
+    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif"): Canvas {
         this.canvas2dContext.fillStyle = color;
-        this.canvas2dContext.font = `${Math.round(size * this.dpr)}px sans-serif`;
+        this.canvas2dContext.font = `${Math.round(size * this.dpr)}px ${font}`;
         let offsetY = 0;
         text.split("\n").forEach(line => {
             this.canvas2dContext.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
@@ -104,7 +104,7 @@ export default class Canvas {
                 this.drawRect(x, y, drawable.width, drawable.height, drawable.color);
             }
         } else if (drawable.type === "TEXT") {
-            this.drawText(x, y, drawable.content, drawable.size ?? 16, drawable.color ?? "#fff");
+            this.drawText(x, y, drawable.content, drawable.size, drawable.color, drawable.font);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite(x + (drawable.offsetX ?? 0), y + (drawable.offsetY ?? 0), drawable.width, drawable.height, drawable.imageSrc);
         } else {
