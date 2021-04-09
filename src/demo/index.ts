@@ -52,6 +52,21 @@ class Game {
                 }));
             }
         }
+        const text = this.manager.createEntity();
+        this.manager.setComponent(text, new WorldLocationComponent({
+            x: 40,
+            y: 200,
+            z: -1,
+        }));
+        this.manager.setComponent(text, new DrawableComponent({
+            type: "TEXT",
+            content: "Big\ntext",
+            color: "#ccc",
+            size: 140,
+            font: "serif",
+            fontWeight: 700,
+        }));
+
         log.info(`${n} created`);
     }
 }

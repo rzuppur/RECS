@@ -16,10 +16,19 @@ export default class DrawScreenSystem extends System {
     }
 
     public tick(dt: number): void {
+        const sorted: Map<number, {sL: ScreenLocationComponent, d: DrawableComponent}[]> = new Map();
         this.query.getMatching().forEach((components, entity) => {
             const sL = components.get("ScreenLocation") as ScreenLocationComponent;
             const d = components.get("Drawable") as DrawableComponent;
-            this.canvas.draw(sL.data.x, sL.data.y, d.data);
+            const z = sL.data.z ?? 0;
+            if (!sorted.has(z)) {
+                sorted.set(z, [{sL, d}]);
+            } else {
+                sorted.get(z).push({sL, d});
+            }
+        });
+        Array.from(sorted.keys()).sort().forEach(z => {
+            sorted.get(z).forEach(({sL, d}) => this.canvas.draw(sL.data.x, sL.data.y, d.data));
         });
     }
 }

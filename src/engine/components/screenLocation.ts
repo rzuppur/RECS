@@ -5,7 +5,7 @@ export interface ScreenLocationData extends ComponentData {
     x: number;
     y: number;
 
-    /* Drawing order, not implemented */
+    /* Drawing order */
     z?: number;
 }
 

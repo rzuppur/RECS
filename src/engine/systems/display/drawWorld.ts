@@ -18,10 +18,21 @@ export default class DrawWorldSystem extends System {
     public tick(dt: number): void {
         this.canvas.clear();
 
+        // TODO: convert to screen coordinates, filter out of view
+
+        const sorted: Map<number, {wL: WorldLocationComponent, d: DrawableComponent}[]> = new Map();
         this.query.getMatching().forEach((components, entity) => {
             const wL = components.get("WorldLocation") as WorldLocationComponent;
             const d = components.get("Drawable") as DrawableComponent;
-            this.canvas.draw(wL.data.x, wL.data.y, d.data);
+            const z = wL.data.z ?? 0;
+            if (!sorted.has(z)) {
+                sorted.set(z, [{wL, d}]);
+            } else {
+                sorted.get(z).push({wL, d});
+            }
+        });
+        Array.from(sorted.keys()).sort().forEach(z => {
+            sorted.get(z).forEach(({wL, d}) => this.canvas.draw(wL.data.x, wL.data.y, d.data));
         });
     }
 }

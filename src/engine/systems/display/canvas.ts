@@ -84,7 +84,7 @@ export default class Canvas {
         let offsetY = 0;
         text.split("\n").forEach(line => {
             this.canvas2dContext.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
-            offsetY += size * this.dpr * 1.25;
+            offsetY += size * this.dpr * 1.15;
         });
         return this;
     }

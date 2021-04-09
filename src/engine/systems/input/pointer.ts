@@ -158,7 +158,7 @@ export default class PointerSystem extends System {
                 screenH = p.data.height;
                 screenX = sL.data.x;
                 screenY = sL.data.y;
-                screenZ = sL.data.z;
+                screenZ = sL.data.z ?? 0;
             }
 
             if (typeof screenW !== "undefined") {
