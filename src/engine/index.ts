@@ -1,5 +1,5 @@
 import Logger from "./utils/logger";
-import Manager, { Query } from "./manager";
+import Manager, { Query, Entity } from "./manager";
 import System from "./systems/index";
 import DisplaySystem from "./systems/display/index";
 import PointerSystem from "./systems/input/pointer";
@@ -40,10 +40,10 @@ export class Engine {
         this.manager.registerComponent("drawable");
 
         const pointerSystem = new PointerSystem();
-        this.manager.registerSystem("pointerInput", pointerSystem);
+        this.manager.registerSystem(pointerSystem);
 
         const displaySystem = new DisplaySystem();
-        this.manager.registerSystem("display", displaySystem);
+        this.manager.registerSystem(displaySystem);
     }
 
     private tick(): void {
@@ -74,6 +74,7 @@ export {
     Manager,
     System,
     Query,
+    Entity,
     ComponentData,
     PointableData,
     ScreenLocationData,

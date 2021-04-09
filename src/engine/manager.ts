@@ -1,15 +1,12 @@
 import System from "./systems/index";
 import ComponentData from "./components/index";
+import {generateUuid} from "./utils/uuid";
 import Logger from "./utils/logger";
 
 type EntityComponents = Map<string, ComponentData>; // key: component name
 type EntitiesMap = Map<Entity, EntityComponents>; // key: entity id
 
 const log = new Logger("Manager");
-
-const generateUuid = (): string => {
-    return performance.now().toString(36).replace(".", "") + Math.random().toString(36).slice(-4);
-}
 
 export type Entity = string;
 
@@ -66,7 +63,7 @@ export class Query {
 
 export default class Manager {
     private registeredComponents: Set<string> = new Set();
-    private registeredSystems: Map<string, System> = new Map();
+    private systems: Map<string, System> = new Map();
     private entities: EntitiesMap = new Map();
     private queries: Map<string, Query> = new Map();
 
@@ -83,13 +80,9 @@ export default class Manager {
         log.info(`registered component: ${key}`);
     }
 
-    public registerSystem(key: string, system: System): void {
-        if (this.registeredSystems.has(key)) {
-            log.warning(`system key already exists: ${key}`);
-            return;
-        }
+    public registerSystem(system: System): void {
+        this.systems.set(system.name, system);
 
-        this.registeredSystems.set(key, system);
         const queryKey = system.getComponents().join(" & ");
         if (!this.queries.has(queryKey)) {
             const query = new Query(system.getComponents(), this);
@@ -98,14 +91,18 @@ export default class Manager {
         }
         const success = system.initialize(this.queries.get(queryKey), this);
         if (success) {
-            log.info(`registered system: ${key}`);
+            log.info(`registered system: ${system.name}`);
         } else {
-            log.error(`failed to start system: ${key}`);
+            log.error(`failed to start system: ${system.name}`);
         }
     }
 
     public getSystem(key: string): System {
-        return this.registeredSystems.get(key);
+        const system = this.systems.get(key);
+        if (!system) {
+            log.error(`System not registered: ${key}`);
+        }
+        return system;
     }
 
     public createEntity(): Entity {
@@ -142,6 +139,6 @@ export default class Manager {
     }
 
     public tick(dt: number) {
-        this.registeredSystems.forEach(system => system.tick(dt));
+        this.systems.forEach(system => system.tick(dt));
     }
 }

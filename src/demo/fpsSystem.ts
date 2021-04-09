@@ -11,7 +11,7 @@ export default class FpsSystem extends System {
     private history: number[] = [];
 
     constructor() {
-        super([]);
+        super("Fps", []);
     }
 
     public initialize(query: Query, manager: Manager): boolean {

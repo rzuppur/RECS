@@ -9,7 +9,7 @@ const log = new Logger("DrawWorldSystem");
 export default class DrawWorldSystem extends System {
     private canvas: Canvas;
     constructor(canvas: Canvas) {
-        super(["drawable", "worldLocation"]);
+        super("DrawWorld", ["drawable", "worldLocation"]);
         log.new();
 
         this.canvas = canvas;

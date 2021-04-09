@@ -2,7 +2,7 @@
 Minimal entity component system for 2D game development in JS/TS
 
 ```ts
-import { Engine } from "@rzuppur/recs";
+import { Engine, Entity } from "@rzuppur/recs";
 
 const engine = new Engine();
 const manager = engine.manager;
@@ -14,12 +14,11 @@ manager.registerComponent(
 
 /* Register custom systems (see below) */
 manager.registerSystem(
-  key: string,
   system: System,
 )
 
 /* Create entities, returns UUID string */
-const entity: string = this.manager.createEntity()
+const entity: Entity = this.manager.createEntity()
 
 /* Add entity components */
 manager.setComponent(
@@ -41,7 +40,7 @@ const components = ["pointable"];
 
 class MySystem extends System {
     constructor() {
-        super(components);
+        super("My", components);
     }
 
     public initialize(query: Query): boolean {

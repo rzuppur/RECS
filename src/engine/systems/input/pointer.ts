@@ -29,7 +29,7 @@ export default class PointerSystem extends System {
     public DRAG_START_THRESHOLD_PX: number = 6;
 
     constructor() {
-        super(["pointable"]);
+        super("Pointer", ["pointable"]);
         log.new();
     }
 

@@ -17,17 +17,17 @@ class Game {
         this.engine = new Engine();
         this.manager = this.engine.manager;
 
-        const displaySystem = this.manager.getSystem("display") as DisplaySystem;
+        const displaySystem = this.manager.getSystem("Display") as DisplaySystem;
 
         this.debugWorld();
 
         const fpsSystem = new FpsSystem();
-        this.manager.registerSystem("fpsSystem", fpsSystem);
+        this.manager.registerSystem(fpsSystem);
     }
 
     private debugWorld(): void {
         const n = 1000;
-        const ds = this.manager.getSystem("display") as DisplaySystem;
+        const ds = this.manager.getSystem("Display") as DisplaySystem;
         const {width, height} = ds.getSize();
 
         log.info(`creating ${n}`);

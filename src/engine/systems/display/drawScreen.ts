@@ -9,7 +9,7 @@ const log = new Logger("DrawScreenSystem");
 export default class DrawScreenSystem extends System {
     private canvas: Canvas;
     constructor(canvas: Canvas) {
-        super(["drawable", "screenLocation"]);
+        super("DrawScreen", ["drawable", "screenLocation"]);
         log.new();
 
         this.canvas = canvas;

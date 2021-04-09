@@ -11,7 +11,7 @@ export default class DisplaySystem extends System {
     private canvas: Canvas;
 
     constructor() {
-        super([]);
+        super("Display", []);
         log.new();
     }
 
@@ -23,10 +23,10 @@ export default class DisplaySystem extends System {
         this.canvas = new Canvas().mount(bodyEl);
 
         const drawWorldSystem = new DrawWorldSystem(this.canvas);
-        manager.registerSystem("drawWorld", drawWorldSystem);
+        manager.registerSystem(drawWorldSystem);
 
         const drawScreenSystem = new DrawScreenSystem(this.canvas);
-        manager.registerSystem("drawScreen", drawScreenSystem);
+        manager.registerSystem(drawScreenSystem);
 
         return true;
     }

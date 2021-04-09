@@ -4,10 +4,15 @@ export default abstract class System {
     protected query: Query;
     protected readonly components: string[];
 
+    public readonly name: string;
+
     /**
+     * System name can be used later to get access to the system from manager.
      * Component names list is sorted - used to create query keys.
      */
-    protected constructor(components: string[]) {
+    protected constructor(name: string, components: string[]) {
+        this.name = name;
+
         components.sort();
         this.components = components;
     }
