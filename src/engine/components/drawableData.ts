@@ -8,6 +8,7 @@ interface Sizeable extends ComponentData {
 interface DrawableRect extends Sizeable {
     type: "RECT";
     color?: string;
+    alpha?: number;
     strokeColor?: string;
     strokeWidth?: number;
 }
@@ -25,6 +26,7 @@ interface DrawableText extends Sizeable {
     color?: string;
     size?: number;
     font?: string;
+    fontWeight?: number;
 }
 
 type DrawableData = DrawableRect | DrawableSprite | DrawableText;

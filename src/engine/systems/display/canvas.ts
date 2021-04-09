@@ -60,23 +60,27 @@ export default class Canvas {
         return this;
     }
 
-    public drawRect(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF"): Canvas {
+    public drawRect(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", alpha: number = 1): Canvas {
+        this.canvas2dContext.globalAlpha = alpha;
         this.canvas2dContext.fillStyle = color;
         this.canvas2dContext.fillRect(x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr);
+        this.canvas2dContext.globalAlpha = 1;
         return this;
     }
 
-    public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", stroke: number = 1): Canvas {
+    public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", stroke: number = 1, alpha: number = 1): Canvas {
+        this.canvas2dContext.globalAlpha = alpha;
         const strokeWidth = stroke * this.dpr;
         this.canvas2dContext.lineWidth = strokeWidth;
         this.canvas2dContext.strokeStyle = color;
         this.canvas2dContext.strokeRect(x * this.dpr + strokeWidth / 2, y * this.dpr + strokeWidth / 2, width * this.dpr - strokeWidth, height * this.dpr - strokeWidth);
+        this.canvas2dContext.globalAlpha = 1;
         return this;
     }
 
-    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif"): Canvas {
+    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400): Canvas {
         this.canvas2dContext.fillStyle = color;
-        this.canvas2dContext.font = `${Math.round(size * this.dpr)}px ${font}`;
+        this.canvas2dContext.font = `${fontWeight} ${Math.round(size * this.dpr)}px ${font}`;
         let offsetY = 0;
         text.split("\n").forEach(line => {
             this.canvas2dContext.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
@@ -99,12 +103,12 @@ export default class Canvas {
     public draw(x: number, y: number, drawable: DrawableData): Canvas {
         if (drawable.type === "RECT") {
             if (drawable.strokeColor) {
-                this.drawRectStroke(x, y, drawable.width, drawable.height, drawable.strokeColor, drawable.strokeWidth ?? 1);
+                this.drawRectStroke(x, y, drawable.width, drawable.height, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
             } else {
-                this.drawRect(x, y, drawable.width, drawable.height, drawable.color);
+                this.drawRect(x, y, drawable.width, drawable.height, drawable.color, drawable.alpha);
             }
         } else if (drawable.type === "TEXT") {
-            this.drawText(x, y, drawable.content, drawable.size, drawable.color, drawable.font);
+            this.drawText(x, y, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite(x + (drawable.offsetX ?? 0), y + (drawable.offsetY ?? 0), drawable.width, drawable.height, drawable.imageSrc);
         } else {
