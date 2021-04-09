@@ -4,6 +4,7 @@ import PointableData from "../../components/pointableData";
 import Logger from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
 import WorldLocationData from "../../components/worldLocationData";
+import ScreenLocationData from "../../components/screenLocationData";
 
 const log = new Logger("PointerInputSystem");
 
@@ -135,20 +136,34 @@ export default class PointerSystem extends System {
         if (this.pointerDragging) this.resetDelta();
 
         this.query.getMatching().forEach((components, entity) => {
-            const pointableComponent = components.get("pointable") as PointableData;
+            const p = components.get("pointable") as PointableData;
             if (!this.pointerActive) {
-                pointableComponent.clicked = false;
-                pointableComponent.hovered = false;
+                p.clicked = false;
+                p.hovered = false;
                 return;
             }
 
+            let screenW, screenH, screenX, screenY;
+
             const wL = components.get("worldLocation") as WorldLocationData;
             if (wL) {
-                pointableComponent.hovered = pointInBox(this.pointerX, this.pointerY, wL.x, wL.y, pointableComponent.width, pointableComponent.height);
+                // TODO
+            }
+
+            const sL = components.get("screenLocation") as ScreenLocationData;
+            if (sL) {
+                screenW = p.width;
+                screenH = p.height;
+                screenX = sL.x;
+                screenY = sL.y;
+            }
+
+            if (typeof screenW !== "undefined") {
+                p.hovered = pointInBox(this.pointerX, this.pointerY, screenX, screenY, screenW, screenH);
                 if (this.pointerClicked) {
-                    pointableComponent.clicked = pointInBox(this.pointerDownStartX, this.pointerDownStartY, wL.x, wL.y, pointableComponent.width, pointableComponent.height)
+                    p.clicked = pointInBox(this.pointerDownStartX, this.pointerDownStartY, screenX, screenY, screenW, screenH);
                 } else {
-                    pointableComponent.clicked = false;
+                    p.clicked = false;
                 }
             }
         });
