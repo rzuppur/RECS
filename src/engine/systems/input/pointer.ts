@@ -149,7 +149,12 @@ export default class PointerSystem extends System {
 
             const wL = components.get("WorldLocation") as WorldLocationComponent;
             if (wL) {
-                // TODO
+                // TODO: transform from world coordinates to screen
+                screenW = p.data.width;
+                screenH = p.data.height;
+                screenX = wL.data.x;
+                screenY = wL.data.y;
+                screenZ = wL.data.z ?? 0;
             }
 
             const sL = components.get("ScreenLocation") as ScreenLocationComponent;
