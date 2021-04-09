@@ -11,7 +11,7 @@ class Game {
 
     constructor() {
         log.new();
-        this.engine = new Engine();
+        this.engine = new Engine("#game");
         this.manager = this.engine.manager;
 
         const displaySystem = this.manager.getSystem("Display") as DisplaySystem;

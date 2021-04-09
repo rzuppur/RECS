@@ -5,10 +5,13 @@ import { pointInBox } from "../../utils/boundingBox";
 import PointableComponent, { PointableData } from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
+import DisplaySystem from "../display/index";
 
 const log = new Logger("PointerInputSystem");
 
 export default class PointerSystem extends System {
+    private manager: Manager;
+
     private pointerLastX: number = 0;
     private pointerLastY: number = 0;
 
@@ -117,6 +120,8 @@ export default class PointerSystem extends System {
     }
 
     public initialize(query: Query, manager: Manager): boolean {
+        this.manager = manager;
+
         document.addEventListener("mousedown", this.mouseDownHandler.bind(this), false);
         document.addEventListener("mousemove", this.mouseMoveHandler.bind(this), false);
         document.addEventListener("mouseup", this.mouseUpHandler.bind(this), false);
@@ -134,6 +139,11 @@ export default class PointerSystem extends System {
 
     public tick(dt: number): void {
         if (this.pointerDragging) this.resetDelta();
+
+        const ds = this.manager.getSystem("Display") as DisplaySystem;
+        const {offsetX, offsetY} = ds.getOffset();
+        const pointerX = this.pointerX - offsetX;
+        const pointerY = this.pointerY - offsetY;
 
         const eventTargets: { z: number; pD: PointableData; }[] = [];
 
@@ -170,7 +180,7 @@ export default class PointerSystem extends System {
                 p.data.hovered = false;
                 p.data.clicked = false;
 
-                if (pointInBox(this.pointerX, this.pointerY, screenX, screenY, screenW, screenH)) {
+                if (pointInBox(pointerX, pointerY, screenX, screenY, screenW, screenH)) {
                     eventTargets.push({
                         z: screenZ,
                         pD: p.data,

@@ -16,11 +16,15 @@ export class Engine {
     private readonly boundTick = this.tick.bind(this);
     private lastTickTime: number = -1;
 
+    private mountElQuery: string;
+
     public manager: Manager;
     public running: boolean = true;
 
-    constructor(timeMainLoop: boolean = false) {
+    constructor(mountElQuery = "body", timeMainLoop: boolean = false) {
         log.new();
+
+        this.mountElQuery = mountElQuery;
 
         this.manager = new Manager();
         this.registerDefaultSystems();
@@ -40,7 +44,7 @@ export class Engine {
         this.manager.registerComponent(new DrawableComponent());
 
         this.manager.registerSystem(new PointerSystem());
-        this.manager.registerSystem(new DisplaySystem());
+        this.manager.registerSystem(new DisplaySystem(this.mountElQuery));
     }
 
     private tick(): void {

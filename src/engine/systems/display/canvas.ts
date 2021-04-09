@@ -12,7 +12,10 @@ export default class Canvas {
     private width: number = 1;
     private height: number = 1;
 
-    private dpr = Math.max(window.devicePixelRatio || 1, 1);
+    public offsetX: number = 0;
+    public offsetY: number = 0;
+
+    private dpr: number;
     private smoothing: boolean = true;
 
     constructor() {
@@ -22,9 +25,10 @@ export default class Canvas {
         this.canvas2dContext = this.canvasEl.getContext("2d", { alpha: false });
     }
 
-    private resizeFillParent(): void {
-        this.width = this.parentEl.clientWidth;
-        this.height = this.parentEl.clientHeight;
+    private setCanvasLogicalSize(width: number, height: number) {
+        this.dpr = Math.max(window.devicePixelRatio || 1, 1);
+        this.width = Math.floor(width);
+        this.height = Math.floor(height);
 
         this.canvasEl.width = this.width * this.dpr;
         this.canvasEl.height = this.height * this.dpr;
@@ -37,9 +41,17 @@ export default class Canvas {
     public mount(parentEl: HTMLElement): Canvas {
         this.parentEl = parentEl;
         this.parentEl.appendChild(this.canvasEl);
+        this.setCanvasLogicalSize(this.parentEl.clientWidth, this.parentEl.clientHeight);
 
-        this.resizeFillParent();
-        window.addEventListener("resize", this.resizeFillParent.bind(this), false);
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const bCR = entry.target.getBoundingClientRect();
+                this.offsetX = bCR.x;
+                this.offsetY = bCR.y;
+                this.setCanvasLogicalSize(entry.contentRect.width, entry.contentRect.height);
+            }
+        });
+        resizeObserver.observe(this.parentEl);
 
         log.info(`mounted to <${parentEl.tagName.toLocaleLowerCase()}>`);
         return this;
