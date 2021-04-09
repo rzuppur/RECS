@@ -1,9 +1,10 @@
-import {Engine, ScreenLocationData} from "../engine";
+import {Engine} from "../engine";
 import Manager from "../engine/manager";
 import WorldLocationData from "../engine/components/worldLocationData";
 import DrawableData from "../engine/components/drawableData";
 import DisplaySystem from "../engine/systems/display/index";
 import Logger from "../engine/utils/logger";
+import FpsSystem from "./fpsSystem";
 
 const log = new Logger("Game");
 
@@ -17,10 +18,14 @@ class Game {
         this.manager = this.engine.manager;
 
         const displaySystem = this.manager.getSystem("display") as DisplaySystem;
-        this.debugPerformance();
+
+        this.debugWorld();
+
+        const fpsSystem = new FpsSystem();
+        this.manager.registerSystem("fpsSystem", fpsSystem);
     }
 
-    private debugPerformance(): void {
+    private debugWorld(): void {
         const n = 1000;
         const ds = this.manager.getSystem("display") as DisplaySystem;
         const {width, height} = ds.getSize();
@@ -51,18 +56,6 @@ class Game {
             }
         }
         log.info(`${n} created`);
-
-        const fpsCounter = this.manager.createEntity();
-        this.manager.setComponent(fpsCounter, "screenLocation", {
-            x: 10,
-            y: 30,
-        } as ScreenLocationData);
-        this.manager.setComponent(fpsCounter, "drawable", {
-            type: "TEXT",
-            content: "FPS: NaN",
-            color: "#fff",
-            size: 20,
-        } as DrawableData)
     }
 }
 

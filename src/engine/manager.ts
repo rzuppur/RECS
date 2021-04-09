@@ -3,13 +3,15 @@ import ComponentData from "./components/index";
 import Logger from "./utils/logger";
 
 type EntityComponents = Map<string, ComponentData>; // key: component name
-type EntitiesMap = Map<string, EntityComponents>; // key: entity id
+type EntitiesMap = Map<Entity, EntityComponents>; // key: entity id
 
 const log = new Logger("Manager");
 
 const generateUuid = (): string => {
     return performance.now().toString(36).replace(".", "") + Math.random().toString(36).slice(-4);
 }
+
+export type Entity = string;
 
 export class Query {
     private matchingEntities: EntitiesMap = new Map();
@@ -50,8 +52,8 @@ export class Query {
     /**
      * Called by Manager when new components are added to entity
      */
-    public setEntityIfMatches(components: EntityComponents, entityId: string): void {
-        if (this.match(components)) this.matchingEntities.set(entityId, components);
+    public setEntityIfMatches(components: EntityComponents, entity: Entity): void {
+        if (this.match(components)) this.matchingEntities.set(entity, components);
     }
 
     /**
@@ -106,29 +108,29 @@ export default class Manager {
         return this.registeredSystems.get(key);
     }
 
-    public createEntity(): string {
+    public createEntity(): Entity {
         const uuid = generateUuid();
         this.entities.set(uuid, new Map());
         return uuid;
     }
 
-    public setComponent(entityId: string, componentKey: string, component: ComponentData): void {
+    public setComponent(entity: Entity, componentKey: string, component: ComponentData): void {
         if (!this.componentRegistered(componentKey)) log.fail(`component not registered: ${componentKey}`);
 
-        const entityComponents = this.getEntityComponents(entityId);
+        const entityComponents = this.getEntityComponents(entity);
         entityComponents.set(componentKey, component);
 
-        this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entityId));
+        this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entity));
     }
 
-    public removeComponent(entityId: string, componentKey: string): void {
+    public removeComponent(entity: Entity, componentKey: string): void {
         console.warn("removeComponent: not implemented");
     }
 
-    public getEntityComponents(entityId: string): EntityComponents {
-        const entity = this.entities.get(entityId);
-        if (!entity) log.fail(`entity does not exist: ${entityId}`);
-        return entity;
+    public getEntityComponents(entity: Entity): EntityComponents {
+        const entityComponents = this.entities.get(entity);
+        if (!entityComponents) log.fail(`entity does not exist: ${entity}`);
+        return entityComponents;
     }
 
     public getEntities(): EntitiesMap {
