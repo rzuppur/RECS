@@ -4,7 +4,8 @@ Minimal entity component system for 2D game development in JS/TS
 ```ts
 import { Engine, Entity } from "@rzuppur/recs";
 
-const engine = new Engine();
+const elementToMountTo = "#app"; // default: body, pointer events break if page is scrolled
+const engine = new Engine(elementToMountTo);
 const manager = engine.manager;
 
 /* Register custom components (see below) */
