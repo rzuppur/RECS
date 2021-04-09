@@ -7,53 +7,62 @@ import { Engine, Entity } from "@rzuppur/recs";
 const engine = new Engine();
 const manager = engine.manager;
 
-/* Register custom component names */
-manager.registerComponent(
-  key: string,
-)
+/* Register custom components (see below) */
+manager.registerComponent(new Component())
 
 /* Register custom systems (see below) */
-manager.registerSystem(
-  system: System,
-)
+manager.registerSystem(new System())
 
 /* Create entities, returns UUID string */
 const entity: Entity = this.manager.createEntity()
 
 /* Add entity components */
 manager.setComponent(
-  entity: string,
-  componentKey: string,
-  data: {},
+  entity: Entity,
+  component: new Component({
+    data,
+  }),
 )
+```
+
+## Creating a custom component
+```ts
+import { Component, ComponentData } from "@rzuppur/recs";
+
+interface MyData extends ComponentData {
+    value: number;
+}
+
+class MyComponent extends Component {
+    public data: MyData;
+
+    constructor(data?: MyData) {
+        super("My", data);
+    }
+}
 ```
 
 ## Creating a custom system
 ```ts
-import { System, PointableData } from "@rzuppur/recs";
+import { System, PointableComponent } from "@rzuppur/recs";
 
-/**
- * Components used by the system.
- * Used for the query to find all entities the system needs to run on. Entity must have all the components listed to qualify.
- */
-const components = ["pointable"];
+const name = "My";
+const componentsQuery = ["Pointable"];
 
 class MySystem extends System {
     constructor() {
-        super("My", components);
+        super(name, componentsQuery);
     }
 
-    public initialize(query: Query): boolean {
+    public initialize(query: Query, manager: Manager): boolean {
         // Add custom initialization code here IF needed
-
-        super.initialize(query);
-        return true;
+        return super.initialize(query, manager);
     }
 
     public tick(dt: number /* ms since last tick */): void {
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get("pointable") as PointableData;
-            if (p.clicked) {
+            const p = components.get("Pointable") as PointableComponent;
+            if (p.data.clicked) {
                 console.log("clicked", entity);
             }
         });

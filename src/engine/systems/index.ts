@@ -2,7 +2,7 @@ import Manager, {Query} from "../manager";
 
 export default abstract class System {
     protected query: Query;
-    protected readonly components: string[];
+    protected readonly componentsQuery: string[];
 
     public readonly name: string;
 
@@ -10,15 +10,15 @@ export default abstract class System {
      * System name can be used later to get access to the system from manager.
      * Component names list is sorted - used to create query keys.
      */
-    protected constructor(name: string, components: string[]) {
+    protected constructor(name: string, componentsQuery: string[]) {
         this.name = name;
 
-        components.sort();
-        this.components = components;
+        componentsQuery.sort();
+        this.componentsQuery = componentsQuery;
     }
 
-    public getComponents(): string[] {
-        return this.components;
+    public getComponentsQueryKey(): string {
+        return this.componentsQuery.join(" & ");
     }
 
     /**

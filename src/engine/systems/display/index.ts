@@ -2,8 +2,8 @@ import System from "../index";
 import Manager, {Query} from "../../manager";
 import Canvas from "./canvas";
 import DrawWorldSystem from "./drawWorld";
-import Logger from "../../utils/logger";
 import DrawScreenSystem from "./drawScreen";
+import Logger from "../../utils/logger";
 
 const log = new Logger("DisplaySystem");
 

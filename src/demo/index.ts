@@ -1,9 +1,6 @@
-import {Engine} from "../engine";
-import Manager from "../engine/manager";
-import WorldLocationData from "../engine/components/worldLocationData";
-import DrawableData from "../engine/components/drawableData";
-import DisplaySystem from "../engine/systems/display/index";
+import {Engine, DrawableComponent, WorldLocationComponent, Manager, DisplaySystem} from "../engine";
 import Logger from "../engine/utils/logger";
+
 import FpsSystem from "./fpsSystem";
 
 const log = new Logger("Game");
@@ -33,26 +30,26 @@ class Game {
         log.info(`creating ${n}`);
         for (let i = 0; i < n; i++) {
             const entity = this.manager.createEntity();
-            this.manager.setComponent(entity, "worldLocation", {
+            this.manager.setComponent(entity, new WorldLocationComponent({
                 x: Math.random() * width,
                 y: Math.random() * height,
-            } as WorldLocationData);
+            }));
             if (Math.random() > 0.95) {
-                this.manager.setComponent(entity, "drawable", {
+                this.manager.setComponent(entity, new DrawableComponent({
                     type: "TEXT",
                     content: "Text",
                     color: `#${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}`,
-                } as DrawableData);
+                }));
             } else {
                 const stroked = Math.random() > 0.5;
-                this.manager.setComponent(entity, "drawable", {
+                this.manager.setComponent(entity, new DrawableComponent({
                     type: "RECT",
                     width: Math.random() * 15,
                     height: Math.random() * 15,
                     color: stroked ? undefined : `#${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}`,
                     strokeColor: stroked ? `#${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}` : undefined,
                     strokeWidth: Math.random() * 3,
-                } as DrawableData);
+                }));
             }
         }
         log.info(`${n} created`);

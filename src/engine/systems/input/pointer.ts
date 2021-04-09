@@ -1,10 +1,10 @@
 import System from "../index";
 import Manager, { Query } from "../../manager";
-import PointableData from "../../components/pointableData";
 import Logger from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
-import WorldLocationData from "../../components/worldLocationData";
-import ScreenLocationData from "../../components/screenLocationData";
+import PointableComponent from "../../components/pointable";
+import WorldLocationComponent from "../../components/worldLocation";
+import ScreenLocationComponent from "../../components/screenLocation";
 
 const log = new Logger("PointerInputSystem");
 
@@ -29,7 +29,7 @@ export default class PointerSystem extends System {
     public DRAG_START_THRESHOLD_PX: number = 6;
 
     constructor() {
-        super("Pointer", ["pointable"]);
+        super("Pointer", ["Pointable"]);
         log.new();
     }
 
@@ -136,34 +136,34 @@ export default class PointerSystem extends System {
         if (this.pointerDragging) this.resetDelta();
 
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get("pointable") as PointableData;
+            const p = components.get("Pointable") as PointableComponent;
             if (!this.pointerActive) {
-                p.clicked = false;
-                p.hovered = false;
+                p.data.clicked = false;
+                p.data.hovered = false;
                 return;
             }
 
             let screenW, screenH, screenX, screenY;
 
-            const wL = components.get("worldLocation") as WorldLocationData;
+            const wL = components.get("WorldLocation") as WorldLocationComponent;
             if (wL) {
                 // TODO
             }
 
-            const sL = components.get("screenLocation") as ScreenLocationData;
+            const sL = components.get("ScreenLocation") as ScreenLocationComponent;
             if (sL) {
-                screenW = p.width;
-                screenH = p.height;
-                screenX = sL.x;
-                screenY = sL.y;
+                screenW = p.data.width;
+                screenH = p.data.height;
+                screenX = sL.data.x;
+                screenY = sL.data.y;
             }
 
             if (typeof screenW !== "undefined") {
-                p.hovered = pointInBox(this.pointerX, this.pointerY, screenX, screenY, screenW, screenH);
+                p.data.hovered = pointInBox(this.pointerX, this.pointerY, screenX, screenY, screenW, screenH);
                 if (this.pointerClicked) {
-                    p.clicked = pointInBox(this.pointerDownStartX, this.pointerDownStartY, screenX, screenY, screenW, screenH);
+                    p.data.clicked = pointInBox(this.pointerDownStartX, this.pointerDownStartY, screenX, screenY, screenW, screenH);
                 } else {
-                    p.clicked = false;
+                    p.data.clicked = false;
                 }
             }
         });

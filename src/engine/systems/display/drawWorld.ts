@@ -1,15 +1,15 @@
 import Logger from "../../utils/logger";
 import System from "../index";
 import Canvas from "./canvas";
-import WorldLocationData from "../../components/worldLocationData";
-import DrawableData from "../../components/drawableData";
+import WorldLocationComponent from "../../components/worldLocation";
+import DrawableComponent from "../../components/drawable";
 
 const log = new Logger("DrawWorldSystem");
 
 export default class DrawWorldSystem extends System {
     private canvas: Canvas;
     constructor(canvas: Canvas) {
-        super("DrawWorld", ["drawable", "worldLocation"]);
+        super("DrawWorld", ["Drawable", "WorldLocation"]);
         log.new();
 
         this.canvas = canvas;
@@ -19,9 +19,9 @@ export default class DrawWorldSystem extends System {
         this.canvas.clear();
 
         this.query.getMatching().forEach((components, entity) => {
-            const wL = components.get("worldLocation") as WorldLocationData;
-            const d = components.get("drawable") as DrawableData;
-            this.canvas.draw(wL.x, wL.y, d);
+            const wL = components.get("WorldLocation") as WorldLocationComponent;
+            const d = components.get("Drawable") as DrawableComponent;
+            this.canvas.draw(wL.data.x, wL.data.y, d.data);
         });
     }
 }

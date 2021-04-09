@@ -3,11 +3,11 @@ import Manager, { Query, Entity } from "./manager";
 import System from "./systems/index";
 import DisplaySystem from "./systems/display/index";
 import PointerSystem from "./systems/input/pointer";
-import ComponentData from "./components/index";
-import DrawableData from "./components/drawableData";
-import PointableData from "./components/pointableData";
-import ScreenLocationData from "./components/screenLocationData";
-import WorldLocationData from "./components/worldLocationData";
+import Component, {ComponentData} from "./components/index";
+import WorldLocationComponent from "./components/worldLocation";
+import ScreenLocationComponent from "./components/screenLocation";
+import PointableComponent from "./components/pointable";
+import DrawableComponent from "./components/drawable";
 
 const log = new Logger("Engine");
 
@@ -34,16 +34,13 @@ export class Engine {
     }
 
     private registerDefaultSystems(): void {
-        this.manager.registerComponent("screenLocation");
-        this.manager.registerComponent("worldLocation");
-        this.manager.registerComponent("pointable");
-        this.manager.registerComponent("drawable");
+        this.manager.registerComponent(new WorldLocationComponent());
+        this.manager.registerComponent(new ScreenLocationComponent());
+        this.manager.registerComponent(new PointableComponent());
+        this.manager.registerComponent(new DrawableComponent());
 
-        const pointerSystem = new PointerSystem();
-        this.manager.registerSystem(pointerSystem);
-
-        const displaySystem = new DisplaySystem();
-        this.manager.registerSystem(displaySystem);
+        this.manager.registerSystem(new PointerSystem());
+        this.manager.registerSystem(new DisplaySystem());
     }
 
     private tick(): void {
@@ -75,10 +72,11 @@ export {
     System,
     Query,
     Entity,
+    Component,
     ComponentData,
-    PointableData,
-    ScreenLocationData,
-    WorldLocationData,
-    DrawableData,
+    WorldLocationComponent,
+    ScreenLocationComponent,
+    PointableComponent,
+    DrawableComponent,
     DisplaySystem,
 };

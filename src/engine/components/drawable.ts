@@ -1,4 +1,4 @@
-import ComponentData from "./index";
+import Component, {ComponentData} from "./index";
 
 interface Sizeable extends ComponentData {
     width: number;
@@ -20,7 +20,7 @@ interface DrawableSprite extends Sizeable {
     offsetY?: number;
 }
 
-interface DrawableText extends Sizeable {
+interface DrawableText extends ComponentData {
     type: "TEXT";
     content: string;
     color?: string;
@@ -29,6 +29,12 @@ interface DrawableText extends Sizeable {
     fontWeight?: number;
 }
 
-type DrawableData = DrawableRect | DrawableSprite | DrawableText;
+export type DrawableData = DrawableRect | DrawableSprite | DrawableText;
 
-export default DrawableData;
+export default class DrawableComponent extends Component {
+    public data: DrawableData;
+
+    constructor(data?: DrawableData) {
+        super("Drawable", data);
+    }
+}

@@ -1,6 +1,4 @@
-import {Manager, PointableData, Query, ScreenLocationData, System} from "../engine";
-import DrawableData from "../engine/components/drawableData";
-import {Entity} from "../engine/manager";
+import { DrawableComponent, Entity, Manager, PointableComponent, Query, ScreenLocationComponent, System} from "../engine";
 
 export default class FpsSystem extends System {
     private manager: Manager;
@@ -18,48 +16,48 @@ export default class FpsSystem extends System {
         this.manager = manager;
 
         this.background = this.manager.createEntity();
-        this.manager.setComponent(this.background, "screenLocation", {
+        this.manager.setComponent(this.background, new ScreenLocationComponent({
             x: 0,
             y: 0,
-        } as ScreenLocationData);
-        this.manager.setComponent(this.background, "drawable", {
+        }));
+        this.manager.setComponent(this.background, new DrawableComponent({
             type: "RECT",
             color: "#444",
             alpha: 0.8,
             width: 105,
             height: 65,
-        } as DrawableData);
-        this.manager.setComponent(this.background, "pointable", {
+        }));
+        this.manager.setComponent(this.background, new PointableComponent({
             width: 105,
             height: 65,
-        } as DrawableData);
+        }));
 
         this.fpsCounter = this.manager.createEntity();
-        this.manager.setComponent(this.fpsCounter, "screenLocation", {
+        this.manager.setComponent(this.fpsCounter, new ScreenLocationComponent({
             x: 10,
             y: 30,
-        } as ScreenLocationData);
-        this.manager.setComponent(this.fpsCounter, "drawable", {
+        }));
+        this.manager.setComponent(this.fpsCounter, new DrawableComponent({
             type: "TEXT",
             content: "FPS: NaN",
             color: "#fff",
             size: 20,
             font: "monospace",
             fontWeight: 700,
-        } as DrawableData);
+        }));
 
         this.fpsCounterMinMax = this.manager.createEntity();
-        this.manager.setComponent(this.fpsCounterMinMax, "screenLocation", {
+        this.manager.setComponent(this.fpsCounterMinMax, new ScreenLocationComponent({
             x: 10,
             y: 50,
-        } as ScreenLocationData);
-        this.manager.setComponent(this.fpsCounterMinMax, "drawable", {
+        }));
+        this.manager.setComponent(this.fpsCounterMinMax, new DrawableComponent({
             type: "TEXT",
             content: "min: NaN  max: NaN",
             color: "#fff",
             size: 14,
             font: "monospace",
-        } as DrawableData);
+        }));
 
         return super.initialize(query, manager);
     }
@@ -76,16 +74,16 @@ export default class FpsSystem extends System {
         const min = Math.min(...this.history);
         const max = Math.max(...this.history);
 
-        const d = this.manager.getEntityComponents(this.fpsCounter).get("drawable") as DrawableData;
-        d.content = `FPS: ${Math.round(avg)}`;
+        const d = this.manager.getEntityComponents(this.fpsCounter).get("Drawable") as DrawableComponent;
+        d.data.content = `FPS: ${Math.round(avg)}`;
 
-        const d2 = this.manager.getEntityComponents(this.fpsCounterMinMax).get("drawable") as DrawableData;
-        d2.content = `${Math.round(min)} - ${Math.round(max)}`;
+        const d2 = this.manager.getEntityComponents(this.fpsCounterMinMax).get("Drawable") as DrawableComponent;
+        d2.data.content = `${Math.round(min)} - ${Math.round(max)}`;
 
-        const bD = this.manager.getEntityComponents(this.background).get("drawable") as DrawableData;
-        const bP = this.manager.getEntityComponents(this.background).get("pointable") as PointableData;
-        if (bP.clicked) {
-            bD.color = `#${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}`;
+        const bD = this.manager.getEntityComponents(this.background).get("Drawable") as DrawableComponent;
+        const bP = this.manager.getEntityComponents(this.background).get("Pointable") as PointableComponent;
+        if (bP.data.clicked) {
+            bD.data.color = `#${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}`;
         }
     }
 }
