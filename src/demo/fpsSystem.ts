@@ -23,7 +23,6 @@ export default class FpsSystem extends System {
         this.manager.setComponent(this.background, new DrawableComponent({
             type: "RECT",
             color: "#444",
-            alpha: 0.8,
             width: 105,
             height: 65,
         }));
@@ -82,6 +81,7 @@ export default class FpsSystem extends System {
 
         const bD = this.manager.getEntityComponents(this.background).get("Drawable") as DrawableComponent;
         const bP = this.manager.getEntityComponents(this.background).get("Pointable") as PointableComponent;
+        bD.data.alpha = bP.data.hovered ? 1 : 0.7;
         if (bP.data.clicked) {
             bD.data.color = `#${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}`;
         }

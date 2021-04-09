@@ -2,7 +2,7 @@ import System from "../index";
 import Manager, { Query } from "../../manager";
 import Logger from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
-import PointableComponent from "../../components/pointable";
+import PointableComponent, { PointableData } from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
 
@@ -46,7 +46,7 @@ export default class PointerSystem extends System {
 
         if (this.pointerDown) {
             if (Math.abs(this.pointerDownStartX - this.pointerX) > this.DRAG_START_THRESHOLD_PX
-             || Math.abs(this.pointerDownStartY - this.pointerY) > this.DRAG_START_THRESHOLD_PX) {
+                || Math.abs(this.pointerDownStartY - this.pointerY) > this.DRAG_START_THRESHOLD_PX) {
                 this.pointerDragging = true;
             }
         }
@@ -135,6 +135,8 @@ export default class PointerSystem extends System {
     public tick(dt: number): void {
         if (this.pointerDragging) this.resetDelta();
 
+        const eventTargets: { z: number; pD: PointableData; }[] = [];
+
         this.query.getMatching().forEach((components, entity) => {
             const p = components.get("Pointable") as PointableComponent;
             if (!this.pointerActive) {
@@ -143,7 +145,7 @@ export default class PointerSystem extends System {
                 return;
             }
 
-            let screenW, screenH, screenX, screenY;
+            let screenW, screenH, screenX, screenY, screenZ;
 
             const wL = components.get("WorldLocation") as WorldLocationComponent;
             if (wL) {
@@ -156,17 +158,29 @@ export default class PointerSystem extends System {
                 screenH = p.data.height;
                 screenX = sL.data.x;
                 screenY = sL.data.y;
+                screenZ = sL.data.z;
             }
 
             if (typeof screenW !== "undefined") {
-                p.data.hovered = pointInBox(this.pointerX, this.pointerY, screenX, screenY, screenW, screenH);
-                if (this.pointerClicked) {
-                    p.data.clicked = pointInBox(this.pointerDownStartX, this.pointerDownStartY, screenX, screenY, screenW, screenH);
-                } else {
-                    p.data.clicked = false;
+                p.data.hovered = false;
+                p.data.clicked = false;
+
+                if (pointInBox(this.pointerX, this.pointerY, screenX, screenY, screenW, screenH)) {
+                    eventTargets.push({
+                        z: screenZ,
+                        pD: p.data,
+                    });
                 }
             }
         });
+
+        if (eventTargets.length) {
+            const targetMaxZ = eventTargets.reduce((prevMax, candidate) => {
+                return (candidate.z >= prevMax.z) ? candidate : prevMax;
+            }, eventTargets[0]);
+            targetMaxZ.pD.hovered = true;
+            targetMaxZ.pD.clicked = this.pointerClicked;
+        }
 
         this.pointerClicked = false;
     }
