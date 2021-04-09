@@ -51,10 +51,14 @@ export class Query {
     }
 
     /**
-     * Called by Manager when new components are added to entity
+     * Called by Manager when new components are added or removed from entity
      */
     public setEntityIfMatches(components: EntityComponents, entity: Entity): void {
-        if (this.match(components)) this.matchingEntities.set(entity, components);
+        if (this.match(components)) {
+            this.matchingEntities.set(entity, components);
+        } else {
+            this.matchingEntities.delete(entity);
+        }
     }
 
     /**
@@ -128,7 +132,7 @@ export default class Manager {
 
     public setComponent(entity: Entity, component: Component): void {
         if (!this.componentRegistered(component)) {
-            log.fail(`component not registered: ${component.name}`);
+            log.fail(`[setComponent] component not registered: ${component.name}`);
         }
 
         const entityComponents = this.getEntityComponents(entity);
@@ -138,7 +142,14 @@ export default class Manager {
     }
 
     public removeComponent(entity: Entity, componentKey: string): void {
-        console.warn("removeComponent: not implemented");
+        if (!this.componentKeyRegistered(componentKey)) {
+            log.fail(`[removeComponent] component not registered: ${componentKey}`);
+        }
+
+        const entityComponents = this.getEntityComponents(entity);
+        if (entityComponents.delete(componentKey)) {
+            this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entity));
+        }
     }
 
     public getEntityComponents(entity: Entity): EntityComponents {
