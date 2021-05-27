@@ -1,4 +1,4 @@
-import Component, {ComponentData} from "./index";
+import Component, { ComponentData } from "./index";
 
 export interface WorldLocationData extends ComponentData {
     /* Absolute position in 2D game world */

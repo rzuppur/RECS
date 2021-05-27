@@ -1,4 +1,4 @@
-import Component, {ComponentData} from "./index";
+import Component, { ComponentData } from "./index";
 
 export interface PointableData extends ComponentData {
     width: number;

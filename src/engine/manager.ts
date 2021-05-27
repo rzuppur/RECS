@@ -1,6 +1,6 @@
 import System from "./systems/index";
 import Component from "./components";
-import {generateUuid} from "./utils/uuid";
+import { generateUuid } from "./utils/uuid";
 import Logger from "./utils/logger";
 
 type EntityComponents = Map<string, Component>; // key: component name

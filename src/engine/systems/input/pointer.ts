@@ -141,7 +141,7 @@ export default class PointerSystem extends System {
         if (this.pointerDragging) this.resetDelta();
 
         const ds = this.manager.getSystem("Display") as DisplaySystem;
-        const {offsetX, offsetY} = ds.getOffset();
+        const { offsetX, offsetY } = ds.getOffset();
         const pointerX = this.pointerX - offsetX;
         const pointerY = this.pointerY - offsetY;
 

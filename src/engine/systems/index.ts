@@ -1,4 +1,4 @@
-import Manager, {Query} from "../manager";
+import Manager, { Query } from "../manager";
 
 export default abstract class System {
     protected query: Query;
@@ -31,5 +31,6 @@ export default abstract class System {
         return true;
     }
 
-    public tick(dt: number): void {}
+    public tick(dt: number): void {
+    }
 }

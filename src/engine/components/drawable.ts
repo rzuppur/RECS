@@ -1,4 +1,4 @@
-import Component, {ComponentData} from "./index";
+import Component, { ComponentData } from "./index";
 
 interface Sizeable extends ComponentData {
     width: number;

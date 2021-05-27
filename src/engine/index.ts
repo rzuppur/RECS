@@ -3,7 +3,7 @@ import Manager, { Query, Entity } from "./manager";
 import System from "./systems/index";
 import DisplaySystem from "./systems/display/index";
 import PointerSystem from "./systems/input/pointer";
-import Component, {ComponentData} from "./components/index";
+import Component, { ComponentData } from "./components/index";
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
 import PointableComponent from "./components/pointable";

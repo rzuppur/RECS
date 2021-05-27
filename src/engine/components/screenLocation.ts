@@ -1,4 +1,4 @@
-import Component, {ComponentData} from "./index";
+import Component, { ComponentData } from "./index";
 
 export interface ScreenLocationData extends ComponentData {
     /* Position on screen from top left corner */

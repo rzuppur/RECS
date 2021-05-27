@@ -1,4 +1,4 @@
-import { DrawableComponent, Entity, Manager, PointableComponent, Query, ScreenLocationComponent, System} from "../engine";
+import { DrawableComponent, Entity, Manager, PointableComponent, Query, ScreenLocationComponent, System } from "../engine";
 
 export default class FpsSystem extends System {
     private manager: Manager;
@@ -102,13 +102,13 @@ export default class FpsSystem extends System {
         const bP = this.manager.getEntityComponents(this.background).get("Pointable") as PointableComponent;
         bD.data.alpha = bP.data.hovered ? 1 : 0.7;
         if (bP.data.clicked) {
-            bD.data.color = `#${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}`;
+            bD.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
         }
         const b2D = this.manager.getEntityComponents(this.background2).get("Drawable") as DrawableComponent;
         const b2P = this.manager.getEntityComponents(this.background2).get("Pointable") as PointableComponent;
         b2D.data.alpha = b2P.data.hovered ? 1 : 0.7;
         if (b2P.data.clicked) {
-            b2D.data.color = `#${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}${Math.ceil(Math.random()*9)}`;
+            b2D.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
         }
     }
 }

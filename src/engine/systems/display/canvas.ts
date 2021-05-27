@@ -1,5 +1,5 @@
 import Logger from "../../utils/logger";
-import {DrawableData} from "../../components/drawable";
+import { DrawableData } from "../../components/drawable";
 
 const log = new Logger("Canvas");
 

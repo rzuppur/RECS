@@ -1,4 +1,4 @@
-import {Engine, DrawableComponent, WorldLocationComponent, Manager, DisplaySystem} from "../engine";
+import { Engine, DrawableComponent, WorldLocationComponent, Manager, DisplaySystem } from "../engine";
 import Logger from "../engine/utils/logger";
 
 import FpsSystem from "./fpsSystem";
@@ -25,7 +25,7 @@ class Game {
     private debugWorld(): void {
         const n = 1000;
         const ds = this.manager.getSystem("Display") as DisplaySystem;
-        const {width, height} = ds.getSize();
+        const { width, height } = ds.getSize();
 
         log.info(`creating ${n}`);
         for (let i = 0; i < n; i++) {
