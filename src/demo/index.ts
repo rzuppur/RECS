@@ -1,7 +1,8 @@
-import { Engine, DrawableComponent, WorldLocationComponent, Manager, DisplaySystem } from "../engine";
+import { DisplaySystem, DrawableComponent, Engine, Manager, System, WorldLocationComponent } from "../engine";
 import Logger from "../engine/utils/logger";
 
 import FpsSystem from "./fpsSystem";
+import PointableComponent from "../engine/components/pointable";
 
 const log = new Logger("Game");
 
@@ -20,6 +21,8 @@ class Game {
 
         const fpsSystem = new FpsSystem();
         this.manager.registerSystem(fpsSystem);
+        const colorSystem = new ColorChangeOnClick();
+        this.manager.registerSystem(colorSystem);
     }
 
     private debugWorld(): void {
@@ -34,40 +37,36 @@ class Game {
                 x: Math.random() * width,
                 y: Math.random() * height,
             }));
-            if (Math.random() > 0.95) {
-                this.manager.setComponent(entity, new DrawableComponent({
-                    type: "TEXT",
-                    content: "Text",
-                    color: `#${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}`,
-                }));
-            } else {
-                const stroked = Math.random() > 0.5;
-                this.manager.setComponent(entity, new DrawableComponent({
-                    type: "RECT",
-                    width: Math.random() * 15,
-                    height: Math.random() * 15,
-                    color: stroked ? undefined : `#${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}`,
-                    strokeColor: stroked ? `#${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}${Math.round(Math.random() * 9)}` : undefined,
-                    strokeWidth: Math.random() * 3,
-                }));
-            }
+            this.manager.setComponent(entity, new DrawableComponent({
+                type: "RECT",
+                width: 25,
+                height: 25,
+                color: "#333",
+            }));
+            this.manager.setComponent(entity, new PointableComponent({
+                width: 25,
+                height: 25,
+            }));
         }
-        const text = this.manager.createEntity();
-        this.manager.setComponent(text, new WorldLocationComponent({
-            x: 40,
-            y: 200,
-            z: -1,
-        }));
-        this.manager.setComponent(text, new DrawableComponent({
-            type: "TEXT",
-            content: "Big\ntext",
-            color: "#ccc",
-            size: 140,
-            font: "serif",
-            fontWeight: 700,
-        }));
 
         log.info(`${n} created`);
+    }
+}
+
+class ColorChangeOnClick extends System {
+    constructor() {
+        super("ColorChangeOnClick", ["Pointable", "Drawable"]);
+    }
+
+    tick(dt: number) {
+        this.query.getMatching().forEach((components, entity) => {
+            const p = components.get("Pointable") as PointableComponent;
+            const d = components.get("Drawable") as DrawableComponent;
+            d.data.alpha = p.data.hovered ? 1 : 0.6;
+            if (p.data.clicked) {
+                d.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
+            }
+        });
     }
 }
 

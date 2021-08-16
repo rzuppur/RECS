@@ -31,22 +31,6 @@ export default class FpsSystem extends System {
             width: 105,
             height: 65,
         }));
-        this.background2 = this.manager.createEntity();
-        this.manager.setComponent(this.background2, new ScreenLocationComponent({
-            x: 85,
-            y: 45,
-            z: 1,
-        }));
-        this.manager.setComponent(this.background2, new DrawableComponent({
-            type: "RECT",
-            color: "#666",
-            width: 40,
-            height: 40,
-        }));
-        this.manager.setComponent(this.background2, new PointableComponent({
-            width: 40,
-            height: 40,
-        }));
 
         this.fpsCounter = this.manager.createEntity();
         this.manager.setComponent(this.fpsCounter, new ScreenLocationComponent({
@@ -71,7 +55,7 @@ export default class FpsSystem extends System {
         }));
         this.manager.setComponent(this.fpsCounterMinMax, new DrawableComponent({
             type: "TEXT",
-            content: "min: NaN  max: NaN",
+            content: "min: max:",
             color: "#fff",
             size: 14,
             font: "monospace",
@@ -97,18 +81,5 @@ export default class FpsSystem extends System {
 
         const d2 = this.manager.getEntityComponents(this.fpsCounterMinMax).get("Drawable") as DrawableComponent;
         d2.data.content = `${Math.round(min)} - ${Math.round(max)}`;
-
-        const bD = this.manager.getEntityComponents(this.background).get("Drawable") as DrawableComponent;
-        const bP = this.manager.getEntityComponents(this.background).get("Pointable") as PointableComponent;
-        bD.data.alpha = bP.data.hovered ? 1 : 0.7;
-        if (bP.data.clicked) {
-            bD.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
-        }
-        const b2D = this.manager.getEntityComponents(this.background2).get("Drawable") as DrawableComponent;
-        const b2P = this.manager.getEntityComponents(this.background2).get("Pointable") as PointableComponent;
-        b2D.data.alpha = b2P.data.hovered ? 1 : 0.7;
-        if (b2P.data.clicked) {
-            b2D.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
-        }
     }
 }
