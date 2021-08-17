@@ -8,9 +8,9 @@ interface Sizeable extends ComponentData {
 interface DrawableRect extends Sizeable {
     type: "RECT";
     color?: string;
-    alpha?: number;
     strokeColor?: string;
     strokeWidth?: number;
+    alpha?: number;
 }
 
 interface DrawableSprite extends Sizeable {
@@ -29,7 +29,15 @@ interface DrawableText extends ComponentData {
     fontWeight?: number;
 }
 
-export type DrawableData = DrawableRect | DrawableSprite | DrawableText;
+interface DrawablePath extends ComponentData {
+    type: "PATH";
+    path: string; // "X1 Y1, X2 Y2, ... , Xn Yn"
+    strokeColor?: string;
+    strokeWidth?: number;
+    alpha?: number;
+}
+
+export type DrawableData = DrawableRect | DrawableSprite | DrawableText | DrawablePath;
 
 export default class DrawableComponent extends Component {
     public data: DrawableData;

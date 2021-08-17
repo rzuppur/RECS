@@ -4,8 +4,8 @@ export default class FpsSystem extends System {
     private manager: Manager;
 
     private background: Entity;
-    private background2: Entity;
     private fpsCounter: Entity;
+    private fpsGraph: Entity;
     private fpsCounterMinMax: Entity;
     private history: number[] = [];
 
@@ -24,12 +24,12 @@ export default class FpsSystem extends System {
         this.manager.setComponent(this.background, new DrawableComponent({
             type: "RECT",
             color: "#444",
-            width: 105,
-            height: 65,
+            width: 260,
+            height: 72,
         }));
         this.manager.setComponent(this.background, new PointableComponent({
-            width: 105,
-            height: 65,
+            width: 260,
+            height: 72,
         }));
 
         this.fpsCounter = this.manager.createEntity();
@@ -47,6 +47,29 @@ export default class FpsSystem extends System {
             fontWeight: 700,
         }));
 
+        this.fpsGraph = this.manager.createEntity();
+        this.manager.setComponent(this.fpsGraph, new ScreenLocationComponent({
+            x: 125,
+            y: 30,
+            z: 10,
+        }));
+        this.manager.setComponent(this.fpsGraph, new DrawableComponent({
+            type: "PATH",
+            path: "0 60",
+            strokeColor: "#fd4"
+        }));
+        const fpsGraphLine = this.manager.createEntity();
+        this.manager.setComponent(fpsGraphLine, new ScreenLocationComponent({
+            x: 125,
+            y: 30,
+            z: 5,
+        }));
+        this.manager.setComponent(fpsGraphLine, new DrawableComponent({
+            type: "PATH",
+            path: "200 0",
+            strokeColor: "#a33"
+        }));
+
         this.fpsCounterMinMax = this.manager.createEntity();
         this.manager.setComponent(this.fpsCounterMinMax, new ScreenLocationComponent({
             x: 10,
@@ -56,7 +79,7 @@ export default class FpsSystem extends System {
         this.manager.setComponent(this.fpsCounterMinMax, new DrawableComponent({
             type: "TEXT",
             content: "min: max:",
-            color: "#fff",
+            color: "#aaa",
             size: 14,
             font: "monospace",
         }));
@@ -67,7 +90,7 @@ export default class FpsSystem extends System {
     public tick(dt: number): void {
         if (!dt) return;
 
-        if (this.history.length > 100) {
+        if (this.history.length > 200) {
             this.history.shift();
         }
         this.history.push(1000 / dt);
@@ -75,6 +98,13 @@ export default class FpsSystem extends System {
         const avg = this.history.reduce((a, b) => (a + b)) / this.history.length;
         const min = Math.min(...this.history);
         const max = Math.max(...this.history);
+
+        const pathDrawable = this.manager.getEntityComponents(this.fpsGraph).get("Drawable") as DrawableComponent;
+        let path = "";
+        this.history.forEach((fps, i) => {
+           path += `${i} ${60 - fps},`;
+        });
+        pathDrawable.data.path = path;
 
         const d = this.manager.getEntityComponents(this.fpsCounter).get("Drawable") as DrawableComponent;
         d.data.content = `FPS: ${Math.round(avg)}`;

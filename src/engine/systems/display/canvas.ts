@@ -80,12 +80,12 @@ export default class Canvas {
         return this;
     }
 
-    public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", stroke: number = 1, alpha: number = 1): Canvas {
+    public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
         this.canvas2dContext.globalAlpha = alpha;
-        const strokeWidth = stroke * this.dpr;
-        this.canvas2dContext.lineWidth = strokeWidth;
+        const strokeWidthRealPixels = strokeWidth * this.dpr;
+        this.canvas2dContext.lineWidth = strokeWidthRealPixels;
         this.canvas2dContext.strokeStyle = color;
-        this.canvas2dContext.strokeRect(x * this.dpr + strokeWidth / 2, y * this.dpr + strokeWidth / 2, width * this.dpr - strokeWidth, height * this.dpr - strokeWidth);
+        this.canvas2dContext.strokeRect(x * this.dpr + strokeWidthRealPixels / 2, y * this.dpr + strokeWidthRealPixels / 2, width * this.dpr - strokeWidthRealPixels, height * this.dpr - strokeWidthRealPixels);
         this.canvas2dContext.globalAlpha = 1;
         return this;
     }
@@ -98,6 +98,21 @@ export default class Canvas {
             this.canvas2dContext.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
             offsetY += size * this.dpr * 1.15;
         });
+        return this;
+    }
+
+    public drawPath(x: number, y: number, path: string, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
+        this.canvas2dContext.globalAlpha = alpha;
+        this.canvas2dContext.lineWidth = strokeWidth * this.dpr;
+        this.canvas2dContext.strokeStyle = strokeColor;
+        this.canvas2dContext.beginPath();
+        this.canvas2dContext.moveTo(x, y);
+        path.split(",").filter(Boolean).forEach((point) => {
+            const [pX, pY] = point.split(" ").filter(Boolean);
+            this.canvas2dContext.lineTo(+pX + x, +pY + y);
+        });
+        this.canvas2dContext.stroke();
+        this.canvas2dContext.globalAlpha = 1;
         return this;
     }
 
@@ -121,6 +136,8 @@ export default class Canvas {
             }
         } else if (drawable.type === "TEXT") {
             this.drawText(x, y, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight);
+        } else if (drawable.type === "PATH") {
+            this.drawPath(x, y, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite(x + (drawable.offsetX ?? 0), y + (drawable.offsetY ?? 0), drawable.width, drawable.height, drawable.imageSrc);
         } else {
