@@ -11,6 +11,11 @@ export default class DisplaySystem extends System {
     private canvas: Canvas;
     private mountElQuery: string;
 
+    /**
+     * @param mountElQuery - A new canvas element will be added as a child here.
+     *
+     * Canvas fills the entire parent and uses ResizeObserver to adjust on resize.
+     */
     constructor(mountElQuery: string) {
         log.new();
         super("Display", []);
@@ -34,12 +39,19 @@ export default class DisplaySystem extends System {
         return true;
     }
 
+    /**
+     * Returns canvas size in CSS pixels.This is not the actual screen pixels size, unless screen has a 1x pixel ratio.
+     */
     public getSize(): {width: number, height: number} {
         return this.canvas.getSize();
     }
 
+    /**
+     * Canvas offset on page.
+     * Used for correct pointer input calculations if canvas does not start from (0,0).
+     */
     public getOffset(): {offsetX: number, offsetY: number} {
-        return { offsetX: this.canvas.offsetX, offsetY: this.canvas.offsetY };
+        return this.canvas.getOffset();
     }
 
     public disableSmoothing(): void {
@@ -48,5 +60,14 @@ export default class DisplaySystem extends System {
 
     public enableSmoothing(): void {
         this.canvas.setSmoothing(true);
+    }
+
+    /**
+     * Supports only one callback, will use the latest.
+     * Called every time canvas size changes, including initialization.
+     * Useful for positioning GUI, etc
+     */
+    public onCanvasSizeChange(callback: (width: number, height: number) => void): void {
+        this.canvas.onSizeChange = callback;
     }
 }

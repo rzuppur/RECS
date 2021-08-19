@@ -90,7 +90,7 @@ export default class FpsSystem extends System {
     public tick(dt: number): void {
         if (!dt) return;
 
-        if (this.history.length > 200) {
+        if (this.history.length > 100) {
             this.history.shift();
         }
         this.history.push(1000 / dt);
@@ -102,7 +102,7 @@ export default class FpsSystem extends System {
         const pathDrawable = this.manager.getEntityComponents(this.fpsGraph).get("Drawable") as DrawableComponent;
         let path = "";
         this.history.forEach((fps, i) => {
-           path += `${i} ${60 - fps},`;
+           path += `${i*2} ${60 - fps},${(i+1)*2} ${60 - fps},`;
         });
         pathDrawable.data.path = path;
 

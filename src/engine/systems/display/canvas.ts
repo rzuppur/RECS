@@ -4,6 +4,8 @@ import { DrawableData } from "../../components/drawable";
 const log = new Logger("Canvas");
 
 export default class Canvas {
+    public onSizeChange: (width: number, height: number) => void = () => {};
+
     private parentEl: HTMLElement;
     private readonly canvasEl: HTMLCanvasElement;
     private readonly ctx: CanvasRenderingContext2D;
@@ -12,8 +14,8 @@ export default class Canvas {
     private width: number = 1;
     private height: number = 1;
 
-    public offsetX: number = 0;
-    public offsetY: number = 0;
+    private offsetX: number = 0;
+    private offsetY: number = 0;
 
     private dpr: number;
     private smoothing: boolean = true;
@@ -27,15 +29,20 @@ export default class Canvas {
 
     private setCanvasLogicalSize(width: number, height: number) {
         this.dpr = Math.max(window.devicePixelRatio || 1, 1);
+
+        // Set CSS pixels size
         this.width = Math.floor(width);
         this.height = Math.floor(height);
 
+        // Set actual screen pixels size
         this.canvasEl.width = this.width * this.dpr;
         this.canvasEl.height = this.height * this.dpr;
 
+        // Smoothing will reset after a resize
         this.ctx.imageSmoothingEnabled = this.smoothing;
 
-        log.info(`${this.width} x ${this.height} px @${this.dpr}x`);
+        // Emit resize event
+        this.onSizeChange(this.width, this.height);
     }
 
     public mount(parentEl: HTMLElement): Canvas {
@@ -59,6 +66,10 @@ export default class Canvas {
 
     public getSize(): { width: number, height: number } {
         return { width: this.width, height: this.height };
+    }
+
+    public getOffset(): { offsetX: number, offsetY: number } {
+        return { offsetX: this.offsetX, offsetY: this.offsetY };
     }
 
     public setSmoothing(smoothing: boolean): void {
