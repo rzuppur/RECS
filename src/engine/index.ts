@@ -1,13 +1,17 @@
 import Logger from "./utils/logger";
-import Manager, { Query, Entity } from "./manager";
+import Manager from "./manager";
+import Query from "./query";
 import System from "./systems/index";
 import DisplaySystem from "./systems/display/index";
+import DrawWorldSystem from "./systems/display/drawWorld";
+import DrawScreenSystem from "./systems/display/drawScreen";
 import PointerSystem from "./systems/input/pointer";
 import Component, { ComponentData } from "./components/index";
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
 import PointableComponent from "./components/pointable";
 import DrawableComponent from "./components/drawable";
+import { Entity } from "./model";
 
 const log = new Logger("Engine");
 
@@ -83,4 +87,7 @@ export {
     PointableComponent,
     DrawableComponent,
     DisplaySystem,
+    DrawWorldSystem,
+    DrawScreenSystem,
+    PointerSystem,
 };

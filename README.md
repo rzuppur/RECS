@@ -55,9 +55,9 @@ class MySystem extends System {
         super(name, componentsQuery);
     }
 
-    public initialize(query: Query, manager: Manager): boolean {
+    public start(query: Query, manager: Manager): boolean {
         // Add custom initialization code here IF needed
-        return super.initialize(query, manager);
+        return super.start(query, manager);
     }
 
     public tick(dt: number /* ms since last tick */): void {

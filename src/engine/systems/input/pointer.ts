@@ -1,16 +1,19 @@
 import System from "../index";
-import Manager, { Query } from "../../manager";
+import Manager from "../../manager";
+import Query from "../../query";
 import Logger from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
 import PointableComponent, { PointableData } from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
 import DisplaySystem from "../display/index";
+import DrawWorldSystem from "../display/drawWorld";
 
 const log = new Logger("PointerInputSystem");
 
 export default class PointerSystem extends System {
-    private manager: Manager;
+    private displaySystem: DisplaySystem;
+    private drawWorldSystem: DrawWorldSystem;
 
     private pointerLastX: number = 0;
     private pointerLastY: number = 0;
@@ -28,6 +31,15 @@ export default class PointerSystem extends System {
     private pointerDragging: boolean = false;
     private pointerClicked: boolean = false;
     private pointerActive: boolean = false;
+
+    private didWheel: boolean = false;
+    public wheelDeltaX: number = 0;
+    public wheelDeltaY: number = 0;
+
+    public pointerScreenX: number = 0;
+    public pointerScreenY: number = 0;
+    public pointerWorldX: number = 0;
+    public pointerWorldY: number = 0;
 
     public DRAG_START_THRESHOLD_PX: number = 6;
 
@@ -106,6 +118,12 @@ export default class PointerSystem extends System {
         this.onPointerUp();
     }
 
+    private wheelHandler(event: WheelEvent): void {
+        this.didWheel = true;
+        this.wheelDeltaX = event.deltaMode ? event.deltaX * 20 : event.deltaX; // Delta mode 0 is pixels, 1/2 is lines/pages
+        this.wheelDeltaY = event.deltaMode ? event.deltaY * 20 : event.deltaY;
+    }
+
     private calculateDelta() {
         this.pointerDeltaX = this.pointerLastX - this.pointerX;
         this.pointerDeltaY = this.pointerLastY - this.pointerY;
@@ -119,9 +137,7 @@ export default class PointerSystem extends System {
         this.pointerDeltaY = 0;
     }
 
-    public initialize(query: Query, manager: Manager): boolean {
-        this.manager = manager;
-
+    public start(query: Query, manager: Manager): boolean {
         document.addEventListener("mousedown", this.mouseDownHandler.bind(this), false);
         document.addEventListener("mousemove", this.mouseMoveHandler.bind(this), false);
         document.addEventListener("mouseup", this.mouseUpHandler.bind(this), false);
@@ -132,18 +148,28 @@ export default class PointerSystem extends System {
         document.addEventListener("touchend", this.touchEndHandler.bind(this), false);
         document.addEventListener("touchcancel", this.touchEndHandler.bind(this), false);
 
-        super.initialize(query, manager);
+        document.addEventListener("wheel", this.wheelHandler.bind(this), false);
 
-        return true;
+        this.displaySystem = manager.getSystem("Display") as DisplaySystem;
+        this.drawWorldSystem = manager.getSystem("DrawWorld") as DrawWorldSystem;
+
+        return super.start(query, manager);
     }
 
     public tick(dt: number): void {
         if (this.pointerDragging) this.resetDelta();
 
-        const ds = this.manager.getSystem("Display") as DisplaySystem;
-        const { offsetX, offsetY } = ds.getOffset();
+        const { offsetX, offsetY } = this.displaySystem.getOffset();
         const pointerX = this.pointerX - offsetX;
         const pointerY = this.pointerY - offsetY;
+        const worldZoom = this.drawWorldSystem.zoom;
+        const worldOffsetX = this.drawWorldSystem.offsetX;
+        const worldOffsetY = this.drawWorldSystem.offsetY;
+
+        this.pointerScreenX = pointerX;
+        this.pointerScreenY = pointerY;
+        this.pointerWorldX = (pointerX / worldZoom) - worldOffsetX;
+        this.pointerWorldY = (pointerY / worldZoom) - worldOffsetY;
 
         const eventTargets: { z: number; pD: PointableData; }[] = [];
 
@@ -159,11 +185,10 @@ export default class PointerSystem extends System {
 
             const wL = components.get("WorldLocation") as WorldLocationComponent;
             if (wL) {
-                // TODO: transform from world coordinates to screen
-                screenW = p.data.width;
-                screenH = p.data.height;
-                screenX = wL.data.x;
-                screenY = wL.data.y;
+                screenW = p.data.width * worldZoom;
+                screenH = p.data.height * worldZoom;
+                screenX = (wL.data.x + worldOffsetX) * worldZoom;
+                screenY = (wL.data.y + worldOffsetY) * worldZoom;
                 screenZ = wL.data.z ?? 0;
             }
 
@@ -198,5 +223,12 @@ export default class PointerSystem extends System {
         }
 
         this.pointerClicked = false;
+
+        if (this.didWheel) {
+            this.didWheel = false;
+        } else {
+            this.wheelDeltaX = 0;
+            this.wheelDeltaY = 0;
+        }
     }
 }

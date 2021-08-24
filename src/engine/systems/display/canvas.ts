@@ -138,12 +138,12 @@ export default class Canvas {
         return this;
     }
 
-    public draw(x: number, y: number, drawable: DrawableData): Canvas {
+    public draw(x: number, y: number, drawable: DrawableData, zoom = 1): Canvas {
         if (drawable.type === "RECT") {
             if (drawable.strokeColor) {
-                this.drawRectStroke(x, y, drawable.width, drawable.height, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
+                this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth * zoom, drawable.alpha);
             } else {
-                this.drawRect(x, y, drawable.width, drawable.height, drawable.color, drawable.alpha);
+                this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
             }
         } else if (drawable.type === "TEXT") {
             this.drawText(x, y, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight);

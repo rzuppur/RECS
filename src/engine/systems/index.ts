@@ -1,10 +1,12 @@
-import Manager, { Query } from "../manager";
+import Manager from "../manager";
+import Query from "../query";
 
 export default abstract class System {
     protected query: Query;
     protected readonly componentsQuery: string[];
 
     public readonly name: string;
+    public started: boolean = false;
 
     /**
      * System name can be used later to get access to the system from manager.
@@ -26,11 +28,21 @@ export default abstract class System {
      *
      * Returns boolean indicating success
      */
-    public initialize(query: Query, manager: Manager): boolean {
-        this.query = query;
+    public beforeStart(manager: Manager): boolean {
         return true;
     }
 
-    public tick(dt: number): void {
+    /**
+     * Called by manager.ts -> registerSystem
+     *
+     * Returns boolean indicating success
+     */
+    public start(query: Query, manager: Manager): boolean {
+        this.query = query;
+        this.started = true;
+        return true;
+    }
+
+    public tick(dt: number, manager: Manager): void {
     }
 }

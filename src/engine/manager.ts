@@ -2,72 +2,10 @@ import System from "./systems/index";
 import Component from "./components";
 import { generateUuid } from "./utils/uuid";
 import Logger from "./utils/logger";
-
-type EntityComponents = Map<string, Component>; // key: component name
-type EntitiesMap = Map<Entity, EntityComponents>; // key: entity id
+import { Entity, EntityComponents, EntitiesMap } from "./model";
+import Query from "./query";
 
 const log = new Logger("Manager");
-
-export type Entity = string;
-
-export class Query {
-    private matchingEntities: EntitiesMap = new Map();
-    private readonly componentKeys: string[];
-    private readonly manager: Manager;
-
-    constructor(queryKey: string, manager: Manager) {
-        this.componentKeys = queryKey.split(" & ");
-        this.manager = manager;
-
-        this.componentKeys.filter(key => key).forEach(componentKey => {
-            if (!manager.componentKeyRegistered(componentKey)) {
-                log.fail(`[query] component not registered: ${componentKey}`);
-            }
-        });
-
-        this.findAllMatching();
-    }
-
-    /**
-     * Test if component names list matches the query
-     */
-    private match(components: EntityComponents): boolean {
-        for (let i = 0; i < this.componentKeys.length; i++) {
-            if (!components.has(this.componentKeys[i])) return false;
-        }
-        return true;
-    }
-
-    /**
-     * Find all matching entities and save to matches
-     * EXPENSIVE! Should only be called when creating a new query
-     */
-    public findAllMatching(): void {
-        this.manager.getEntities().forEach((components: EntityComponents, entity: Entity) => {
-            if (this.match(components)) {
-                this.matchingEntities.set(entity, components);
-            }
-        });
-    }
-
-    /**
-     * Called by Manager when new components are added or removed from entity
-     */
-    public setEntityIfMatches(components: EntityComponents, entity: Entity): void {
-        if (this.match(components)) {
-            this.matchingEntities.set(entity, components);
-        } else {
-            this.matchingEntities.delete(entity);
-        }
-    }
-
-    /**
-     * Return all matching entities map with components
-     */
-    public getMatching(): EntitiesMap {
-        return this.matchingEntities;
-    }
-}
 
 export default class Manager {
     private components: Map<string, Component> = new Map();
@@ -89,6 +27,7 @@ export default class Manager {
     }
 
     public registerSystem(system: System): void {
+        log.info(`registering system: ${system.name}`);
         if (this.systems.has(system.name)) {
             log.warning(`system already exists: ${system.name}`);
             return;
@@ -100,11 +39,17 @@ export default class Manager {
             this.queries.set(queryKey, new Query(queryKey, this));
             log.info(`created query: ${queryKey}`);
         }
-        const success = system.initialize(this.queries.get(queryKey), this);
-        if (success) {
-            log.info(`registered system: ${system.name}`);
+
+        if (system.beforeStart(this)) {
+            setTimeout(() => {
+                if (system.start(this.queries.get(queryKey), this)) {
+                    log.info(`started system: ${system.name}`);
+                } else {
+                    log.error(`failed to start system: ${system.name}`);
+                }
+            });
         } else {
-            log.error(`failed to start system: ${system.name}`);
+            log.error(`failed to start system [beforeStart]: ${system.name}`);
         }
     }
 
@@ -163,6 +108,6 @@ export default class Manager {
     }
 
     public tick(dt: number) {
-        this.systems.forEach(system => system.tick(dt));
+        this.systems.forEach(system => system.started && system.tick(dt, this));
     }
 }
