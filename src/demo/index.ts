@@ -84,11 +84,12 @@ class GameSystem extends System {
     }
 
     tick(dt: number, manager: Manager) {
-        this.drawWorldSystem.view.x += this.pointerSystem.wheelDeltaX * 0.2;
-        this.drawWorldSystem.view.y += this.pointerSystem.wheelDeltaY * 0.2;
+        this.drawWorldSystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
+        this.drawWorldSystem.view.x += this.pointerSystem.wheelDeltaX / this.drawWorldSystem.zoom;
+        //this.drawWorldSystem.view.y += this.pointerSystem.wheelDeltaY * 0.2;
 
         const coordinatesTextDrawable = manager.getEntityComponents(this.coordinatesText).get("Drawable") as DrawableComponent;
-        coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}`;
+        coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}`;
         const coordinatesTextLocation = manager.getEntityComponents(this.coordinatesText).get("ScreenLocation") as ScreenLocationComponent;
         coordinatesTextLocation.data.x = this.pointerSystem.pointerScreenX;
         coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;

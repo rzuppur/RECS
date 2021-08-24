@@ -138,6 +138,8 @@ export default class PointerSystem extends System {
     }
 
     public start(query: Query, manager: Manager): boolean {
+        // todo: listen only on canvas area
+
         document.addEventListener("mousedown", this.mouseDownHandler.bind(this), false);
         document.addEventListener("mousemove", this.mouseMoveHandler.bind(this), false);
         document.addEventListener("mouseup", this.mouseUpHandler.bind(this), false);
