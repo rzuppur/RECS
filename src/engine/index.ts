@@ -6,6 +6,7 @@ import DisplaySystem from "./systems/display/index";
 import DrawWorldSystem from "./systems/display/drawWorld";
 import DrawScreenSystem from "./systems/display/drawScreen";
 import PointerSystem from "./systems/input/pointer";
+import KeyboardSystem from "./systems/input/keyboard";
 import Component, { ComponentData } from "./components/index";
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
@@ -48,6 +49,7 @@ export class Engine {
         this.manager.registerComponent(new DrawableComponent());
 
         this.manager.registerSystem(new PointerSystem());
+        this.manager.registerSystem(new KeyboardSystem());
         this.manager.registerSystem(new DisplaySystem(this.mountElQuery));
     }
 
@@ -90,4 +92,5 @@ export {
     DrawWorldSystem,
     DrawScreenSystem,
     PointerSystem,
+    KeyboardSystem,
 };

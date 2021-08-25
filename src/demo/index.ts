@@ -1,4 +1,4 @@
-import { DisplaySystem, PointerSystem, DrawWorldSystem, DrawableComponent, PointableComponent, Engine, Manager, System, WorldLocationComponent, Query, ScreenLocationComponent, Entity } from "../engine";
+import { DisplaySystem, PointerSystem, DrawWorldSystem, DrawableComponent, PointableComponent, Engine, Manager, System, WorldLocationComponent, Query, ScreenLocationComponent, Entity, KeyboardSystem } from "../engine";
 import Logger from "../engine/utils/logger";
 
 import FpsSystem from "./fpsSystem";
@@ -53,6 +53,7 @@ class Game {
 class GameSystem extends System {
     private displaySystem: DisplaySystem;
     private pointerSystem: PointerSystem;
+    private keyboardSystem: KeyboardSystem;
     private drawWorldSystem: DrawWorldSystem;
 
     private coordinatesText: Entity;
@@ -64,6 +65,7 @@ class GameSystem extends System {
     start(query: Query, manager: Manager): boolean {
         this.displaySystem = manager.getSystem("Display") as DisplaySystem;
         this.pointerSystem = manager.getSystem("Pointer") as PointerSystem;
+        this.keyboardSystem = manager.getSystem("Keyboard") as KeyboardSystem;
         this.drawWorldSystem = manager.getSystem("DrawWorld") as DrawWorldSystem;
 
         this.coordinatesText = manager.createEntity();
@@ -85,11 +87,15 @@ class GameSystem extends System {
 
     tick(dt: number, manager: Manager) {
         this.drawWorldSystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
-        this.drawWorldSystem.view.x += this.pointerSystem.wheelDeltaX / this.drawWorldSystem.zoom;
-        //this.drawWorldSystem.view.y += this.pointerSystem.wheelDeltaY * 0.2;
+        //this.drawWorldSystem.view.x += this.pointerSystem.wheelDeltaX / this.drawWorldSystem.zoom;
+
+        if (this.keyboardSystem.keysDown.has("ArrowDown")) this.drawWorldSystem.view.y += 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ArrowUp")) this.drawWorldSystem.view.y -= 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ArrowLeft")) this.drawWorldSystem.view.x -= 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ArrowRight")) this.drawWorldSystem.view.x += 4 / this.drawWorldSystem.zoom;
 
         const coordinatesTextDrawable = manager.getEntityComponents(this.coordinatesText).get("Drawable") as DrawableComponent;
-        coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}`;
+        coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
         const coordinatesTextLocation = manager.getEntityComponents(this.coordinatesText).get("ScreenLocation") as ScreenLocationComponent;
         coordinatesTextLocation.data.x = this.pointerSystem.pointerScreenX;
         coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;
