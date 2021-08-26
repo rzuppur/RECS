@@ -112,15 +112,15 @@ export default class Canvas {
         return this;
     }
 
-    public drawPath(x: number, y: number, path: string, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
+    public drawPath(x: number, y: number, path: string, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1, zoom: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.lineWidth = strokeWidth * this.dpr;
         this.ctx.strokeStyle = strokeColor;
         this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
+        this.ctx.moveTo(x * this.dpr, y * this.dpr);
         path.split(",").filter(Boolean).forEach((point) => {
             const [pX, pY] = point.split(" ").filter(Boolean);
-            this.ctx.lineTo(+pX + x, +pY + y);
+            this.ctx.lineTo((+pX * zoom + x) * this.dpr, (+pY * zoom + y) * this.dpr);
         });
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
@@ -146,11 +146,11 @@ export default class Canvas {
                 this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
             }
         } else if (drawable.type === "TEXT") {
-            this.drawText(x, y, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight);
+            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "PATH") {
-            this.drawPath(x, y, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
+            this.drawPath(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
         } else if (drawable.type === "SPRITE") {
-            this.drawSprite(x + (drawable.offsetX ?? 0), y + (drawable.offsetY ?? 0), drawable.width, drawable.height, drawable.imageSrc);
+            this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc);
         } else {
             log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
         }

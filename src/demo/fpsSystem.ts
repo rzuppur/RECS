@@ -19,11 +19,11 @@ export default class FpsSystem extends System {
         manager.setComponent(this.background, new DrawableComponent({
             type: "RECT",
             color: "#444",
-            width: 260,
+            width: 325,
             height: 72,
         }));
         manager.setComponent(this.background, new PointableComponent({
-            width: 260,
+            width: 325,
             height: 72,
         }));
 
@@ -44,7 +44,7 @@ export default class FpsSystem extends System {
 
         this.fpsGraph = manager.createEntity();
         manager.setComponent(this.fpsGraph, new ScreenLocationComponent({
-            x: 125,
+            x: 100,
             y: 30,
             z: 10,
         }));
