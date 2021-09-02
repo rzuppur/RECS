@@ -10,9 +10,10 @@ export interface WorldLocationData extends ComponentData {
 }
 
 export default class WorldLocationComponent extends Component {
+    static key = "WorldLocation";
     public data: WorldLocationData;
 
     constructor(data?: WorldLocationData) {
-        super("WorldLocation", data);
+        super(WorldLocationComponent.key, data);
     }
 }

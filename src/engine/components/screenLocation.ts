@@ -10,9 +10,10 @@ export interface ScreenLocationData extends ComponentData {
 }
 
 export default class ScreenLocationComponent extends Component {
+    static key = "ScreenLocation";
     public data: ScreenLocationData;
 
     constructor(data?: ScreenLocationData) {
-        super("ScreenLocation", data);
+        super(ScreenLocationComponent.key, data);
     }
 }

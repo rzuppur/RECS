@@ -59,7 +59,7 @@ class GameSystem extends System {
     private coordinatesText: Entity;
 
     constructor() {
-        super("Game", ["Pointable", "Drawable"]);
+        super("Game", [PointableComponent.key, DrawableComponent.key]);
     }
 
     start(query: Query, manager: Manager): boolean {
@@ -94,15 +94,15 @@ class GameSystem extends System {
         if (this.keyboardSystem.keysDown.has("ArrowLeft")) this.drawWorldSystem.view.x -= 4 / this.drawWorldSystem.zoom;
         if (this.keyboardSystem.keysDown.has("ArrowRight")) this.drawWorldSystem.view.x += 4 / this.drawWorldSystem.zoom;
 
-        const coordinatesTextDrawable = manager.getEntityComponents(this.coordinatesText).get("Drawable") as DrawableComponent;
+        const coordinatesTextDrawable = manager.getEntityComponents(this.coordinatesText).get(DrawableComponent.key) as DrawableComponent;
         coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
-        const coordinatesTextLocation = manager.getEntityComponents(this.coordinatesText).get("ScreenLocation") as ScreenLocationComponent;
+        const coordinatesTextLocation = manager.getEntityComponents(this.coordinatesText).get(ScreenLocationComponent.key) as ScreenLocationComponent;
         coordinatesTextLocation.data.x = this.pointerSystem.pointerScreenX;
         coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;
 
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get("Pointable") as PointableComponent;
-            const d = components.get("Drawable") as DrawableComponent;
+            const p = components.get(PointableComponent.key) as PointableComponent;
+            const d = components.get(DrawableComponent.key) as DrawableComponent;
             d.data.alpha = p.data.hovered ? 1 : 0.4;
             if (p.data.clicked) {
                 d.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;

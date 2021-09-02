@@ -10,7 +10,7 @@ export default class DrawScreenSystem extends System {
     private canvas: Canvas;
 
     constructor(canvas: Canvas) {
-        super("DrawScreen", ["Drawable", "ScreenLocation"]);
+        super("DrawScreen", [DrawableComponent.key, ScreenLocationComponent.key]);
         log.new();
 
         this.canvas = canvas;
@@ -19,8 +19,8 @@ export default class DrawScreenSystem extends System {
     public tick(dt: number): void {
         const sorted: Map<number, { sL: ScreenLocationComponent, d: DrawableComponent }[]> = new Map();
         this.query.getMatching().forEach((components, entity) => {
-            const sL = components.get("ScreenLocation") as ScreenLocationComponent;
-            const d = components.get("Drawable") as DrawableComponent;
+            const sL = components.get(ScreenLocationComponent.key) as ScreenLocationComponent;
+            const d = components.get(DrawableComponent.key) as DrawableComponent;
             const z = sL.data.z ?? 0;
             if (!sorted.has(z)) {
                 sorted.set(z, [{ sL, d }]);

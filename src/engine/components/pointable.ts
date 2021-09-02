@@ -8,9 +8,10 @@ export interface PointableData extends ComponentData {
 }
 
 export default class PointableComponent extends Component {
+    static key = "Pointable";
     public data: PointableData;
 
     constructor(data?: PointableData) {
-        super("Pointable", data);
+        super(PointableComponent.key, data);
     }
 }

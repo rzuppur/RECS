@@ -40,9 +40,10 @@ interface DrawablePath extends ComponentData {
 export type DrawableData = DrawableRect | DrawableSprite | DrawableText | DrawablePath;
 
 export default class DrawableComponent extends Component {
+    static key = "Drawable";
     public data: DrawableData;
 
     constructor(data?: DrawableData) {
-        super("Drawable", data);
+        super(DrawableComponent.key, data);
     }
 }

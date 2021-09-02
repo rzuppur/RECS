@@ -35,10 +35,11 @@ interface MyData extends ComponentData {
 }
 
 class MyComponent extends Component {
+    static key = "My";
     public data: MyData;
 
     constructor(data?: MyData) {
-        super("My", data);
+        super(MyComponent.key, data);
     }
 }
 ```
@@ -48,7 +49,7 @@ class MyComponent extends Component {
 import { System, PointableComponent } from "@rzuppur/recs";
 
 const name = "My";
-const componentsQuery = ["Pointable"];
+const componentsQuery = [PointableComponent.key];
 
 class MySystem extends System {
     constructor() {
@@ -62,7 +63,7 @@ class MySystem extends System {
 
     public tick(dt: number /* ms since last tick */): void {
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get("Pointable") as PointableComponent;
+            const p = components.get(PointableComponent.key) as PointableComponent;
             if (p.data.clicked) {
                 console.log("clicked", entity);
             }

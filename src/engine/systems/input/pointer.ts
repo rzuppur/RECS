@@ -44,7 +44,7 @@ export default class PointerSystem extends System {
     public DRAG_START_THRESHOLD_PX: number = 6;
 
     constructor() {
-        super("Pointer", ["Pointable"]);
+        super("Pointer", [PointableComponent.key]);
         log.new();
     }
 
@@ -176,7 +176,7 @@ export default class PointerSystem extends System {
         const eventTargets: { z: number; pD: PointableData; }[] = [];
 
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get("Pointable") as PointableComponent;
+            const p = components.get(PointableComponent.key) as PointableComponent;
             if (!this.pointerActive) {
                 p.data.clicked = false;
                 p.data.hovered = false;
@@ -185,7 +185,7 @@ export default class PointerSystem extends System {
 
             let screenW, screenH, screenX, screenY, screenZ;
 
-            const wL = components.get("WorldLocation") as WorldLocationComponent;
+            const wL = components.get(WorldLocationComponent.key) as WorldLocationComponent;
             if (wL) {
                 screenW = p.data.width * worldZoom;
                 screenH = p.data.height * worldZoom;
@@ -194,7 +194,7 @@ export default class PointerSystem extends System {
                 screenZ = wL.data.z ?? 0;
             }
 
-            const sL = components.get("ScreenLocation") as ScreenLocationComponent;
+            const sL = components.get(ScreenLocationComponent.key) as ScreenLocationComponent;
             if (sL) {
                 screenW = p.data.width;
                 screenH = p.data.height;

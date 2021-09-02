@@ -3,6 +3,7 @@ type ComponentData = {
 };
 
 export default abstract class Component {
+    static key: string;
     public readonly name: string;
     public data: ComponentData;
 
