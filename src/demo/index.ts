@@ -89,10 +89,10 @@ class GameSystem extends System {
         this.drawWorldSystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
         //this.drawWorldSystem.view.x += this.pointerSystem.wheelDeltaX / this.drawWorldSystem.zoom;
 
-        if (this.keyboardSystem.keysDown.has("ArrowDown")) this.drawWorldSystem.view.y += 4 / this.drawWorldSystem.zoom;
-        if (this.keyboardSystem.keysDown.has("ArrowUp")) this.drawWorldSystem.view.y -= 4 / this.drawWorldSystem.zoom;
-        if (this.keyboardSystem.keysDown.has("ArrowLeft")) this.drawWorldSystem.view.x -= 4 / this.drawWorldSystem.zoom;
-        if (this.keyboardSystem.keysDown.has("ArrowRight")) this.drawWorldSystem.view.x += 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWDOWN")) this.drawWorldSystem.view.y += 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWUP")) this.drawWorldSystem.view.y -= 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWLEFT")) this.drawWorldSystem.view.x -= 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWRIGHT")) this.drawWorldSystem.view.x += 4 / this.drawWorldSystem.zoom;
 
         const coordinatesTextDrawable = manager.getEntityComponents(this.coordinatesText).get(DrawableComponent.key) as DrawableComponent;
         coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
