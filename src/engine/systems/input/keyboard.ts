@@ -18,8 +18,8 @@ export default class KeyboardSystem extends System {
     }
 
     private static replaceKeyNames(keyName: string): string {
-        if (keyName === " ") return "Space";
-        return keyName;
+        if (keyName === " ") return "space";
+        return keyName.toLowerCase();
     }
 
     private keyDownHandler(event: KeyboardEvent): void {

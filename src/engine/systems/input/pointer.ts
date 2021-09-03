@@ -176,7 +176,7 @@ export default class PointerSystem extends System {
         const eventTargets: { z: number; pD: PointableData; }[] = [];
 
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get(PointableComponent.key) as PointableComponent;
+            const p = Query.getComponent(components, PointableComponent);
             if (!this.pointerActive) {
                 p.data.clicked = false;
                 p.data.hovered = false;

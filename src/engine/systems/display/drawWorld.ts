@@ -3,6 +3,7 @@ import System from "../index";
 import Canvas from "./canvas";
 import WorldLocationComponent from "../../components/worldLocation";
 import DrawableComponent from "../../components/drawable";
+import Query from "../../query";
 
 const log = new Logger("DrawWorldSystem");
 
@@ -53,8 +54,8 @@ export default class DrawWorldSystem extends System {
 
         const sorted: Map<number, { wL: WorldLocationComponent, d: DrawableComponent }[]> = new Map();
         this.query.getMatching().forEach((components, entity) => {
-            const wL = components.get(WorldLocationComponent.key) as WorldLocationComponent;
-            const d = components.get(DrawableComponent.key) as DrawableComponent;
+            const wL = Query.getComponent(components, WorldLocationComponent);
+            const d = Query.getComponent(components, DrawableComponent);
             const z = wL.data.z ?? 0;
             if (!sorted.has(z)) {
                 sorted.set(z, [{ wL, d }]);

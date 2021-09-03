@@ -1,6 +1,7 @@
 import Logger from "./utils/logger";
 import { Entity, EntityComponents, EntitiesMap } from "./model";
 import Manager from "./manager";
+import Component from "./components";
 
 const log = new Logger("Query");
 
@@ -60,5 +61,14 @@ export default class Query {
      */
     public getMatching(): EntitiesMap {
         return this.matchingEntities;
+    }
+
+    /**
+     * @param components - All components returned from this.getMatching()
+     * @param component - Component constructor, name used for finding the component & type is returned.
+     */
+    public static getComponent<T extends Component>(components: EntityComponents, component: new (...args: any) => T): T {
+        const componentConstructor = component as unknown as typeof Component;
+        return components.get(componentConstructor.key) as T;
     }
 }

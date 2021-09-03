@@ -46,7 +46,7 @@ class MyComponent extends Component {
 
 ## Creating a custom system
 ```ts
-import { System, PointableComponent } from "@rzuppur/recs";
+import { System, Query, PointableComponent } from "@rzuppur/recs";
 
 const name = "My";
 const componentsQuery = [PointableComponent.key];
@@ -63,7 +63,7 @@ class MySystem extends System {
 
     public tick(dt: number /* ms since last tick */): void {
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get(PointableComponent.key) as PointableComponent;
+            const p = Query.getComponent(components, PointableComponent);
             if (p.data.clicked) {
                 console.log("clicked", entity);
             }

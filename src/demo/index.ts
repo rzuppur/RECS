@@ -101,8 +101,8 @@ class GameSystem extends System {
         coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;
 
         this.query.getMatching().forEach((components, entity) => {
-            const p = components.get(PointableComponent.key) as PointableComponent;
-            const d = components.get(DrawableComponent.key) as DrawableComponent;
+            const p = Query.getComponent(components, PointableComponent);
+            const d = Query.getComponent(components, DrawableComponent);
             d.data.alpha = p.data.hovered ? 1 : 0.4;
             if (p.data.clicked) {
                 d.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;

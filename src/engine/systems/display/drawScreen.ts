@@ -3,6 +3,7 @@ import System from "../index";
 import Canvas from "./canvas";
 import DrawableComponent from "../../components/drawable";
 import ScreenLocationComponent from "../../components/screenLocation";
+import Query from "../../query";
 
 const log = new Logger("DrawScreenSystem");
 
@@ -19,8 +20,8 @@ export default class DrawScreenSystem extends System {
     public tick(dt: number): void {
         const sorted: Map<number, { sL: ScreenLocationComponent, d: DrawableComponent }[]> = new Map();
         this.query.getMatching().forEach((components, entity) => {
-            const sL = components.get(ScreenLocationComponent.key) as ScreenLocationComponent;
-            const d = components.get(DrawableComponent.key) as DrawableComponent;
+            const sL = Query.getComponent(components, ScreenLocationComponent);
+            const d = Query.getComponent(components, DrawableComponent);
             const z = sL.data.z ?? 0;
             if (!sorted.has(z)) {
                 sorted.set(z, [{ sL, d }]);
