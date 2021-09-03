@@ -94,9 +94,9 @@ class GameSystem extends System {
         if (this.keyboardSystem.keysDown.has("ARROWLEFT")) this.drawWorldSystem.view.x -= 4 / this.drawWorldSystem.zoom;
         if (this.keyboardSystem.keysDown.has("ARROWRIGHT")) this.drawWorldSystem.view.x += 4 / this.drawWorldSystem.zoom;
 
-        const coordinatesTextDrawable = manager.getEntityComponents(this.coordinatesText).get(DrawableComponent.key) as DrawableComponent;
+        const coordinatesTextDrawable = Query.getComponent(manager.getEntityComponents(this.coordinatesText), DrawableComponent);
         coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
-        const coordinatesTextLocation = manager.getEntityComponents(this.coordinatesText).get(ScreenLocationComponent.key) as ScreenLocationComponent;
+        const coordinatesTextLocation = Query.getComponent(manager.getEntityComponents(this.coordinatesText), ScreenLocationComponent);
         coordinatesTextLocation.data.x = this.pointerSystem.pointerScreenX;
         coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;
 

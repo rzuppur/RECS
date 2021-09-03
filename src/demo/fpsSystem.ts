@@ -80,14 +80,14 @@ export default class FpsSystem extends System {
         const min = Math.min(...this.history);
         const max = Math.max(...this.history);
 
-        const pathDrawable = manager.getEntityComponents(this.fpsGraph).get(DrawableComponent.key) as DrawableComponent;
+        const pathDrawable = Query.getComponent(manager.getEntityComponents(this.fpsGraph), DrawableComponent);
         let path = "";
         this.history.forEach((fps, i) => {
            path += `${i*2} ${60 - fps},${(i+1)*2} ${60 - fps},`;
         });
         pathDrawable.data.path = path;
 
-        const d = manager.getEntityComponents(this.fpsCounter).get(DrawableComponent.key) as DrawableComponent;
+        const d = Query.getComponent(manager.getEntityComponents(this.fpsCounter), DrawableComponent);
         d.data.content = `FPS: ${Math.round(avg)}\n${Math.round(1000 / dt).toString().padStart(7, " ")}`;
     }
 }
