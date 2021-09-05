@@ -116,8 +116,8 @@ export default class Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.lineWidth = strokeWidth * this.dpr;
         this.ctx.strokeStyle = strokeColor;
-        this.ctx.beginPath();
         this.ctx.moveTo(x * this.dpr, y * this.dpr);
+        this.ctx.beginPath();
         path.split(",").filter(Boolean).forEach((point) => {
             const [pX, pY] = point.split(" ").filter(Boolean);
             this.ctx.lineTo((+pX * zoom + x) * this.dpr, (+pY * zoom + y) * this.dpr);
