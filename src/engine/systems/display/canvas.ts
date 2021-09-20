@@ -112,15 +112,14 @@ export default class Canvas {
         return this;
     }
 
-    public drawPath(x: number, y: number, path: string, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1, zoom: number = 1): Canvas {
+    public drawPathStroke(x: number, y: number, path: Array<Array<number>>, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1, zoom: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.lineWidth = strokeWidth * this.dpr;
         this.ctx.strokeStyle = strokeColor;
         this.ctx.moveTo(x * this.dpr, y * this.dpr);
         this.ctx.beginPath();
-        path.split(",").filter(Boolean).forEach((point) => {
-            const [pX, pY] = point.split(" ").filter(Boolean);
-            this.ctx.lineTo((+pX * zoom + x) * this.dpr, (+pY * zoom + y) * this.dpr);
+        path.forEach((point) => {
+            this.ctx.lineTo((point[0] * zoom + x) * this.dpr, (point[1] * zoom + y) * this.dpr);
         });
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
@@ -140,15 +139,16 @@ export default class Canvas {
 
     public draw(x: number, y: number, drawable: DrawableData, zoom = 1): Canvas {
         if (drawable.type === "RECT") {
+            if (drawable.color)  {
+                this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
+            }
             if (drawable.strokeColor) {
                 this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth * zoom, drawable.alpha);
-            } else {
-                this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
             }
         } else if (drawable.type === "TEXT") {
             this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "PATH") {
-            this.drawPath(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
+            this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc);
         } else {

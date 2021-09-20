@@ -1,5 +1,5 @@
 type ComponentData = {
-    [x: string]: number | string | boolean;
+    [key: string]: any;
 };
 
 export default abstract class Component {

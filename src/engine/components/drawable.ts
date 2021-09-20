@@ -31,7 +31,8 @@ interface DrawableText extends ComponentData {
 
 interface DrawablePath extends ComponentData {
     type: "PATH";
-    path: string; // "X1 Y1, X2 Y2, ... , Xn Yn"
+    path: Array<Array<number>>; // "[[X1, Y1], [X2, Y2], ... , [Xn, Yn]]"
+    color?: string;
     strokeColor?: string;
     strokeWidth?: number;
     alpha?: number;

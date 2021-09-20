@@ -1,7 +1,7 @@
-import { DisplaySystem, PointerSystem, DrawWorldSystem, DrawableComponent, PointableComponent, Engine, Manager, System, WorldLocationComponent, Query, ScreenLocationComponent, Entity, KeyboardSystem } from "../engine";
+import { DisplaySystem, DrawableComponent, DrawWorldSystem, Engine, Entity, KeyboardSystem, Manager, PointableComponent, PointerSystem, Query, ScreenLocationComponent, System, WorldLocationComponent } from "../engine";
 import Logger from "../engine/utils/logger";
 
-import FpsSystem from "./fpsSystem";
+import { initializeFPS } from "./fpsSystem";
 
 const log = new Logger("Game");
 
@@ -16,10 +16,10 @@ class Game {
 
         this.debugWorld();
 
-        const fpsSystem = new FpsSystem();
-        this.manager.registerSystem(fpsSystem);
         const gameSystem = new GameSystem();
         this.manager.registerSystem(gameSystem);
+
+        initializeFPS(this.manager);
     }
 
     private debugWorld(): void {
@@ -45,6 +45,23 @@ class Game {
                 height: 3,
             }));
         }
+
+        const pathEntity = this.manager.createEntity();
+        this.manager.setComponent(pathEntity, new WorldLocationComponent({
+            x: 100,
+            y: 50,
+        }));
+        let path = [];
+        const pN = 100_000;
+        for (let i = 0; i < pN; i++) {
+            path.push([Math.cos(i * 2 * Math.PI / pN) * 100, Math.sin(i * 2 * Math.PI / pN) * 100]);
+        }
+        this.manager.setComponent(pathEntity, new DrawableComponent({
+            type: "PATH",
+            strokeColor: "#fff",
+            strokeWidth: 2,
+            path,
+        }));
 
         log.info(`${n} created`);
     }
