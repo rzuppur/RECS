@@ -83,7 +83,11 @@ export default class Canvas {
     }
 
     private fillText(text: string, x: number, y: number): void {
-        this.ctx.fillText(text, x * this.dpr, y * this.dpr);
+        this.ctx.fillText(text, this.round(x * this.dpr), this.round(y * this.dpr));
+    }
+
+    private drawImage(image: CanvasImageSource, x: number, y: number, width: number, height: number): void {
+        this.ctx.drawImage(image, this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
     }
 
     private set lineWidth(strokeWidth: number) {
@@ -190,14 +194,16 @@ export default class Canvas {
         return this;
     }
 
-    public drawSprite(x: number, y: number, width: number, height: number, imageSrc: string): Canvas {
+    public drawSprite(x: number, y: number, width: number, height: number, imageSrc: string, alpha: number = 1): Canvas {
         if (!this.spriteMap.has(imageSrc)) {
             const imageEl = new Image();
             imageEl.src = imageSrc;
             this.spriteMap.set(imageSrc, imageEl);
         }
         const image = this.spriteMap.get(imageSrc);
-        this.ctx.drawImage(image, x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr);
+        this.ctx.globalAlpha = alpha;
+        this.drawImage(image, x, y, width, height);
+        this.ctx.globalAlpha = 1;
         return this;
     }
 
@@ -219,7 +225,7 @@ export default class Canvas {
         } else if (drawable.type === "TEXT") {
             this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "SPRITE") {
-            this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc);
+            this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc, drawable.alpha);
         } else {
             log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
         }

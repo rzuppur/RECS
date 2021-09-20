@@ -18,6 +18,7 @@ interface DrawableSprite extends Sizeable {
     imageSrc: string;
     offsetX?: number;
     offsetY?: number;
+    alpha?: number;
 }
 
 interface DrawableText extends ComponentData {
