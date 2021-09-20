@@ -86,6 +86,7 @@ export default class Canvas {
     public drawRect(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", alpha: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
+        this.ctx.beginPath();
         this.ctx.fillRect(x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr);
         this.ctx.globalAlpha = 1;
         return this;
@@ -96,19 +97,22 @@ export default class Canvas {
         const strokeWidthRealPixels = strokeWidth * this.dpr;
         this.ctx.lineWidth = strokeWidthRealPixels;
         this.ctx.strokeStyle = color;
+        this.ctx.beginPath();
         this.ctx.strokeRect(x * this.dpr + strokeWidthRealPixels / 2, y * this.dpr + strokeWidthRealPixels / 2, width * this.dpr - strokeWidthRealPixels, height * this.dpr - strokeWidthRealPixels);
         this.ctx.globalAlpha = 1;
         return this;
     }
 
-    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400): Canvas {
+    public drawPath(x: number, y: number, path: Array<Array<number>>, color: string = "#FFFFFF", alpha: number = 1, zoom: number = 1): Canvas {
+        this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.ctx.font = `${fontWeight} ${Math.round(size * this.dpr)}px ${font}`;
-        let offsetY = 0;
-        text.split("\n").forEach(line => {
-            this.ctx.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
-            offsetY += size * this.dpr * 1.15;
+        this.ctx.moveTo(x * this.dpr, y * this.dpr);
+        this.ctx.beginPath();
+        path.forEach((point) => {
+            this.ctx.lineTo((point[0] * zoom + x) * this.dpr, (point[1] * zoom + y) * this.dpr);
         });
+        this.ctx.fill();
+        this.ctx.globalAlpha = 1;
         return this;
     }
 
@@ -123,6 +127,17 @@ export default class Canvas {
         });
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
+        return this;
+    }
+
+    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400): Canvas {
+        this.ctx.fillStyle = color;
+        this.ctx.font = `${fontWeight} ${Math.round(size * this.dpr)}px ${font}`;
+        let offsetY = 0;
+        text.split("\n").forEach(line => {
+            this.ctx.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
+            offsetY += size * this.dpr * 1.15;
+        });
         return this;
     }
 
@@ -145,10 +160,15 @@ export default class Canvas {
             if (drawable.strokeColor) {
                 this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth * zoom, drawable.alpha);
             }
+        } else if (drawable.type === "PATH") {
+            if (drawable.color)  {
+                this.drawPath(x * zoom, y * zoom, drawable.path, drawable.color, drawable.alpha, zoom);
+            }
+            if (drawable.strokeColor) {
+                this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
+            }
         } else if (drawable.type === "TEXT") {
             this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
-        } else if (drawable.type === "PATH") {
-            this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc);
         } else {

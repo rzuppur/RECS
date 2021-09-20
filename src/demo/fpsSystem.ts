@@ -16,7 +16,7 @@ export class FPS extends System {
 
         this.fpsGraph = manager.createEntity();
         manager.setComponent(this.fpsGraph, new ScreenLocationComponent({ x: 0, y: 0, z: 11 }));
-        manager.setComponent(this.fpsGraph, new DrawableComponent({ type: "PATH", path: [[0, 0]], strokeColor: "#ff9525" }));
+        manager.setComponent(this.fpsGraph, new DrawableComponent({ type: "PATH", path: [], color: "#f92a" }));
 
         return super.start(query, manager);
     }
@@ -32,11 +32,12 @@ export class FPS extends System {
         const avg = this.history.reduce((a, b) => (a + b)) / this.history.length;
 
         const pathDrawable = manager.getEntityComponents(this.fpsGraph).get("Drawable") as DrawableComponent;
-        let path: Array<Array<number>> = [];
+        let path: Array<Array<number>> = [[0,60]];
         this.history.forEach((fps, i) => {
             path.push([i * 2, 60 - fps]);
             path.push([(i + 1) * 2, 60 - fps]);
         });
+        path.push([this.history.length*2, 60]);
         pathDrawable.data.path = path;
     }
 }
