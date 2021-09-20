@@ -49,7 +49,7 @@ class Game {
         const pathEntity = this.manager.createEntity();
         this.manager.setComponent(pathEntity, new WorldLocationComponent({ x: 100, y: 50 }));
         let path = [];
-        const pN = 100_000;
+        const pN = 10_000;
         for (let i = 0; i < pN; i++) {
             path.push([Math.cos(i * 2 * Math.PI / pN) * 100, Math.sin(i * 2 * Math.PI / pN) * 100]);
         }
