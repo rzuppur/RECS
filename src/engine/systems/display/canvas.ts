@@ -3,6 +3,9 @@ import { DrawableData } from "../../components/drawable";
 
 const log = new Logger("Canvas");
 
+const roundToSubpixel = (px: number): number => { return Math.floor(px * 10) / 10 };
+const roundToPixel = (px: number): number => { return Math.floor(px); };
+
 export default class Canvas {
     public onSizeChange: (width: number, height: number) => void = () => {};
 
@@ -19,6 +22,8 @@ export default class Canvas {
 
     private dpr: number;
     private smoothing: boolean = true;
+    private pathSplitPoints = 5_000;
+    private round: (x: number) => number;
 
     constructor() {
         log.new();
@@ -29,6 +34,20 @@ export default class Canvas {
 
     private setCanvasLogicalSize(width: number, height: number) {
         this.dpr = Math.max(window.devicePixelRatio || 1, 1);
+
+        /**
+         * Select rounding function
+         *
+         * Rounding to pixel is more performant in some cases, but causes jagged edges on low DPI screens.
+         * High DPI screens need to render more pixels and usually do not need antialiasing since the individual pixels are not visible.
+         */
+        if (this.dpr > 2) {
+            log.info("High resolution screen detected, will round to pixel");
+            this.round = roundToPixel;
+        } else {
+            log.info("Low resolution screen detected, will round to subpixel");
+            this.round = roundToSubpixel;
+        }
 
         // Set CSS pixels size
         this.width = Math.floor(width);
@@ -43,6 +62,32 @@ export default class Canvas {
 
         // Emit resize event
         this.onSizeChange(this.width, this.height);
+    }
+
+    private moveTo(x: number, y: number): void {
+        this.ctx.moveTo(this.round(x * this.dpr), this.round(y * this.dpr));
+    }
+
+    private lineTo(x: number, y: number): void {
+        this.ctx.lineTo(this.round(x * this.dpr), this.round(y * this.dpr));
+    }
+
+    private fillRect(x: number, y: number, width: number, height: number): void {
+        this.ctx.beginPath();
+        this.ctx.fillRect(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
+    }
+
+    private strokeRect(x: number, y: number, width: number, height: number): void {
+        this.ctx.beginPath();
+        this.ctx.strokeRect(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
+    }
+
+    private fillText(text: string, x: number, y: number): void {
+        this.ctx.fillText(text, x * this.dpr, y * this.dpr);
+    }
+
+    private set lineWidth(strokeWidth: number) {
+        this.ctx.lineWidth = this.round(strokeWidth * this.dpr);
     }
 
     public mount(parentEl: HTMLElement): Canvas {
@@ -86,19 +131,16 @@ export default class Canvas {
     public drawRect(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", alpha: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.ctx.beginPath();
-        this.ctx.fillRect(x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr);
+        this.fillRect(x, y, width, height);
         this.ctx.globalAlpha = 1;
         return this;
     }
 
     public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
-        const strokeWidthRealPixels = strokeWidth * this.dpr;
-        this.ctx.lineWidth = strokeWidthRealPixels;
+        this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = color;
-        this.ctx.beginPath();
-        this.ctx.strokeRect(x * this.dpr + strokeWidthRealPixels / 2, y * this.dpr + strokeWidthRealPixels / 2, width * this.dpr - strokeWidthRealPixels, height * this.dpr - strokeWidthRealPixels);
+        this.strokeRect(x, y, width, height);
         this.ctx.globalAlpha = 1;
         return this;
     }
@@ -106,10 +148,10 @@ export default class Canvas {
     public drawPath(x: number, y: number, path: Array<Array<number>>, color: string = "#FFFFFF", alpha: number = 1, zoom: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.ctx.moveTo(x * this.dpr, y * this.dpr);
+        this.moveTo(x, y);
         this.ctx.beginPath();
         path.forEach((point) => {
-            this.ctx.lineTo((point[0] * zoom + x) * this.dpr, (point[1] * zoom + y) * this.dpr);
+            this.lineTo(point[0] * zoom + x, point[1] * zoom + y);
         });
         this.ctx.fill();
         this.ctx.globalAlpha = 1;
@@ -118,12 +160,19 @@ export default class Canvas {
 
     public drawPathStroke(x: number, y: number, path: Array<Array<number>>, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1, zoom: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
-        this.ctx.lineWidth = strokeWidth * this.dpr;
+        this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = strokeColor;
-        this.ctx.moveTo(x * this.dpr, y * this.dpr);
+        this.moveTo(x, y);
         this.ctx.beginPath();
+        let i = 0;
         path.forEach((point) => {
-            this.ctx.lineTo((point[0] * zoom + x) * this.dpr, (point[1] * zoom + y) * this.dpr);
+            i++;
+            this.lineTo(point[0] * zoom + x, point[1] * zoom + y);
+            if (i > this.pathSplitPoints) {
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                i = 0;
+            }
         });
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
@@ -132,11 +181,11 @@ export default class Canvas {
 
     public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400): Canvas {
         this.ctx.fillStyle = color;
-        this.ctx.font = `${fontWeight} ${Math.round(size * this.dpr)}px ${font}`;
+        this.ctx.font = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
         let offsetY = 0;
         text.split("\n").forEach(line => {
-            this.ctx.fillText(line, x * this.dpr, (y * this.dpr) + offsetY);
-            offsetY += size * this.dpr * 1.15;
+            this.fillText(line, x, y + offsetY);
+            offsetY += size * 1.15;
         });
         return this;
     }
@@ -154,14 +203,14 @@ export default class Canvas {
 
     public draw(x: number, y: number, drawable: DrawableData, zoom = 1): Canvas {
         if (drawable.type === "RECT") {
-            if (drawable.color)  {
+            if (drawable.color) {
                 this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
             }
             if (drawable.strokeColor) {
-                this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth * zoom, drawable.alpha);
+                this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
             }
         } else if (drawable.type === "PATH") {
-            if (drawable.color)  {
+            if (drawable.color) {
                 this.drawPath(x * zoom, y * zoom, drawable.path, drawable.color, drawable.alpha, zoom);
             }
             if (drawable.strokeColor) {

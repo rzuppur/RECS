@@ -47,21 +47,13 @@ class Game {
         }
 
         const pathEntity = this.manager.createEntity();
-        this.manager.setComponent(pathEntity, new WorldLocationComponent({
-            x: 100,
-            y: 50,
-        }));
+        this.manager.setComponent(pathEntity, new WorldLocationComponent({ x: 100, y: 50 }));
         let path = [];
         const pN = 100_000;
         for (let i = 0; i < pN; i++) {
             path.push([Math.cos(i * 2 * Math.PI / pN) * 100, Math.sin(i * 2 * Math.PI / pN) * 100]);
         }
-        this.manager.setComponent(pathEntity, new DrawableComponent({
-            type: "PATH",
-            strokeColor: "#fff",
-            strokeWidth: 2,
-            path,
-        }));
+        this.manager.setComponent(pathEntity, new DrawableComponent({ type: "PATH", strokeColor: "#fff", strokeWidth: 2, path }));
 
         log.info(`${n} created`);
     }
@@ -120,7 +112,7 @@ class GameSystem extends System {
         this.query.getMatching().forEach((components, entity) => {
             const p = Query.getComponent(components, PointableComponent);
             const d = Query.getComponent(components, DrawableComponent);
-            d.data.alpha = p.data.hovered ? 1 : 0.4;
+            d.data.alpha = p.data.hovered ? 0.7 : 1;
             if (p.data.clicked) {
                 d.data.color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
             }
