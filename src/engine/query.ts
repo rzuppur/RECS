@@ -63,6 +63,10 @@ export default class Query {
         return this.matchingEntities;
     }
 
+    public deleteMatch(entity: Entity): boolean {
+        return this.matchingEntities.delete(entity);
+    }
+
     /**
      * @param components - All components returned from this.getMatching()
      * @param component - Component constructor, name used for finding the component & type is returned.

@@ -67,6 +67,11 @@ export default class Manager {
         return uuid;
     }
 
+    public deleteEntity(entity: Entity): void {
+        this.entities.delete(entity);
+        this.queries.forEach(query => query.deleteMatch(entity));
+    }
+
     public componentRegistered(component: Component): boolean {
         return this.components.has(component.name);
     }
