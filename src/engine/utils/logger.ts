@@ -6,10 +6,12 @@ export default class Logger {
     }
 
     new(message: string = "") {
+        if (process.env.NODE_ENV !== "dev") return;
         console.info(`%c⫸ %c[${this.module}]%c ${message}`, "color: #50c040;", "font-weight: bold; color: #40a030;", "");
     }
 
     info(message: string) {
+        if (process.env.NODE_ENV !== "dev") return;
         console.info(`%c◉ %c[${this.module}]%c ${message}`, "color: #40a0f0;", "font-weight: bold; opacity: 0.7;", "");
     }
 
