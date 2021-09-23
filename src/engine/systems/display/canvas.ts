@@ -226,6 +226,8 @@ export default class Canvas {
             this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc, drawable.alpha);
+        } else if (drawable.type === "SPRITE_FIXED_SIZE") {
+            this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width, drawable.height, drawable.imageSrc, drawable.alpha);
         } else {
             log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
         }

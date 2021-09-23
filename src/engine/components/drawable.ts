@@ -21,6 +21,14 @@ interface DrawableSprite extends Sizeable {
     alpha?: number;
 }
 
+interface DrawableSpriteFixed extends Sizeable {
+    type: "SPRITE_FIXED_SIZE";
+    imageSrc: string;
+    offsetX?: number;
+    offsetY?: number;
+    alpha?: number;
+}
+
 interface DrawableText extends ComponentData {
     type: "TEXT";
     content: string;
@@ -39,7 +47,7 @@ interface DrawablePath extends ComponentData {
     alpha?: number;
 }
 
-export type DrawableData = DrawableRect | DrawableSprite | DrawableText | DrawablePath;
+export type DrawableData = DrawableRect | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawablePath;
 
 export default class DrawableComponent extends Component {
     static key = "Drawable";
