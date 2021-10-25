@@ -4,8 +4,8 @@ import Component from "../components";
 
 export default abstract class System {
     protected query: Query;
-    protected readonly componentsQuery: string[];
 
+    public readonly componentsQueryKey: string;
     public readonly name: string;
     public started: boolean = false;
 
@@ -15,13 +15,7 @@ export default abstract class System {
      */
     protected constructor(name: string, componentsQuery: string[]) {
         this.name = name;
-
-        componentsQuery.sort();
-        this.componentsQuery = componentsQuery;
-    }
-
-    public getComponentsQueryKey(): string {
-        return this.componentsQuery.join(" & ");
+        this.componentsQueryKey = Query.getComponentsQuery(componentsQuery);
     }
 
     /**

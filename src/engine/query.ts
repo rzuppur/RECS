@@ -1,5 +1,5 @@
 import Logger from "./utils/logger";
-import { Entity, EntityComponents, EntitiesMap } from "./model";
+import { EntitiesMap, Entity, EntityComponents } from "./model";
 import Manager from "./manager";
 import Component from "./components";
 
@@ -74,5 +74,10 @@ export default class Query {
     public static getComponent<T extends Component>(components: EntityComponents, component: new (...args: any) => T): T {
         const componentConstructor = component as unknown as typeof Component;
         return components.get(componentConstructor.key) as T;
+    }
+
+    public static getComponentsQuery(componentsQuery: string[]): string {
+        componentsQuery.sort();
+        return componentsQuery.join(" & ");
     }
 }

@@ -1,19 +1,18 @@
 import Logger from "../../utils/logger";
-import System from "../index";
 import Canvas from "./canvas";
 import WorldLocationComponent from "../../components/worldLocation";
 import DrawableComponent from "../../components/drawable";
 import Query from "../../query";
 
-const log = new Logger("DrawWorldSystem");
+const log = new Logger("DrawWorld");
 
-interface WorldView {
+export interface WorldView {
     x: number;
     y: number;
     radius: number;
 }
 
-export default class DrawWorldSystem extends System {
+export default class DrawWorld {
     private canvas: Canvas;
     private _zoom: number = 1;
     private _offsetX: number = 0;
@@ -22,9 +21,7 @@ export default class DrawWorldSystem extends System {
     public view: WorldView = { x: 100, y: 50, radius: 80 };
 
     constructor(canvas: Canvas) {
-        super("DrawWorld", [DrawableComponent.key, WorldLocationComponent.key]);
         log.new();
-
         this.canvas = canvas;
     }
 
@@ -40,7 +37,7 @@ export default class DrawWorldSystem extends System {
         return this._offsetY;
     }
 
-    public tick(dt: number): void {
+    public tick(dt: number, query: Query): void {
         this.canvas.clear();
 
         const { width: canvasWidth, height: canvasHeight } = this.canvas.getSize();
@@ -53,7 +50,7 @@ export default class DrawWorldSystem extends System {
         // TODO: filter out of view
 
         const sorted: Map<number, { wL: WorldLocationComponent, d: DrawableComponent }[]> = new Map();
-        this.query.getMatching().forEach((components, entity) => {
+        query.getMatching().forEach((components, entity) => {
             const wL = Query.getComponent(components, WorldLocationComponent);
             const d = Query.getComponent(components, DrawableComponent);
             const z = wL.data.z ?? 0;

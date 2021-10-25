@@ -2,7 +2,7 @@ import System from "./systems/index";
 import Component from "./components";
 import { generateUuid } from "./utils/uuid";
 import Logger from "./utils/logger";
-import { Entity, EntityComponents, EntitiesMap } from "./model";
+import { EntitiesMap, Entity, EntityComponents } from "./model";
 import Query from "./query";
 
 const log = new Logger("Manager");
@@ -26,6 +26,14 @@ export default class Manager {
         log.info(`registered component: ${component.name}`);
     }
 
+    public registerQuery(queryKey: string): Query {
+        if (!this.queries.has(queryKey)) {
+            this.queries.set(queryKey, new Query(queryKey, this));
+            log.info(`created query: ${queryKey}`);
+        }
+        return this.queries.get(queryKey);
+    }
+
     public registerSystem(system: System): void {
         log.info(`registering system: ${system.name}`);
         if (this.systems.has(system.name)) {
@@ -33,16 +41,11 @@ export default class Manager {
             return;
         }
         this.systems.set(system.name, system);
-
-        const queryKey = system.getComponentsQueryKey();
-        if (!this.queries.has(queryKey)) {
-            this.queries.set(queryKey, new Query(queryKey, this));
-            log.info(`created query: ${queryKey}`);
-        }
+        const query = this.registerQuery(system.componentsQueryKey);
 
         if (system.beforeStart(this)) {
             setTimeout(() => {
-                if (system.start(this.queries.get(queryKey), this)) {
+                if (system.start(query, this)) {
                     log.info(`started system: ${system.name}`);
                 } else {
                     log.error(`failed to start system: ${system.name}`);
@@ -113,6 +116,8 @@ export default class Manager {
     }
 
     public tick(dt: number) {
-        this.systems.forEach(system => system.started && system.tick(dt, this));
+        const systems = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
+        systems.forEach(s => s.tick(dt, this));
+        this.systems.get("Display").tick(dt, this);
     }
 }

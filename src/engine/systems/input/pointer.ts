@@ -7,13 +7,11 @@ import PointableComponent, { PointableData } from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
 import DisplaySystem from "../display/index";
-import DrawWorldSystem from "../display/drawWorld";
 
 const log = new Logger("PointerInputSystem");
 
 export default class PointerSystem extends System {
     private displaySystem: DisplaySystem;
-    private drawWorldSystem: DrawWorldSystem;
 
     private pointerLastX: number = 0;
     private pointerLastY: number = 0;
@@ -153,7 +151,6 @@ export default class PointerSystem extends System {
         document.addEventListener("wheel", this.wheelHandler.bind(this), false);
 
         this.displaySystem = manager.getSystem("Display") as DisplaySystem;
-        this.drawWorldSystem = manager.getSystem("DrawWorld") as DrawWorldSystem;
 
         return super.start(query, manager);
     }
@@ -164,9 +161,9 @@ export default class PointerSystem extends System {
         const { offsetX, offsetY } = this.displaySystem.getOffset();
         const pointerX = this.pointerX - offsetX;
         const pointerY = this.pointerY - offsetY;
-        const worldZoom = this.drawWorldSystem.zoom;
-        const worldOffsetX = this.drawWorldSystem.offsetX;
-        const worldOffsetY = this.drawWorldSystem.offsetY;
+        const worldZoom = this.displaySystem.zoom;
+        const worldOffsetX = this.displaySystem.offsetX;
+        const worldOffsetY = this.displaySystem.offsetY;
 
         this.pointerScreenX = pointerX;
         this.pointerScreenY = pointerY;

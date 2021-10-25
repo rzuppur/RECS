@@ -1,4 +1,4 @@
-import { DisplaySystem, DrawableComponent, DrawWorldSystem, Engine, Entity, KeyboardSystem, Manager, PointableComponent, PointerSystem, Query, ScreenLocationComponent, System, WorldLocationComponent } from "../engine";
+import { DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointableComponent, PointerSystem, Query, ScreenLocationComponent, System, WorldLocationComponent } from "../engine";
 import Logger from "../engine/utils/logger";
 
 import { initializeFPS } from "./fpsSystem";
@@ -63,7 +63,6 @@ class GameSystem extends System {
     private displaySystem: DisplaySystem;
     private pointerSystem: PointerSystem;
     private keyboardSystem: KeyboardSystem;
-    private drawWorldSystem: DrawWorldSystem;
 
     private coordinatesText: Entity;
 
@@ -75,7 +74,6 @@ class GameSystem extends System {
         this.displaySystem = manager.getSystem("Display") as DisplaySystem;
         this.pointerSystem = manager.getSystem("Pointer") as PointerSystem;
         this.keyboardSystem = manager.getSystem("Keyboard") as KeyboardSystem;
-        this.drawWorldSystem = manager.getSystem("DrawWorld") as DrawWorldSystem;
 
         this.coordinatesText = manager.createEntity();
         manager.setComponent(this.coordinatesText, new ScreenLocationComponent({
@@ -95,16 +93,16 @@ class GameSystem extends System {
     }
 
     tick(dt: number, manager: Manager) {
-        this.drawWorldSystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
-        //this.drawWorldSystem.view.x += this.pointerSystem.wheelDeltaX / this.drawWorldSystem.zoom;
+        this.displaySystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
+        //this.displaySystem.view.x += this.pointerSystem.wheelDeltaX / this.displaySystem.zoom;
 
-        if (this.keyboardSystem.keysDown.has("ARROWDOWN")) this.drawWorldSystem.view.y += 4 / this.drawWorldSystem.zoom;
-        if (this.keyboardSystem.keysDown.has("ARROWUP")) this.drawWorldSystem.view.y -= 4 / this.drawWorldSystem.zoom;
-        if (this.keyboardSystem.keysDown.has("ARROWLEFT")) this.drawWorldSystem.view.x -= 4 / this.drawWorldSystem.zoom;
-        if (this.keyboardSystem.keysDown.has("ARROWRIGHT")) this.drawWorldSystem.view.x += 4 / this.drawWorldSystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWDOWN")) this.displaySystem.view.y += 4 / this.displaySystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWUP")) this.displaySystem.view.y -= 4 / this.displaySystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWLEFT")) this.displaySystem.view.x -= 4 / this.displaySystem.zoom;
+        if (this.keyboardSystem.keysDown.has("ARROWRIGHT")) this.displaySystem.view.x += 4 / this.displaySystem.zoom;
 
         const coordinatesTextDrawable = Query.getComponent(manager.getEntityComponents(this.coordinatesText), DrawableComponent);
-        coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.drawWorldSystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
+        coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.displaySystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
         const coordinatesTextLocation = Query.getComponent(manager.getEntityComponents(this.coordinatesText), ScreenLocationComponent);
         coordinatesTextLocation.data.x = this.pointerSystem.pointerScreenX;
         coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;
