@@ -25,6 +25,12 @@ export default class Vector2 {
         return new Vector2(x, y);
     }
 
+    public multiply(a: number): Vector2 {
+        const x = this.x * a;
+        const y = this.y * a;
+        return new Vector2(x, y);
+    }
+
     public subtract(v2: Vector2): Vector2 {
         const x = this.x - v2.x;
         const y = this.y - v2.y;

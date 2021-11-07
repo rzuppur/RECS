@@ -39,6 +39,15 @@ interface DrawableText extends DrawableBase {
     fontWeight?: number;
 }
 
+interface DrawableTextFixed extends DrawableBase {
+    type: "TEXT_FIXED_SIZE";
+    content: string;
+    color?: string;
+    size?: number;
+    font?: string;
+    fontWeight?: number;
+}
+
 interface DrawablePath extends DrawableBase {
     type: "PATH";
     path: Array<Array<number>>; // "[[X1, Y1], [X2, Y2], ... , [Xn, Yn]]"
@@ -48,7 +57,7 @@ interface DrawablePath extends DrawableBase {
     alpha?: number;
 }
 
-export type DrawableData = DrawableRect | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawablePath;
+export type DrawableData = DrawableRect | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawableTextFixed | DrawablePath;
 
 export default class DrawableComponent extends Component {
     static key = "Drawable";

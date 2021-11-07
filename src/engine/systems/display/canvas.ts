@@ -224,6 +224,8 @@ export default class Canvas {
                 this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
             }
         } else if (drawable.type === "TEXT") {
+            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
+        } else if (drawable.type === "TEXT_FIXED_SIZE") {
             this.drawText(x * zoom, y * zoom, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc, drawable.alpha);
