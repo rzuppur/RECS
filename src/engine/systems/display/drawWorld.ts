@@ -62,7 +62,18 @@ export default class DrawWorld {
         });
         Array.from(sorted.keys()).sort().forEach(z => {
             sorted.get(z).forEach(({ wL, d }) => {
-                this.canvas.draw(wL.data.loc.x + this._offsetX, wL.data.loc.y + this._offsetY, d.data, this._zoom);
+                let x = wL.data.loc.x;
+                let y = wL.data.loc.y;
+                if (d.data.offset) {
+                    if (d.data.type.endsWith("_FIXED_SIZE")) {
+                        x += d.data.offset.x / this._zoom;
+                        y += d.data.offset.y / this._zoom;
+                    } else {
+                        x += d.data.offset.x;
+                        y += d.data.offset.y;
+                    }
+                }
+                this.canvas.draw(x + this._offsetX, y + this._offsetY, d.data, this._zoom);
             });
         });
     }

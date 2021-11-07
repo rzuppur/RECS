@@ -43,14 +43,34 @@ class Game {
             }));
         }
 
+        const sprite = this.manager.createEntity();
+        this.manager.setComponent(sprite, new WorldLocationComponent({ loc: new Vector2(0, 0)}));
+        this.manager.setComponent(sprite, new DrawableComponent({
+            type: "SPRITE",
+            imageSrc: "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+            width: 30,
+            height: 30,
+            offset: new Vector2(-15, -15),
+        }));
+
+        const sprite2 = this.manager.createEntity();
+        this.manager.setComponent(sprite2, new WorldLocationComponent({ loc: new Vector2(50, 0)}));
+        this.manager.setComponent(sprite2, new DrawableComponent({
+            type: "SPRITE_FIXED_SIZE",
+            imageSrc: "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
+            width: 50,
+            height: 50,
+            offset: new Vector2(-25, -25),
+        }));
+
         const pathEntity = this.manager.createEntity();
-        this.manager.setComponent(pathEntity, new WorldLocationComponent({ loc: new Vector2(100, 50) }));
+        this.manager.setComponent(pathEntity, new WorldLocationComponent({ loc: new Vector2(0, 0) }));
         let path = [];
         const pN = 10_000;
         for (let i = 0; i < pN; i++) {
             path.push([Math.cos(i * 2 * Math.PI / pN) * 100, Math.sin(i * 2 * Math.PI / pN) * 100]);
         }
-        this.manager.setComponent(pathEntity, new DrawableComponent({ type: "PATH", strokeColor: "#fff", strokeWidth: 2, path }));
+        this.manager.setComponent(pathEntity, new DrawableComponent({ type: "PATH", strokeColor: "#fff", strokeWidth: 2, path, offset: new Vector2(100, 50) }));
 
         log.info(`${n} created`);
     }
@@ -83,6 +103,7 @@ class GameSystem extends System {
             color: "#fff",
             size: 16,
             font: "monospace",
+            offset: new Vector2(0, 30),
         }));
 
         return super.start(query, manager);
@@ -100,7 +121,7 @@ class GameSystem extends System {
         const coordinatesTextDrawable = Query.getComponent(manager.getEntityComponents(this.coordinatesText), DrawableComponent);
         coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.displaySystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
         const coordinatesTextLocation = Query.getComponent(manager.getEntityComponents(this.coordinatesText), ScreenLocationComponent);
-        coordinatesTextLocation.data.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY + 30);
+        coordinatesTextLocation.data.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY);
 
         this.query.getMatching().forEach((components, entity) => {
             const p = Query.getComponent(components, PointableComponent);
