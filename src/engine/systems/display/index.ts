@@ -8,6 +8,7 @@ import DrawableComponent from "../../components/drawable";
 import ScreenLocationComponent from "../../components/screenLocation";
 import WorldLocationComponent from "../../components/worldLocation";
 import Query from "../../query";
+import Vector2 from "../../utils/vector2";
 
 const log = new Logger("DisplaySystem");
 
@@ -56,7 +57,7 @@ export default class DisplaySystem extends System {
      * Canvas offset on page.
      * Used for correct pointer input calculations if canvas does not start from (0,0).
      */
-    public getOffset(): { offsetX: number, offsetY: number } {
+    public getOffset(): Vector2 {
         return this.canvas.getOffset();
     }
 

@@ -1,4 +1,4 @@
-import { DrawableComponent, Entity, Manager, Query, ScreenLocationComponent, System } from "../engine";
+import { DrawableComponent, Entity, Manager, Query, ScreenLocationComponent, System, Vector2 } from "../engine";
 
 export class FPS extends System {
     private background: Entity;
@@ -11,11 +11,11 @@ export class FPS extends System {
 
     public start(query: Query, manager: Manager): boolean {
         this.background = manager.createEntity();
-        manager.setComponent(this.background, new ScreenLocationComponent({ x: 0, y: 0, z: 10 }));
+        manager.setComponent(this.background, new ScreenLocationComponent({ loc: new Vector2(0, 0), z: 10 }));
         manager.setComponent(this.background, new DrawableComponent({ type: "RECT", color: "#6668", width: 300, height: 60 }));
 
         this.fpsGraph = manager.createEntity();
-        manager.setComponent(this.fpsGraph, new ScreenLocationComponent({ x: 0, y: 0, z: 11 }));
+        manager.setComponent(this.fpsGraph, new ScreenLocationComponent({ loc: new Vector2(0, 0), z: 11 }));
         manager.setComponent(this.fpsGraph, new DrawableComponent({ type: "PATH", path: [], color: "#f92a" }));
 
         return super.start(query, manager);

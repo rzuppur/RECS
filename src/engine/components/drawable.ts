@@ -1,6 +1,11 @@
 import Component, { ComponentData } from "./index";
+import Vector2 from "../utils/vector2";
 
-interface Sizeable extends ComponentData {
+interface DrawableBase extends ComponentData {
+    offset?: Vector2;
+}
+
+interface Sizeable extends DrawableBase {
     width: number;
     height: number;
 }
@@ -16,20 +21,16 @@ interface DrawableRect extends Sizeable {
 interface DrawableSprite extends Sizeable {
     type: "SPRITE";
     imageSrc: string;
-    offsetX?: number;
-    offsetY?: number;
     alpha?: number;
 }
 
 interface DrawableSpriteFixed extends Sizeable {
     type: "SPRITE_FIXED_SIZE";
     imageSrc: string;
-    offsetX?: number;
-    offsetY?: number;
     alpha?: number;
 }
 
-interface DrawableText extends ComponentData {
+interface DrawableText extends DrawableBase {
     type: "TEXT";
     content: string;
     color?: string;
@@ -38,7 +39,7 @@ interface DrawableText extends ComponentData {
     fontWeight?: number;
 }
 
-interface DrawablePath extends ComponentData {
+interface DrawablePath extends DrawableBase {
     type: "PATH";
     path: Array<Array<number>>; // "[[X1, Y1], [X2, Y2], ... , [Xn, Yn]]"
     color?: string;

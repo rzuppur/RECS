@@ -158,7 +158,7 @@ export default class PointerSystem extends System {
     public tick(dt: number): void {
         if (this.pointerDragging) this.resetDelta();
 
-        const { offsetX, offsetY } = this.displaySystem.getOffset();
+        const { x: offsetX, y: offsetY } = this.displaySystem.getOffset();
         const pointerX = this.pointerX - offsetX;
         const pointerY = this.pointerY - offsetY;
         const worldZoom = this.displaySystem.zoom;
@@ -186,8 +186,8 @@ export default class PointerSystem extends System {
             if (wL) {
                 screenW = p.data.width * worldZoom;
                 screenH = p.data.height * worldZoom;
-                screenX = (wL.data.x + worldOffsetX) * worldZoom;
-                screenY = (wL.data.y + worldOffsetY) * worldZoom;
+                screenX = (wL.data.loc.x + worldOffsetX) * worldZoom;
+                screenY = (wL.data.loc.y + worldOffsetY) * worldZoom;
                 screenZ = wL.data.z ?? 0;
             }
 
@@ -195,8 +195,8 @@ export default class PointerSystem extends System {
             if (sL) {
                 screenW = p.data.width;
                 screenH = p.data.height;
-                screenX = sL.data.x;
-                screenY = sL.data.y;
+                screenX = sL.data.loc.x;
+                screenY = sL.data.loc.y;
                 screenZ = sL.data.z ?? 0;
             }
 

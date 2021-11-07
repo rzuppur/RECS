@@ -1,4 +1,5 @@
 import Logger from "./utils/logger";
+import Vector2 from "./utils/vector2";
 import Manager from "./manager";
 import Query from "./query";
 import System from "./systems/index";
@@ -89,4 +90,5 @@ export {
     DisplaySystem,
     PointerSystem,
     KeyboardSystem,
+    Vector2,
 };

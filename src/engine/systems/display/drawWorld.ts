@@ -62,7 +62,7 @@ export default class DrawWorld {
         });
         Array.from(sorted.keys()).sort().forEach(z => {
             sorted.get(z).forEach(({ wL, d }) => {
-                this.canvas.draw(wL.data.x + this._offsetX, wL.data.y + this._offsetY, d.data, this._zoom);
+                this.canvas.draw(wL.data.loc.x + this._offsetX, wL.data.loc.y + this._offsetY, d.data, this._zoom);
             });
         });
     }

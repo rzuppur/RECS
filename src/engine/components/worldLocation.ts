@@ -1,9 +1,9 @@
 import Component, { ComponentData } from "./index";
+import Vector2 from "../utils/vector2";
 
 export interface WorldLocationData extends ComponentData {
     /* Absolute position in 2D game world */
-    x: number;
-    y: number;
+    loc: Vector2;
 
     /* Drawing order */
     z?: number;

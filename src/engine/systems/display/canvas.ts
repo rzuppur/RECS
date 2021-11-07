@@ -1,4 +1,5 @@
 import Logger from "../../utils/logger";
+import Vector2 from "../../utils/vector2";
 import { DrawableData } from "../../components/drawable";
 
 const log = new Logger("Canvas");
@@ -117,8 +118,8 @@ export default class Canvas {
         return { width: this.width, height: this.height };
     }
 
-    public getOffset(): { offsetX: number, offsetY: number } {
-        return { offsetX: this.offsetX, offsetY: this.offsetY };
+    public getOffset(): Vector2 {
+        return new Vector2(this.offsetX, this.offsetY);
     }
 
     public setSmoothing(smoothing: boolean): void {
@@ -223,7 +224,7 @@ export default class Canvas {
                 this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
             }
         } else if (drawable.type === "TEXT") {
-            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);
+            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite((x + (drawable.offsetX ?? 0)) * zoom, (y + (drawable.offsetY ?? 0)) * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc, drawable.alpha);
         } else if (drawable.type === "SPRITE_FIXED_SIZE") {

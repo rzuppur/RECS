@@ -1,4 +1,4 @@
-import { DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointableComponent, PointerSystem, Query, ScreenLocationComponent, System, WorldLocationComponent } from "../engine";
+import { DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointableComponent, PointerSystem, Query, ScreenLocationComponent, System, Vector2, WorldLocationComponent } from "../engine";
 import Logger from "../engine/utils/logger";
 
 import { initializeFPS } from "./fpsSystem";
@@ -30,10 +30,7 @@ class Game {
         log.info(`creating ${n}`);
         for (let i = 0; i < n; i++) {
             const entity = this.manager.createEntity();
-            this.manager.setComponent(entity, new WorldLocationComponent({
-                x: Math.random() * limX,
-                y: Math.random() * limY,
-            }));
+            this.manager.setComponent(entity, new WorldLocationComponent({ loc: new Vector2(Math.random() * limX, Math.random() * limY) }));
             this.manager.setComponent(entity, new DrawableComponent({
                 type: "RECT",
                 width: 3,
@@ -47,7 +44,7 @@ class Game {
         }
 
         const pathEntity = this.manager.createEntity();
-        this.manager.setComponent(pathEntity, new WorldLocationComponent({ x: 100, y: 50 }));
+        this.manager.setComponent(pathEntity, new WorldLocationComponent({ loc: new Vector2(100, 50) }));
         let path = [];
         const pN = 10_000;
         for (let i = 0; i < pN; i++) {
@@ -77,8 +74,7 @@ class GameSystem extends System {
 
         this.coordinatesText = manager.createEntity();
         manager.setComponent(this.coordinatesText, new ScreenLocationComponent({
-            x: 10,
-            y: 100,
+            loc: new Vector2(10, 100),
             z: 10,
         }));
         manager.setComponent(this.coordinatesText, new DrawableComponent({
@@ -104,8 +100,7 @@ class GameSystem extends System {
         const coordinatesTextDrawable = Query.getComponent(manager.getEntityComponents(this.coordinatesText), DrawableComponent);
         coordinatesTextDrawable.data.content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.displaySystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
         const coordinatesTextLocation = Query.getComponent(manager.getEntityComponents(this.coordinatesText), ScreenLocationComponent);
-        coordinatesTextLocation.data.x = this.pointerSystem.pointerScreenX;
-        coordinatesTextLocation.data.y = this.pointerSystem.pointerScreenY + 30;
+        coordinatesTextLocation.data.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY + 30);
 
         this.query.getMatching().forEach((components, entity) => {
             const p = Query.getComponent(components, PointableComponent);

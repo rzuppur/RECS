@@ -1,9 +1,9 @@
 import Component, { ComponentData } from "./index";
+import Vector2 from "../utils/vector2";
 
 export interface ScreenLocationData extends ComponentData {
     /* Position on screen from top left corner */
-    x: number;
-    y: number;
+    loc: Vector2;
 
     /* Drawing order */
     z?: number;

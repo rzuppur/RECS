@@ -27,7 +27,7 @@ export default class DrawScreen {
             }
         });
         Array.from(sorted.keys()).sort().forEach(z => {
-            sorted.get(z).forEach(({ sL, d }) => this.canvas.draw(sL.data.x, sL.data.y, d.data));
+            sorted.get(z).forEach(({ sL, d }) => this.canvas.draw(sL.data.loc.x, sL.data.loc.y, d.data));
         });
     }
 }
