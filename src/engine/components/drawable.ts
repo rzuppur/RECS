@@ -36,6 +36,7 @@ interface DrawableText extends DrawableBase {
     color?: string;
     size?: number;
     font?: string;
+    align?: "left" | "center" | "right";
     fontWeight?: number;
 }
 
@@ -45,6 +46,7 @@ interface DrawableTextFixed extends DrawableBase {
     color?: string;
     size?: number;
     font?: string;
+    align?: "left" | "center" | "right";
     fontWeight?: number;
 }
 
