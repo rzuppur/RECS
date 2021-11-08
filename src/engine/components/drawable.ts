@@ -57,7 +57,20 @@ interface DrawablePath extends DrawableBase {
     alpha?: number;
 }
 
-export type DrawableData = DrawableRect | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawableTextFixed | DrawablePath;
+interface DrawablePathFixed extends DrawableBase {
+    type: "PATH_FIXED_SIZE";
+    path: Array<Array<number>>; // "[[X1, Y1], [X2, Y2], ... , [Xn, Yn]]"
+    color?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    alpha?: number;
+}
+
+export type Drawable = DrawableRect | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawableTextFixed | DrawablePath | DrawablePathFixed;
+
+export interface DrawableData {
+    drawables: Drawable[];
+}
 
 export default class DrawableComponent extends Component {
     static key = "Drawable";

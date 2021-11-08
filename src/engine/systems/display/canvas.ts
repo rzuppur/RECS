@@ -1,6 +1,6 @@
 import Logger from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
-import { DrawableData } from "../../components/drawable";
+import { Drawable, DrawableData } from "../../components/drawable";
 
 const log = new Logger("Canvas");
 
@@ -208,7 +208,7 @@ export default class Canvas {
         return this;
     }
 
-    public draw(x: number, y: number, drawable: DrawableData, zoom = 1): Canvas {
+    public draw(x: number, y: number, drawable: Drawable, zoom = 1): Canvas {
         if (drawable.type === "RECT") {
             if (drawable.color) {
                 this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
@@ -216,12 +216,12 @@ export default class Canvas {
             if (drawable.strokeColor) {
                 this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
             }
-        } else if (drawable.type === "PATH") {
+        } else if (drawable.type === "PATH" || drawable.type === "PATH_FIXED_SIZE") {
             if (drawable.color) {
-                this.drawPath(x * zoom, y * zoom, drawable.path, drawable.color, drawable.alpha, zoom);
+                this.drawPath(x * zoom, y * zoom, drawable.path, drawable.color, drawable.alpha, drawable.type === "PATH_FIXED_SIZE" ? 1 : zoom);
             }
             if (drawable.strokeColor) {
-                this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, zoom);
+                this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, drawable.type === "PATH_FIXED_SIZE" ? 1 : zoom);
             }
         } else if (drawable.type === "TEXT") {
             this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight);

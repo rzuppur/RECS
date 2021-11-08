@@ -64,6 +64,10 @@ export default class Manager {
         return system;
     }
 
+    public systemKeyRegistered(systemName: string): boolean {
+        return this.systems.has(systemName);
+    }
+
     public createEntity(): Entity {
         const uuid = generateUuid();
         this.entities.set(uuid, new Map());

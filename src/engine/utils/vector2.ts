@@ -15,8 +15,8 @@ export default class Vector2 {
         return Math.atan2(this.y, this.x);
     }
 
-    public normalized(): Vector2 {
-        return new Vector2(this.x / length, this.y / length);
+    public get normalized(): Vector2 {
+        return new Vector2(this.x / this.length, this.y / this.length);
     }
 
     public add(v2: Vector2): Vector2 {

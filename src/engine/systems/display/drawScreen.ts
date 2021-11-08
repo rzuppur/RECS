@@ -28,13 +28,15 @@ export default class DrawScreen {
         });
         Array.from(sorted.keys()).sort().forEach(z => {
             sorted.get(z).forEach(({ sL, d }) => {
-                let x = sL.data.loc.x;
-                let y = sL.data.loc.y;
-                if (d.data.offset) {
-                    x += d.data.offset.x;
-                    y += d.data.offset.y;
-                }
-                this.canvas.draw(x, y, d.data);
+                d.data.drawables.forEach((drawable) => {
+                    let x = sL.data.loc.x;
+                    let y = sL.data.loc.y;
+                    if (drawable.offset) {
+                        x += drawable.offset.x;
+                        y += drawable.offset.y;
+                    }
+                    this.canvas.draw(x, y, drawable);
+                });
             });
         });
     }
