@@ -10,7 +10,7 @@ import Component, { ComponentData } from "./components/index";
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
 import PointableComponent from "./components/pointable";
-import DrawableComponent from "./components/drawable";
+import DrawableComponent, { Drawable } from "./components/drawable";
 import { Entity } from "./model";
 
 const log = new Logger("Engine");
@@ -87,6 +87,7 @@ export {
     ScreenLocationComponent,
     PointableComponent,
     DrawableComponent,
+    Drawable,
     DisplaySystem,
     PointerSystem,
     KeyboardSystem,
