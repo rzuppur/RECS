@@ -1,6 +1,5 @@
 import Manager from "../manager";
 import Query from "../query";
-import Component from "../components";
 
 export default abstract class System {
     protected query: Query;

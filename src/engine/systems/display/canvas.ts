@@ -1,14 +1,19 @@
 import Logger from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
-import { Drawable, DrawableData } from "../../components/drawable";
+import { Drawable } from "../../components/drawable";
 
 const log = new Logger("Canvas");
 
-const roundToSubpixel = (px: number): number => { return Math.floor(px * 10) / 10 };
-const roundToPixel = (px: number): number => { return Math.floor(px); };
+const roundToSubpixel = (px: number): number => {
+    return Math.floor(px * 10) / 10
+};
+const roundToPixel = (px: number): number => {
+    return Math.floor(px);
+};
 
 export default class Canvas {
-    public onSizeChange: (width: number, height: number) => void = () => {};
+    public onSizeChange: (width: number, height: number) => void = () => {
+    };
 
     private parentEl: HTMLElement;
     private readonly canvasEl: HTMLCanvasElement;

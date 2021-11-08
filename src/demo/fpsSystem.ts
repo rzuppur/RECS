@@ -32,12 +32,12 @@ export class FPS extends System {
         const avg = this.history.reduce((a, b) => (a + b)) / this.history.length;
 
         const d = manager.getEntityComponents(this.entity).get("Drawable") as DrawableComponent;
-        let path: Array<Array<number>> = [[0,60]];
+        let path: Array<Array<number>> = [[0, 60]];
         this.history.forEach((fps, i) => {
             path.push([i * 2, 60 - fps]);
             path.push([(i + 1) * 2, 60 - fps]);
         });
-        path.push([this.history.length*2, 60]);
+        path.push([this.history.length * 2, 60]);
         d.data.drawables[1].path = path;
     }
 }
