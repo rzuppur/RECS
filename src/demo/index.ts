@@ -119,9 +119,14 @@ class GameSystem extends System {
         this.query.getMatching().forEach((components, entity) => {
             const p = Query.getComponent(components, PointableComponent);
             const d = Query.getComponent(components, DrawableComponent);
+            const wL = Query.getComponent(components, WorldLocationComponent);
             d.data.drawables[0].alpha = p.data.hovered ? 0.7 : 1;
             if (p.data.clicked) {
                 d.data.drawables[0].color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
+            }
+            if (p.data.dragged) {
+                wL.data.loc = wL.data.loc.subtract(new Vector2(this.pointerSystem.pointerDeltaX / this.displaySystem.zoom, this.pointerSystem.pointerDeltaY / this.displaySystem.zoom));
+                // d.data.drawables[0].color = "#fff";
             }
         });
     }

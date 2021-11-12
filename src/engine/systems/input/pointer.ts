@@ -3,7 +3,7 @@ import Manager from "../../manager";
 import Query from "../../query";
 import Logger from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
-import PointableComponent, { PointableData } from "../../components/pointable";
+import PointableComponent from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
 import DisplaySystem from "../display/index";
@@ -16,15 +16,14 @@ export default class PointerSystem extends System {
     private pointerLastX: number = 0;
     private pointerLastY: number = 0;
 
-    private pointerDeltaX: number = 0;
-    private pointerDeltaY: number = 0;
-
     private pointerX: number = 0;
     private pointerY: number = 0;
 
     private pointerDownStartX: number = 0;
     private pointerDownStartY: number = 0;
 
+    private didMove: boolean = false;
+    public dragStartPointable: PointableComponent = null;
     private pointerDown: boolean = false;
     private pointerDragging: boolean = false;
     private pointerClicked: boolean = false;
@@ -38,8 +37,10 @@ export default class PointerSystem extends System {
     public pointerScreenY: number = 0;
     public pointerWorldX: number = 0;
     public pointerWorldY: number = 0;
+    public pointerDeltaX: number = 0;
+    public pointerDeltaY: number = 0;
 
-    public DRAG_START_THRESHOLD_PX: number = 6;
+    public DRAG_START_THRESHOLD_PX: number = 2;
 
     constructor() {
         super("Pointer", [PointableComponent.key]);
@@ -54,18 +55,15 @@ export default class PointerSystem extends System {
     }
 
     private onPointerMove(x: number, y: number) {
+        this.didMove = true;
         this.pointerX = x;
         this.pointerY = y;
 
-        if (this.pointerDown) {
+        if (!this.pointerDragging && this.pointerDown) {
             if (Math.abs(this.pointerDownStartX - this.pointerX) > this.DRAG_START_THRESHOLD_PX
                 || Math.abs(this.pointerDownStartY - this.pointerY) > this.DRAG_START_THRESHOLD_PX) {
                 this.pointerDragging = true;
             }
-        }
-
-        if (this.pointerDragging) {
-            this.calculateDelta();
         }
     }
 
@@ -73,6 +71,7 @@ export default class PointerSystem extends System {
         if (this.pointerDown && !this.pointerDragging) this.pointerClicked = true;
         this.pointerDown = false;
         this.pointerDragging = false;
+        this.dragStartPointable = null;
         this.resetDelta();
     }
 
@@ -122,14 +121,6 @@ export default class PointerSystem extends System {
         this.wheelDeltaY = event.deltaMode ? event.deltaY * 20 : event.deltaY;
     }
 
-    private calculateDelta() {
-        this.pointerDeltaX = this.pointerLastX - this.pointerX;
-        this.pointerDeltaY = this.pointerLastY - this.pointerY;
-
-        this.pointerLastX = this.pointerX;
-        this.pointerLastY = this.pointerY;
-    }
-
     private resetDelta() {
         this.pointerDeltaX = 0;
         this.pointerDeltaY = 0;
@@ -156,8 +147,6 @@ export default class PointerSystem extends System {
     }
 
     public tick(dt: number): void {
-        if (this.pointerDragging) this.resetDelta();
-
         const { x: offsetX, y: offsetY } = this.displaySystem.getOffset();
         const pointerX = this.pointerX - offsetX;
         const pointerY = this.pointerY - offsetY;
@@ -170,10 +159,13 @@ export default class PointerSystem extends System {
         this.pointerWorldX = (pointerX / worldZoom) - worldOffsetX;
         this.pointerWorldY = (pointerY / worldZoom) - worldOffsetY;
 
-        const eventTargets: { z: number; pD: PointableData; }[] = [];
+        const eventTargets: { z: number; p: PointableComponent; }[] = [];
 
         this.query.getMatching().forEach((components, entity) => {
             const p = Query.getComponent(components, PointableComponent);
+            if (!this.pointerDragging) {
+                p.data.dragged = false;
+            }
             if (!this.pointerActive) {
                 p.data.clicked = false;
                 p.data.hovered = false;
@@ -205,10 +197,7 @@ export default class PointerSystem extends System {
                 p.data.clicked = false;
 
                 if (pointInBox(pointerX, pointerY, screenX, screenY, screenW, screenH)) {
-                    eventTargets.push({
-                        z: screenZ,
-                        pD: p.data,
-                    });
+                    eventTargets.push({ z: screenZ, p });
                 }
             }
         });
@@ -217,11 +206,30 @@ export default class PointerSystem extends System {
             const targetMaxZ = eventTargets.reduce((prevMax, candidate) => {
                 return (candidate.z >= prevMax.z) ? candidate : prevMax;
             }, eventTargets[0]);
-            targetMaxZ.pD.hovered = true;
-            targetMaxZ.pD.clicked = this.pointerClicked;
+            targetMaxZ.p.data.hovered = true;
+            targetMaxZ.p.data.clicked = this.pointerClicked;
+            if (this.pointerDown && !this.pointerDragging && !this.dragStartPointable) {
+                this.dragStartPointable = targetMaxZ.p;
+            }
+        }
+
+        if (this.pointerDragging && this.dragStartPointable) {
+            this.dragStartPointable.data.dragged = true;
         }
 
         this.pointerClicked = false;
+
+        if (this.didMove) {
+            this.didMove = false;
+            const deltaX = this.pointerLastX - this.pointerX
+            const deltaY = this.pointerLastY - this.pointerY
+            this.pointerDeltaX = Math.round(deltaX * 100) / 100;
+            this.pointerDeltaY = Math.round(deltaY * 100) / 100;
+            this.pointerLastX = this.pointerX;
+            this.pointerLastY = this.pointerY;
+        } else {
+            this.resetDelta();
+        }
 
         if (this.didWheel) {
             this.didWheel = false;
