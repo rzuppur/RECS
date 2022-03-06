@@ -165,6 +165,8 @@ export default class PointerSystem extends System {
             const p = Query.getComponent(components, PointableComponent);
             if (!this.pointerDragging) {
                 p.data.dragged = false;
+                p.data.draggedDeltaX = 0;
+                p.data.draggedDeltaY = 0;
             }
             if (!this.pointerActive) {
                 p.data.clicked = false;
@@ -215,6 +217,8 @@ export default class PointerSystem extends System {
 
         if (this.pointerDragging && this.dragStartPointable) {
             this.dragStartPointable.data.dragged = true;
+            this.dragStartPointable.data.draggedDeltaX = this.pointerDeltaX;
+            this.dragStartPointable.data.draggedDeltaY = this.pointerDeltaY;
         }
 
         this.pointerClicked = false;

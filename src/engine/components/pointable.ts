@@ -6,6 +6,8 @@ export interface PointableData extends ComponentData {
     hovered?: boolean;
     clicked?: boolean;
     dragged?: boolean;
+    draggedDeltaX?: number;
+    draggedDeltaY?: number;
 }
 
 export default class PointableComponent extends Component {

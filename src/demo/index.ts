@@ -125,7 +125,7 @@ class GameSystem extends System {
                 d.data.drawables[0].color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
             }
             if (p.data.dragged) {
-                wL.data.loc = wL.data.loc.subtract(new Vector2(this.pointerSystem.pointerDeltaX / this.displaySystem.zoom, this.pointerSystem.pointerDeltaY / this.displaySystem.zoom));
+                wL.data.loc = wL.data.loc.subtract(new Vector2(p.data.draggedDeltaX / this.displaySystem.zoom, p.data.draggedDeltaY / this.displaySystem.zoom));
                 // d.data.drawables[0].color = "#fff";
             }
         });
