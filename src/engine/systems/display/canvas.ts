@@ -88,6 +88,18 @@ export default class Canvas {
         this.ctx.strokeRect(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
     }
 
+    private fillEllipse(x: number, y: number, width: number, height: number, rotation: number): void {
+        this.ctx.beginPath();
+        this.ctx.ellipse(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr), rotation, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+
+    private strokeEllipse(x: number, y: number, width: number, height: number, rotation: number): void {
+        this.ctx.beginPath();
+        this.ctx.ellipse(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr), rotation, 0, Math.PI * 2);
+        this.ctx.stroke();
+    }
+
     private fillText(text: string, x: number, y: number): void {
         this.ctx.fillText(text, this.round(x * this.dpr), this.round(y * this.dpr));
     }
@@ -151,6 +163,23 @@ export default class Canvas {
         this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = color;
         this.strokeRect(x, y, width, height);
+        this.ctx.globalAlpha = 1;
+        return this;
+    }
+
+    public drawEllipse(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", alpha: number = 1): Canvas {
+        this.ctx.globalAlpha = alpha;
+        this.ctx.fillStyle = color;
+        this.fillEllipse(x, y, width, height, rotation);
+        this.ctx.globalAlpha = 1;
+        return this;
+    }
+
+    public drawEllipseStroke(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
+        this.ctx.globalAlpha = alpha;
+        this.lineWidth = strokeWidth;
+        this.ctx.strokeStyle = color;
+        this.strokeEllipse(x, y, width, height, rotation);
         this.ctx.globalAlpha = 1;
         return this;
     }
@@ -221,6 +250,13 @@ export default class Canvas {
             }
             if (drawable.strokeColor) {
                 this.drawRectStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
+            }
+        } else if (drawable.type === "ELLIPSE") {
+            if (drawable.color) {
+                this.drawEllipse(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.rotation, drawable.color, drawable.alpha);
+            }
+            if (drawable.strokeColor) {
+                this.drawEllipseStroke(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.rotation, drawable.strokeColor, drawable.strokeWidth, drawable.alpha);
             }
         } else if (drawable.type === "PATH" || drawable.type === "PATH_FIXED_SIZE") {
             if (drawable.color) {

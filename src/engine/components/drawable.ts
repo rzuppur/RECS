@@ -18,6 +18,15 @@ interface DrawableRect extends Sizeable {
     alpha?: number;
 }
 
+interface DrawableEllipse extends Sizeable {
+    type: "ELLIPSE";
+    rotation?: number;
+    color?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    alpha?: number;
+}
+
 interface DrawableSprite extends Sizeable {
     type: "SPRITE";
     imageSrc: string;
@@ -68,7 +77,7 @@ interface DrawablePathFixed extends DrawableBase {
     alpha?: number;
 }
 
-export type Drawable = DrawableRect | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawableTextFixed | DrawablePath | DrawablePathFixed;
+export type Drawable = DrawableRect | DrawableEllipse | DrawableSprite | DrawableSpriteFixed | DrawableText | DrawableTextFixed | DrawablePath | DrawablePathFixed;
 
 export interface DrawableData {
     drawables: Drawable[];
