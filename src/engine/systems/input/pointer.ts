@@ -167,6 +167,8 @@ export default class PointerSystem extends System {
                 p.data.dragged = false;
                 p.data.draggedDeltaX = 0;
                 p.data.draggedDeltaY = 0;
+                p.data.draggedDeltaXWorld = 0;
+                p.data.draggedDeltaYWorld = 0;
             }
             if (!this.pointerActive) {
                 p.data.clicked = false;
@@ -219,6 +221,8 @@ export default class PointerSystem extends System {
             this.dragStartPointable.data.dragged = true;
             this.dragStartPointable.data.draggedDeltaX = this.pointerDeltaX;
             this.dragStartPointable.data.draggedDeltaY = this.pointerDeltaY;
+            this.dragStartPointable.data.draggedDeltaXWorld = this.pointerDeltaX / this.displaySystem.zoom;
+            this.dragStartPointable.data.draggedDeltaYWorld = this.pointerDeltaY / this.displaySystem.zoom;
         }
 
         this.pointerClicked = false;

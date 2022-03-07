@@ -1,5 +1,5 @@
 import ts from "@wessberg/rollup-plugin-ts";
-import {terser} from "rollup-plugin-terser";
+import {terser} from "rollup-plugin-terser";  // replace with esbuild? (faster)
 import replace from "@rollup/plugin-replace";
 import {nodeResolve} from "@rollup/plugin-node-resolve";
 import livereload from "rollup-plugin-livereload";

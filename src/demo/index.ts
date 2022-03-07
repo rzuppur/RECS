@@ -5,6 +5,9 @@ import { initializeFPS } from "./fpsSystem";
 
 const log = new Logger("Game");
 
+let worldTest: Entity;
+let screenTest: Entity;
+
 class Game {
     private readonly engine: Engine;
     private readonly manager: Manager;
@@ -42,14 +45,14 @@ class Game {
             }));
         }
 
-        const sprite = this.manager.createEntity();
         let path = [];
         const pN = 10_000;
         for (let i = 0; i < pN; i++) {
             path.push([Math.cos(i * 2 * Math.PI / pN) * 100, Math.sin(i * 2 * Math.PI / pN) * 100]);
         }
-        this.manager.setComponent(sprite, new WorldLocationComponent({ loc: new Vector2(0, 0) }));
-        this.manager.setComponent(sprite, new DrawableComponent({
+        worldTest = this.manager.createEntity();
+        this.manager.setComponent(worldTest, new WorldLocationComponent({ loc: new Vector2(0, 0) }));
+        this.manager.setComponent(worldTest, new DrawableComponent({
             drawables: [
                 {
                     type: "SPRITE",
@@ -58,13 +61,21 @@ class Game {
                     height: 30,
                     offset: new Vector2(85, 35)
                 },
+                { type: "PATH", strokeColor: "#fff", strokeWidth: 2, path },
+            ],
+        }));
+
+        screenTest = this.manager.createEntity();
+        this.manager.setComponent(screenTest, new ScreenLocationComponent({ loc: new Vector2(0, 0), z: 100 }));
+        this.manager.setComponent(screenTest, new DrawableComponent({
+            drawables: [
                 {
-                    type: "SPRITE_FIXED_SIZE",
+                    type: "SPRITE",
                     imageSrc: "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
-                    width: 50,
-                    height: 50,
+                    width: 40,
+                    height: 40,
+                    offset: new Vector2(-20, -20),
                 },
-                { type: "PATH", strokeColor: "#fff", strokeWidth: 2, path, offset: new Vector2(100, 50) },
             ],
         }));
         log.info(`${n} created`);
@@ -103,7 +114,7 @@ class GameSystem extends System {
 
     tick(dt: number, manager: Manager) {
         this.displaySystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
-        //this.displaySystem.view.x += this.pointerSystem.wheelDeltaX / this.displaySystem.zoom;
+        // this.displaySystem.view.x += this.pointerSystem.wheelDeltaX / this.displaySystem.zoom;
         this.displaySystem.view.radius = Math.max(this.displaySystem.view.radius, 0.1);
 
         if (this.keyboardSystem.keysDown.has("ARROWDOWN")) this.displaySystem.view.y += 4 / this.displaySystem.zoom;
@@ -116,6 +127,16 @@ class GameSystem extends System {
         const coordinatesTextLocation = Query.getComponent(manager.getEntityComponents(this.coordinatesText), ScreenLocationComponent);
         coordinatesTextLocation.data.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY);
 
+        if (screenTest) {
+            const { data: sL } = Query.getComponent(manager.getEntityComponents(screenTest), ScreenLocationComponent);
+            sL.loc = this.displaySystem.worldLocationToScreen(new Vector2(0, 0));
+        }
+
+        if (worldTest) {
+            const { data: wL } = Query.getComponent(manager.getEntityComponents(worldTest), WorldLocationComponent);
+            wL.loc = this.displaySystem.screenLocationToWorld(new Vector2(0, 0));
+        }
+
         this.query.getMatching().forEach((components, entity) => {
             const p = Query.getComponent(components, PointableComponent);
             const d = Query.getComponent(components, DrawableComponent);
@@ -125,8 +146,8 @@ class GameSystem extends System {
                 d.data.drawables[0].color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
             }
             if (p.data.dragged) {
-                wL.data.loc = wL.data.loc.subtract(new Vector2(p.data.draggedDeltaX / this.displaySystem.zoom, p.data.draggedDeltaY / this.displaySystem.zoom));
-                // d.data.drawables[0].color = "#fff";
+                wL.data.loc = wL.data.loc.subtract(new Vector2(p.data.draggedDeltaXWorld, p.data.draggedDeltaYWorld));
+                d.data.drawables[0].color = "#fff";
             }
         });
     }

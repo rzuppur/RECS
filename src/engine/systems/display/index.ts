@@ -13,12 +13,12 @@ import Vector2 from "../../utils/vector2";
 const log = new Logger("DisplaySystem");
 
 export default class DisplaySystem extends System {
+    private drawWorld: DrawWorld;
+    private drawScreen: DrawScreen;
     private canvas: Canvas;
     private readonly mountElQuery: string;
     private worldQuery: Query;
     private screenQuery: Query;
-    public drawWorld: DrawWorld;
-    public drawScreen: DrawScreen;
 
     /**
      * @param mountElQuery - A new canvas element will be added as a child here.
@@ -30,6 +30,26 @@ export default class DisplaySystem extends System {
         super("Display", []);
 
         this.mountElQuery = mountElQuery;
+    }
+
+    public get zoom(): number {
+        return this.drawWorld.zoom;
+    }
+
+    public get offsetX(): number {
+        return this.drawWorld.offsetX;
+    }
+
+    public get offsetY(): number {
+        return this.drawWorld.offsetY;
+    }
+
+    public get view(): WorldView {
+        return this.drawWorld.view;
+    }
+
+    public set view(value: WorldView) {
+        this.drawWorld.view = value;
     }
 
     public beforeStart(manager: Manager): boolean {
@@ -61,32 +81,16 @@ export default class DisplaySystem extends System {
         return this.canvas.getOffset();
     }
 
-    public disableSmoothing(): void {
-        this.canvas.setSmoothing(false);
+    public setSmoothing(value: boolean): void {
+        this.canvas.setSmoothing(value);
     }
 
-    public enableSmoothing(): void {
-        this.canvas.setSmoothing(true);
+    public worldLocationToScreen(world: Vector2): Vector2 {
+        return new Vector2((world.x + this.offsetX) * this.zoom, (world.y + this.offsetY) * this.zoom);
     }
 
-    public get zoom(): number {
-        return this.drawWorld.zoom;
-    }
-
-    public get offsetX(): number {
-        return this.drawWorld.offsetX;
-    }
-
-    public get offsetY(): number {
-        return this.drawWorld.offsetY;
-    }
-
-    public get view(): WorldView {
-        return this.drawWorld.view;
-    }
-
-    public set view(value: WorldView) {
-        this.drawWorld.view = value;
+    public screenLocationToWorld(screen: Vector2): Vector2 {
+        return new Vector2((screen.x / this.zoom) - this.offsetX, (screen.y / this.zoom) - this.offsetY);
     }
 
     /**

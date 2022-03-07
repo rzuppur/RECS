@@ -8,6 +8,8 @@ export interface PointableData extends ComponentData {
     dragged?: boolean;
     draggedDeltaX?: number;
     draggedDeltaY?: number;
+    draggedDeltaXWorld?: number;
+    draggedDeltaYWorld?: number;
 }
 
 export default class PointableComponent extends Component {
