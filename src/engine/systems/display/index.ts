@@ -93,6 +93,10 @@ export default class DisplaySystem extends System {
         return new Vector2((screen.x / this.zoom) - this.offsetX, (screen.y / this.zoom) - this.offsetY);
     }
 
+    public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): TextMetrics {
+        return this.canvas.measureText(text, size, font, fontWeight);
+    }
+
     /**
      * Supports only one callback, will use the latest.
      * Called every time canvas size changes, including initialization.

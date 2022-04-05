@@ -218,6 +218,11 @@ export default class Canvas {
         return this;
     }
 
+    public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): TextMetrics {
+        this.ctx.font = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
+        return this.ctx.measureText(text);
+    }
+
     public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400, align: "left" | "center" | "right" = "left"): Canvas {
         this.ctx.fillStyle = color;
         this.ctx.textAlign = align;
