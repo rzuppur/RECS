@@ -1,6 +1,6 @@
 import System from "../index";
 import Manager from "../../manager";
-import Canvas from "./canvas";
+import Canvas, { CanvasTextMetrics } from "./canvas";
 import Logger from "../../utils/logger";
 import DrawWorld, { WorldView } from "./drawWorld";
 import DrawScreen from "./drawScreen";
@@ -93,7 +93,7 @@ export default class DisplaySystem extends System {
         return new Vector2((screen.x / this.zoom) - this.offsetX, (screen.y / this.zoom) - this.offsetY);
     }
 
-    public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): TextMetrics {
+    public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): CanvasTextMetrics {
         return this.canvas.measureText(text, size, font, fontWeight);
     }
 

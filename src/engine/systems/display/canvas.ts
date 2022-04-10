@@ -2,6 +2,10 @@ import Logger from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
 import { Drawable } from "../../components/drawable";
 
+export type CanvasTextMetrics = {
+    width: number;
+};
+
 const log = new Logger("Canvas");
 
 const roundToSubpixel = (px: number): number => {
@@ -218,9 +222,10 @@ export default class Canvas {
         return this;
     }
 
-    public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): TextMetrics {
+    public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): CanvasTextMetrics {
         this.ctx.font = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
-        return this.ctx.measureText(text);
+        const measure = this.ctx.measureText(text);
+        return { width: measure.width / this.dpr };
     }
 
     public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400, align: "left" | "center" | "right" = "left"): Canvas {
