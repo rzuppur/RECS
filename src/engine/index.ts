@@ -1,17 +1,25 @@
+// utils
 import Logger from "./utils/logger";
 import Vector2 from "./utils/vector2";
+import { clamp, InterpolatedValue } from "./utils/math";
+
+// core
 import Manager from "./manager";
 import Query from "./query";
 import System from "./systems/index";
+import { Entity } from "./model";
+
+// systems
 import DisplaySystem from "./systems/display/index";
 import PointerSystem from "./systems/input/pointer";
 import KeyboardSystem from "./systems/input/keyboard";
+
+// components
 import Component, { ComponentData } from "./components/index";
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
 import PointableComponent from "./components/pointable";
 import DrawableComponent, { Drawable } from "./components/drawable";
-import { Entity } from "./model";
 
 const log = new Logger("Engine");
 
@@ -92,4 +100,6 @@ export {
     PointerSystem,
     KeyboardSystem,
     Vector2,
+    clamp,
+    InterpolatedValue,
 };

@@ -18,7 +18,7 @@ export default class DrawWorld {
     private _offsetX: number = 0;
     private _offsetY: number = 0;
 
-    public view: WorldView = { x: 100, y: 50, radius: 80 };
+    public view: WorldView = { x: 0, y: 0, radius: 100 };
 
     constructor(canvas: Canvas) {
         log.new();

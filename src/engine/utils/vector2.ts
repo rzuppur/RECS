@@ -40,4 +40,11 @@ export default class Vector2 {
     public dotProduct(v2: Vector2): number {
         return this.x * v2.x + this.y * v2.y;
     }
+
+    /**
+     * Returns the magnitude of the z value of the resulting 3D vector.
+     */
+    public crossProduct(v2: Vector2): number {
+        return this.x * v2.y - this.y * v2.x;
+    }
 }

@@ -2,11 +2,9 @@ import { DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manag
 import Logger from "../engine/utils/logger";
 
 import { initializeFPS } from "./fpsSystem";
+import { initializeAnimations } from "./animations";
 
 const log = new Logger("Game");
-
-let worldTest: Entity;
-let screenTest: Entity;
 
 class Game {
     private readonly engine: Engine;
@@ -17,68 +15,11 @@ class Game {
         this.engine = new Engine("#game");
         this.manager = this.engine.manager;
 
-        this.debugWorld();
-
         const gameSystem = new GameSystem();
         this.manager.registerSystem(gameSystem);
 
+        initializeAnimations(this.manager);
         initializeFPS(this.manager);
-    }
-
-    private debugWorld(): void {
-        const n = 1000;
-        const limX = 200;
-        const limY = 100;
-
-        log.info(`creating ${n}`);
-        for (let i = 0; i < n; i++) {
-            const entity = this.manager.createEntity();
-            this.manager.setComponent(entity, new WorldLocationComponent({ loc: new Vector2(Math.random() * limX, Math.random() * limY) }));
-            this.manager.setComponent(entity, new DrawableComponent({
-                drawables: [
-                    { type: "RECT", width: 3, height: 3, color: "#555" },
-                ]
-            }));
-            this.manager.setComponent(entity, new PointableComponent({
-                width: 3,
-                height: 3,
-            }));
-        }
-
-        let path = [];
-        const pN = 10_000;
-        for (let i = 0; i < pN; i++) {
-            path.push([Math.cos(i * 2 * Math.PI / pN) * 100, Math.sin(i * 2 * Math.PI / pN) * 100]);
-        }
-        worldTest = this.manager.createEntity();
-        this.manager.setComponent(worldTest, new WorldLocationComponent({ loc: new Vector2(0, 0) }));
-        this.manager.setComponent(worldTest, new DrawableComponent({
-            drawables: [
-                {
-                    type: "SPRITE",
-                    imageSrc: "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
-                    width: 30,
-                    height: 30,
-                    offset: new Vector2(85, 35)
-                },
-                { type: "PATH", strokeColor: "#fff", strokeWidth: 2, path },
-            ],
-        }));
-
-        screenTest = this.manager.createEntity();
-        this.manager.setComponent(screenTest, new ScreenLocationComponent({ loc: new Vector2(0, 0), z: 100 }));
-        this.manager.setComponent(screenTest, new DrawableComponent({
-            drawables: [
-                {
-                    type: "SPRITE",
-                    imageSrc: "https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png",
-                    width: 40,
-                    height: 40,
-                    offset: new Vector2(-20, -20),
-                },
-            ],
-        }));
-        log.info(`${n} created`);
     }
 }
 
@@ -90,7 +31,7 @@ class GameSystem extends System {
     private coordinatesText: Entity;
 
     constructor() {
-        super("Game", [PointableComponent.key, DrawableComponent.key]);
+        super("Game", []);
     }
 
     start(query: Query, manager: Manager): boolean {
@@ -113,7 +54,7 @@ class GameSystem extends System {
     }
 
     tick(dt: number, manager: Manager) {
-        this.displaySystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.005);
+        this.displaySystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.004);
         // this.displaySystem.view.x += this.pointerSystem.wheelDeltaX / this.displaySystem.zoom;
         this.displaySystem.view.radius = Math.max(this.displaySystem.view.radius, 0.1);
 
@@ -122,41 +63,18 @@ class GameSystem extends System {
         if (this.keyboardSystem.keysDown.has("ARROWLEFT")) this.displaySystem.view.x -= 4 / this.displaySystem.zoom;
         if (this.keyboardSystem.keysDown.has("ARROWRIGHT")) this.displaySystem.view.x += 4 / this.displaySystem.zoom;
 
-        const coordinatesTextDrawable = Query.getComponent(manager.getEntityComponents(this.coordinatesText), DrawableComponent);
-        coordinatesTextDrawable.data.drawables[0].content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.displaySystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
-        const coordinatesTextLocation = Query.getComponent(manager.getEntityComponents(this.coordinatesText), ScreenLocationComponent);
-        coordinatesTextLocation.data.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY);
+        const textComponents = manager.getEntityComponents(this.coordinatesText);
 
-        if (screenTest) {
-            const { data: sL } = Query.getComponent(manager.getEntityComponents(screenTest), ScreenLocationComponent);
-            sL.loc = this.displaySystem.worldLocationToScreen(new Vector2(0, 0));
-        }
+        const { data: coordinatesTextDrawable } = Query.getComponent(textComponents, DrawableComponent);
+        coordinatesTextDrawable.drawables[0].content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.displaySystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
 
-        if (worldTest) {
-            const { data: wL } = Query.getComponent(manager.getEntityComponents(worldTest), WorldLocationComponent);
-            wL.loc = this.displaySystem.screenLocationToWorld(new Vector2(0, 0));
-        }
-
-        this.query.getMatching().forEach((components, entity) => {
-            const p = Query.getComponent(components, PointableComponent);
-            const d = Query.getComponent(components, DrawableComponent);
-            const wL = Query.getComponent(components, WorldLocationComponent);
-            d.data.drawables[0].alpha = p.data.hovered ? 0.7 : 1;
-            if (p.data.clicked) {
-                d.data.drawables[0].color = `#${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}${Math.ceil(Math.random() * 9)}`;
-            }
-            if (p.data.dragged) {
-                wL.data.loc = wL.data.loc.subtract(new Vector2(p.data.draggedDeltaXWorld, p.data.draggedDeltaYWorld));
-                d.data.drawables[0].color = "#fff";
-            }
-        });
+        const { data: coordinatesTextLocation } = Query.getComponent(textComponents, ScreenLocationComponent);
+        coordinatesTextLocation.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY);
     }
 }
 
 const start = () => {
-    console.time("init");
     const game = new Game();
-    console.timeEnd("init");
 }
 
 start();
