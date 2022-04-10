@@ -11,6 +11,7 @@ const plugins = [
     replace({
         "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
     }),
+    esbuild({ minify: true }),
 ];
 
 let input = "src/engine/index.ts";
@@ -32,7 +33,6 @@ export default {
     output: {
         dir: "dist",
         format: "es",
-        plugins: process.env.NODE_ENV === "dev" ? [] : [esbuild({ minify: true })],
     },
     plugins,
 };

@@ -54,7 +54,13 @@ export class InterpolatedValue {
      * Starts interpolating towards the target from current value
      */
     public setInterpolate(value: number): void {
-        this.percentage = 0;
+        if (value === this.currentValue) {
+            this.percentage = 1;
+            return;
+        }
+        if (this.to !== value) {
+            this.percentage = 0;
+        }
         this.from = this.currentValue;
         this.to = value;
     }
