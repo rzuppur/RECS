@@ -121,7 +121,9 @@ export default class Manager {
 
     public tick(dt: number) {
         const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
-        systemsWithoutDisplay.forEach(s => s.tick(dt, this));
-        this.systems.get("Display").tick(dt, this);
+        const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
+        systemsOrdered.forEach(s => {
+            s.tick(dt, this);
+        });
     }
 }

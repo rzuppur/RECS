@@ -32,9 +32,15 @@ export default class KeyboardSystem extends System {
         this.keysReleased.add(KeyboardSystem.replaceKeyNames(event.key));
     }
 
+    private blurHandler(): void {
+        this.keysDown.forEach(key => this.keysReleased.add(key));
+        this.keysDown = new Set();
+    }
+
     public start(query: Query, manager: Manager): boolean {
         window.addEventListener("keydown", this.keyDownHandler.bind(this));
         window.addEventListener("keyup", this.keyUpHandler.bind(this));
+        window.addEventListener("blur", this.blurHandler.bind(this));
 
         return super.start(query, manager);
     }

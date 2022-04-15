@@ -1,4 +1,4 @@
-import { DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointableComponent, PointerSystem, Query, ScreenLocationComponent, System, Vector2, WorldLocationComponent } from "../engine";
+import { clamp, DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../engine";
 import Logger from "../engine/utils/logger";
 
 import { initializeFPS } from "./fpsSystem";
@@ -54,9 +54,8 @@ class GameSystem extends System {
     }
 
     tick(dt: number, manager: Manager) {
-        this.displaySystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.004);
-        // this.displaySystem.view.x += this.pointerSystem.wheelDeltaX / this.displaySystem.zoom;
-        this.displaySystem.view.radius = Math.max(this.displaySystem.view.radius, 0.1);
+        this.displaySystem.view.radius *= 1 - (this.pointerSystem.wheelDeltaY * 0.002);
+        this.displaySystem.view.radius = clamp(0.1, this.displaySystem.view.radius, 1000);
 
         if (this.keyboardSystem.keysDown.has("ARROWDOWN")) this.displaySystem.view.y += 4 / this.displaySystem.zoom;
         if (this.keyboardSystem.keysDown.has("ARROWUP")) this.displaySystem.view.y -= 4 / this.displaySystem.zoom;
