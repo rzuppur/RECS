@@ -8,7 +8,7 @@ export default class Vector2 {
     }
 
     public get length(): number {
-        return Math.hypot(this.x, this.y);
+        return Math.sqrt(this.x * this.x + this.y * this.y);
     }
 
     public get angle(): number {
