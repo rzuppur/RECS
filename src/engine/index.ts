@@ -42,7 +42,7 @@ export class Engine {
 
         this.mountElQuery = mountElQuery;
 
-        this.manager = new Manager();
+        this.manager = new Manager(debug);
         this.registerDefaultSystems();
 
         this.log.info("entering main loop");

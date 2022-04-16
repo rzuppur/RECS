@@ -11,10 +11,15 @@ export default class Manager {
     private entities: EntitiesMap = new Map();
     private queries: Map<string, Query> = new Map();
     private log: Logger;
+    private debug: boolean;
+    private tickTotal: number = 0;
+    private tickTotalBySystem: Map<string, number> = new Map();
+    private ticksCollected: number = 0;
 
-    constructor() {
+    constructor(debug = false) {
         this.log = LoggerFactory.getLogger("Manager");
         this.log.new();
+        this.debug = debug;
     }
 
     public registerComponent(component: Component): void {
@@ -120,10 +125,45 @@ export default class Manager {
     }
 
     public tick(dt: number) {
-        const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
-        const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
-        systemsOrdered.forEach(s => {
-            s.tick(dt, this);
-        });
+        if (this.debug) {
+            const tickStart = performance.now();
+
+            const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
+            const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
+            systemsOrdered.forEach((s: System) => {
+                const start = performance.now();
+                s.tick(dt, this);
+                const time = performance.now() - start;
+                if (this.tickTotalBySystem.has(s.name)) {
+                    this.tickTotalBySystem.set(s.name, this.tickTotalBySystem.get(s.name) + time);
+                } else {
+                    this.tickTotalBySystem.set(s.name, time);
+                }
+            });
+
+            this.tickTotal += performance.now() - tickStart;
+            this.ticksCollected += 1;
+
+            if (this.ticksCollected > 60*5) {
+                let percentages = "Engine tick time usage by system";
+                let totalAllocatedTime = 0;
+                this.tickTotalBySystem.forEach((time, system) => {
+                    percentages += `\n${system} ${Math.round((time / this.tickTotal) * 100)}%`;
+                    totalAllocatedTime += time;
+                });
+                percentages += `\nUNKNOWN ${Math.round(((this.tickTotal - totalAllocatedTime) / this.tickTotal) * 100)}%`;
+
+                this.log.debug(percentages);
+                this.ticksCollected = 0;
+                this.tickTotal = 0;
+                this.tickTotalBySystem = new Map();
+            }
+        } else {
+            const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
+            const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
+            systemsOrdered.forEach((s: System) => {
+                s.tick(dt, this);
+            });
+        }
     }
 }
