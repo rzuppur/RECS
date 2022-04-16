@@ -1,12 +1,10 @@
-import Logger from "../../utils/logger";
+import { LoggerFactory, Logger } from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
 import { Drawable } from "../../components/drawable";
 
 export type CanvasTextMetrics = {
     width: number;
 };
-
-const log = new Logger("Canvas");
 
 const roundToSubpixel = (px: number): number => {
     return Math.floor(px * 10) / 10
@@ -35,8 +33,11 @@ export default class Canvas {
     private pathSplitPoints = 5_000;
     private round: (x: number) => number;
 
+    private log: Logger;
+
     constructor() {
-        log.new();
+        this.log = LoggerFactory.getLogger("Canvas");
+        this.log.new();
 
         this.canvasEl = document.createElement("canvas");
         this.ctx = this.canvasEl.getContext("2d", { alpha: false });
@@ -52,10 +53,10 @@ export default class Canvas {
          * High DPI screens need to render more pixels and usually do not need antialiasing since the individual pixels are not visible.
          */
         if (this.dpr > 2) {
-            log.info("High resolution screen detected, will round to pixel");
+            this.log.info("High resolution screen detected, will round to pixel");
             this.round = roundToPixel;
         } else {
-            log.info("Low resolution screen detected, will round to subpixel");
+            this.log.info("Low resolution screen detected, will round to subpixel");
             this.round = roundToSubpixel;
         }
 
@@ -131,7 +132,7 @@ export default class Canvas {
         });
         resizeObserver.observe(this.parentEl);
 
-        log.info(`mounted to <${parentEl.tagName.toLocaleLowerCase()}>`);
+        this.log.info(`mounted to <${parentEl.tagName.toLocaleLowerCase()}>`);
         return this;
     }
 
@@ -284,7 +285,7 @@ export default class Canvas {
         } else if (drawable.type === "SPRITE_FIXED_SIZE") {
             this.drawSprite(x * zoom, y * zoom, drawable.width, drawable.height, drawable.imageSrc, drawable.alpha);
         } else {
-            log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
+            this.log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
         }
 
         return this;

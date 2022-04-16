@@ -1,18 +1,14 @@
 import { clamp, DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../engine";
-import Logger from "../engine/utils/logger";
 
 import { initializeFPS } from "./fpsSystem";
 import { initializeAnimations } from "./animations";
-
-const log = new Logger("Game");
 
 class Game {
     private readonly engine: Engine;
     private readonly manager: Manager;
 
     constructor() {
-        log.new();
-        this.engine = new Engine("#game");
+        this.engine = new Engine("#game", true);
         this.manager = this.engine.manager;
 
         const gameSystem = new GameSystem();

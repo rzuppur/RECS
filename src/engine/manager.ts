@@ -1,43 +1,43 @@
 import System from "./systems/index";
 import Component from "./components";
 import { generateUuid } from "./utils/uuid";
-import Logger from "./utils/logger";
+import { LoggerFactory, Logger } from "./utils/logger";
 import { EntitiesMap, Entity, EntityComponents } from "./model";
 import Query from "./query";
-
-const log = new Logger("Manager");
 
 export default class Manager {
     private components: Map<string, Component> = new Map();
     private systems: Map<string, System> = new Map();
     private entities: EntitiesMap = new Map();
     private queries: Map<string, Query> = new Map();
+    private log: Logger;
 
     constructor() {
-        log.new();
+        this.log = LoggerFactory.getLogger("Manager");
+        this.log.new();
     }
 
     public registerComponent(component: Component): void {
         if (this.components.has(component.name)) {
-            log.warning(`component already exists: ${component.name}`);
+            this.log.warning(`component already exists: ${component.name}`);
             return;
         }
         this.components.set(component.name, component);
-        log.info(`registered component: ${component.name}`);
+        this.log.debug(`registered component: ${component.name}`);
     }
 
     public registerQuery(queryKey: string): Query {
         if (!this.queries.has(queryKey)) {
             this.queries.set(queryKey, new Query(queryKey, this));
-            log.info(`created query: ${queryKey}`);
+            this.log.debug(`created query: ${queryKey}`);
         }
         return this.queries.get(queryKey);
     }
 
     public registerSystem(system: System): void {
-        log.info(`registering system: ${system.name}`);
+        this.log.debug(`registering system: ${system.name}`);
         if (this.systems.has(system.name)) {
-            log.warning(`system already exists: ${system.name}`);
+            this.log.warning(`system already exists: ${system.name}`);
             return;
         }
         this.systems.set(system.name, system);
@@ -46,20 +46,20 @@ export default class Manager {
         if (system.beforeStart(this)) {
             setTimeout(() => {
                 if (system.start(query, this)) {
-                    log.info(`started system: ${system.name}`);
+                    this.log.debug(`started system: ${system.name}`);
                 } else {
-                    log.error(`failed to start system: ${system.name}`);
+                    this.log.error(`failed to start system: ${system.name}`);
                 }
             });
         } else {
-            log.error(`failed to start system [beforeStart]: ${system.name}`);
+            this.log.error(`failed to start system [beforeStart]: ${system.name}`);
         }
     }
 
     public getSystem(key: string): System {
         const system = this.systems.get(key);
         if (!system) {
-            log.error(`System not registered: ${key}`);
+            this.log.error(`System not registered: ${key}`);
         }
         return system;
     }
@@ -89,7 +89,7 @@ export default class Manager {
 
     public setComponent(entity: Entity, component: Component): void {
         if (!this.componentRegistered(component)) {
-            log.fail(`[setComponent] component not registered: ${component.name}`);
+            this.log.fail(`[setComponent] component not registered: ${component.name}`);
         }
 
         const entityComponents = this.getEntityComponents(entity);
@@ -100,7 +100,7 @@ export default class Manager {
 
     public removeComponent(entity: Entity, componentKey: string): void {
         if (!this.componentKeyRegistered(componentKey)) {
-            log.fail(`[removeComponent] component not registered: ${componentKey}`);
+            this.log.fail(`[removeComponent] component not registered: ${componentKey}`);
         }
 
         const entityComponents = this.getEntityComponents(entity);
@@ -111,7 +111,7 @@ export default class Manager {
 
     public getEntityComponents(entity: Entity): EntityComponents {
         const entityComponents = this.entities.get(entity);
-        if (!entityComponents) log.fail(`entity does not exist: ${entity}`);
+        if (!entityComponents) this.log.fail(`entity does not exist: ${entity}`);
         return entityComponents;
     }
 

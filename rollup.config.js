@@ -11,7 +11,6 @@ const plugins = [
     replace({
         "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
     }),
-    esbuild({ minify: true }),
 ];
 
 let input = "src/engine/index.ts";
@@ -26,6 +25,8 @@ if (process.env.NODE_ENV === "dev") {
         open: false,
         port: 9081,
     }));
+} else {
+    plugins.push(esbuild({minify: true}));
 }
 
 export default {

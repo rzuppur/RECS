@@ -1,14 +1,12 @@
 import System from "../index";
 import Manager from "../../manager";
 import Query from "../../query";
-import Logger from "../../utils/logger";
+import { LoggerFactory, Logger } from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
 import PointableComponent from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
 import DisplaySystem from "../display/index";
-
-const log = new Logger("PointerInputSystem");
 
 export default class PointerSystem extends System {
     private displaySystem: DisplaySystem;
@@ -42,9 +40,12 @@ export default class PointerSystem extends System {
 
     public DRAG_START_THRESHOLD_PX: number = 2;
 
+    private log: Logger;
+
     constructor() {
         super("Pointer", [PointableComponent.key]);
-        log.new();
+        this.log = LoggerFactory.getLogger("PointerSystem");
+        this.log.new();
     }
 
     private onPointerDown(x: number, y: number) {

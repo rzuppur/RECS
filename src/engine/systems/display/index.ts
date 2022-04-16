@@ -1,7 +1,7 @@
 import System from "../index";
 import Manager from "../../manager";
 import Canvas, { CanvasTextMetrics } from "./canvas";
-import Logger from "../../utils/logger";
+import { LoggerFactory, Logger } from "../../utils/logger";
 import DrawWorld, { WorldView } from "./drawWorld";
 import DrawScreen from "./drawScreen";
 import DrawableComponent from "../../components/drawable";
@@ -10,8 +10,6 @@ import WorldLocationComponent from "../../components/worldLocation";
 import Query from "../../query";
 import Vector2 from "../../utils/vector2";
 
-const log = new Logger("DisplaySystem");
-
 export default class DisplaySystem extends System {
     private drawWorld: DrawWorld;
     private drawScreen: DrawScreen;
@@ -19,6 +17,7 @@ export default class DisplaySystem extends System {
     private readonly mountElQuery: string;
     private worldQuery: Query;
     private screenQuery: Query;
+    private log: Logger;
 
     /**
      * @param mountElQuery - A new canvas element will be added as a child here.
@@ -26,9 +25,10 @@ export default class DisplaySystem extends System {
      * Canvas fills the entire parent and uses ResizeObserver to adjust on resize.
      */
     constructor(mountElQuery: string) {
-        log.new();
         super("Display", []);
 
+        this.log = LoggerFactory.getLogger("DisplaySystem");
+        this.log.new();
         this.mountElQuery = mountElQuery;
     }
 

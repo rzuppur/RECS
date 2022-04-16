@@ -1,10 +1,8 @@
-import Logger from "../../utils/logger";
+import { LoggerFactory, Logger } from "../../utils/logger";
 import Canvas from "./canvas";
 import WorldLocationComponent from "../../components/worldLocation";
 import DrawableComponent from "../../components/drawable";
 import Query from "../../query";
-
-const log = new Logger("DrawWorld");
 
 export interface WorldView {
     x: number;
@@ -18,10 +16,13 @@ export default class DrawWorld {
     private _offsetX: number = 0;
     private _offsetY: number = 0;
 
+    private log: Logger;
+
     public view: WorldView = { x: 0, y: 0, radius: 100 };
 
     constructor(canvas: Canvas) {
-        log.new();
+        this.log = LoggerFactory.getLogger("DrawWorld");
+        this.log.new();
         this.canvas = canvas;
     }
 

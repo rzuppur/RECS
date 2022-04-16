@@ -1,52 +1,52 @@
 // utils
-import Logger from "./utils/logger";
+import { LoggerFactory, Logger, LOG_LEVEL } from "./utils/logger";
 import Vector2 from "./utils/vector2";
 import { clamp, InterpolatedValue } from "./utils/math";
+export { Vector2, clamp, InterpolatedValue };
 
 // core
 import Manager from "./manager";
 import Query from "./query";
 import System from "./systems/index";
 import { Entity } from "./model";
+import Component, { ComponentData } from "./components/index";
+export { Manager, Query, System, Entity, Component, ComponentData };
 
 // systems
 import DisplaySystem from "./systems/display/index";
 import PointerSystem from "./systems/input/pointer";
 import KeyboardSystem from "./systems/input/keyboard";
+export { DisplaySystem, PointerSystem, KeyboardSystem };
 
 // components
-import Component, { ComponentData } from "./components/index";
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
 import PointableComponent from "./components/pointable";
 import DrawableComponent, { Drawable } from "./components/drawable";
-
-const log = new Logger("Engine");
+export { WorldLocationComponent, ScreenLocationComponent, PointableComponent, DrawableComponent, Drawable };
 
 export class Engine {
     private step: number = 0;
-    private readonly boundTick = this.tick.bind(this);
     private lastTickTime: number = -1;
 
-    private mountElQuery: string;
+    private readonly mountElQuery: string;
+    private log: Logger;
 
     public manager: Manager;
     public running: boolean = true;
 
-    constructor(mountElQuery = "body", timeMainLoop: boolean = false) {
-        log.new();
+    constructor(mountElQuery = "body", debug: boolean = false) {
+        LoggerFactory.setLevel(debug ? LOG_LEVEL.DEBUG : LOG_LEVEL.WARNING);
+        this.log = LoggerFactory.getLogger("Engine");
+        this.log.new();
 
         this.mountElQuery = mountElQuery;
 
         this.manager = new Manager();
         this.registerDefaultSystems();
 
-        if (timeMainLoop) {
-            this.boundTick = this.timedTick.bind(this);
-        }
-
-        log.info("entering main loop");
-        window.requestAnimationFrame(this.boundTick);
+        this.log.info("entering main loop");
+        window.requestAnimationFrame(this.tick.bind(this));
     }
 
     private registerDefaultSystems(): void {
@@ -68,38 +68,12 @@ export class Engine {
             this.step += 1;
             this.manager.tick(dt);
 
-            window.requestAnimationFrame(this.boundTick);
+            window.requestAnimationFrame(this.tick.bind(this));
             this.lastTickTime = now;
 
         } else {
-            log.warning("main loop stopped");
+            this.log.warning("main loop stopped");
             this.lastTickTime = -1;
         }
     }
-
-    private timedTick(): void {
-        console.time("engineTick");
-        this.tick();
-        console.timeEnd("engineTick");
-    }
 }
-
-export {
-    Manager,
-    System,
-    Query,
-    Entity,
-    Component,
-    ComponentData,
-    WorldLocationComponent,
-    ScreenLocationComponent,
-    PointableComponent,
-    DrawableComponent,
-    Drawable,
-    DisplaySystem,
-    PointerSystem,
-    KeyboardSystem,
-    Vector2,
-    clamp,
-    InterpolatedValue,
-};

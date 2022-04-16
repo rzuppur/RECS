@@ -1,9 +1,7 @@
 import System from "../index";
 import Manager from "../../manager";
 import Query from "../../query";
-import Logger from "../../utils/logger";
-
-const log = new Logger("KeyboardInputSystem");
+import { LoggerFactory, Logger } from "../../utils/logger";
 
 export default class KeyboardSystem extends System {
     public keysDown: Set<string> = new Set();
@@ -12,9 +10,12 @@ export default class KeyboardSystem extends System {
     private keysReleasedToDelete: Set<string> = new Set();
     private PREVENT_KEYS = ["Tab", "Alt", "Control"];
 
+    private log: Logger;
+
     constructor() {
         super("Keyboard", []);
-        log.new();
+        this.log = LoggerFactory.getLogger("KeyboardSystem");
+        this.log.new();
     }
 
     private static replaceKeyNames(keyName: string): string {

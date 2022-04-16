@@ -1,22 +1,22 @@
-import Logger from "./utils/logger";
+import { LoggerFactory, Logger } from "./utils/logger";
 import { EntitiesMap, Entity, EntityComponents } from "./model";
 import Manager from "./manager";
 import Component from "./components";
-
-const log = new Logger("Query");
 
 export default class Query {
     private matchingEntities: EntitiesMap = new Map();
     private readonly componentKeys: string[];
     private readonly manager: Manager;
+    private log: Logger;
 
     constructor(queryKey: string, manager: Manager) {
+        this.log = LoggerFactory.getLogger("Engine");
         this.componentKeys = queryKey.split(" & ");
         this.manager = manager;
 
         this.componentKeys.filter(key => key).forEach(componentKey => {
             if (!manager.componentKeyRegistered(componentKey)) {
-                log.fail(`[query] component not registered: ${componentKey}`);
+                this.log.fail(`[query] component not registered: ${componentKey}`);
             }
         });
 
