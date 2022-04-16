@@ -1,31 +1,14 @@
-// utils
-import { LoggerFactory, Logger, LOG_LEVEL } from "./utils/logger";
-import Vector2 from "./utils/vector2";
-import { clamp, InterpolatedValue } from "./utils/math";
-export { Vector2, clamp, InterpolatedValue };
-
-// core
+import { LOG_LEVEL, Logger, LoggerFactory } from "./utils/logger";
 import Manager from "./manager";
-import Query from "./query";
-import System from "./systems/index";
-import { Entity } from "./model";
-import Component, { ComponentData } from "./components/index";
-export { Manager, Query, System, Entity, Component, ComponentData };
-
-// systems
-import DisplaySystem from "./systems/display/index";
-import PointerSystem from "./systems/input/pointer";
-import KeyboardSystem from "./systems/input/keyboard";
-export { DisplaySystem, PointerSystem, KeyboardSystem };
-
-// components
 import WorldLocationComponent from "./components/worldLocation";
 import ScreenLocationComponent from "./components/screenLocation";
 import PointableComponent from "./components/pointable";
-import DrawableComponent, { Drawable } from "./components/drawable";
-export { WorldLocationComponent, ScreenLocationComponent, PointableComponent, DrawableComponent, Drawable };
+import DrawableComponent from "./components/drawable";
+import PointerSystem from "./systems/input/pointer";
+import KeyboardSystem from "./systems/input/keyboard";
+import DisplaySystem from "./systems/display";
 
-export class Engine {
+export default class Engine {
     private step: number = 0;
     private lastTickTime: number = -1;
 
@@ -45,7 +28,7 @@ export class Engine {
         this.manager = new Manager(debug);
         this.registerDefaultSystems();
 
-        this.log.info("entering main loop");
+        this.log.info("Entering main loop");
         window.requestAnimationFrame(this.tick.bind(this));
     }
 
@@ -72,7 +55,7 @@ export class Engine {
             this.lastTickTime = now;
 
         } else {
-            this.log.warning("main loop stopped");
+            this.log.warning("Main loop stopped");
             this.lastTickTime = -1;
         }
     }

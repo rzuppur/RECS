@@ -132,7 +132,7 @@ export default class Canvas {
         });
         resizeObserver.observe(this.parentEl);
 
-        this.log.info(`mounted to <${parentEl.tagName.toLocaleLowerCase()}>`);
+        this.log.info(`Mounted to <${parentEl.tagName.toLocaleLowerCase()}>`);
         return this;
     }
 

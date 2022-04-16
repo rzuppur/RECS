@@ -1,5 +1,4 @@
-import { Component, ComponentData, DrawableComponent, Entity, Manager, Query, System, Vector2, WorldLocationComponent } from "../engine";
-import { InterpolatedValue, InterpolateType } from "../engine/utils/math";
+import { Component, ComponentData, DrawableComponent, Entity, Manager, Query, System, Vector2, WorldLocationComponent, InterpolatedValue, InterpolateType } from "../lib";
 
 export interface AnimationData extends ComponentData {
     id: string;

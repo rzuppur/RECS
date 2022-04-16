@@ -5,6 +5,10 @@ import { LoggerFactory, Logger } from "./utils/logger";
 import { EntitiesMap, Entity, EntityComponents } from "./model";
 import Query from "./query";
 
+const debugNumberFormat = Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+const debugTicksCount = 300;
+const debugTimePercentageBarLength = 8;
+
 export default class Manager {
     private components: Map<string, Component> = new Map();
     private systems: Map<string, System> = new Map();
@@ -12,9 +16,10 @@ export default class Manager {
     private queries: Map<string, Query> = new Map();
     private log: Logger;
     private debug: boolean;
-    private tickTotal: number = 0;
-    private tickTotalBySystem: Map<string, number> = new Map();
-    private ticksCollected: number = 0;
+    private totalTicks: number = 0;
+    private totalTicksTime: number = 0;
+    private totalTicksTimeBySystem: Map<string, number> = new Map();
+    private firstTickTime: number;
 
     constructor(debug = false) {
         this.log = LoggerFactory.getLogger("Manager");
@@ -24,25 +29,25 @@ export default class Manager {
 
     public registerComponent(component: Component): void {
         if (this.components.has(component.name)) {
-            this.log.warning(`component already exists: ${component.name}`);
+            this.log.warning(`Component already exists: ${component.name}`);
             return;
         }
         this.components.set(component.name, component);
-        this.log.debug(`registered component: ${component.name}`);
+        this.log.debug(`Registered component: ${component.name}`);
     }
 
     public registerQuery(queryKey: string): Query {
         if (!this.queries.has(queryKey)) {
             this.queries.set(queryKey, new Query(queryKey, this));
-            this.log.debug(`created query: ${queryKey}`);
+            this.log.debug(`Created query: ${queryKey}`);
         }
         return this.queries.get(queryKey);
     }
 
     public registerSystem(system: System): void {
-        this.log.debug(`registering system: ${system.name}`);
+        this.log.debug(`Registering system: ${system.name}`);
         if (this.systems.has(system.name)) {
-            this.log.warning(`system already exists: ${system.name}`);
+            this.log.warning(`System already exists: ${system.name}`);
             return;
         }
         this.systems.set(system.name, system);
@@ -51,13 +56,13 @@ export default class Manager {
         if (system.beforeStart(this)) {
             setTimeout(() => {
                 if (system.start(query, this)) {
-                    this.log.debug(`started system: ${system.name}`);
+                    this.log.debug(`Started system: ${system.name}`);
                 } else {
-                    this.log.error(`failed to start system: ${system.name}`);
+                    this.log.error(`Failed to start system: ${system.name}`);
                 }
             });
         } else {
-            this.log.error(`failed to start system [beforeStart]: ${system.name}`);
+            this.log.error(`Failed to start system [beforeStart]: ${system.name}`);
         }
     }
 
@@ -127,6 +132,7 @@ export default class Manager {
     public tick(dt: number) {
         if (this.debug) {
             const tickStart = performance.now();
+            if (!this.firstTickTime) this.firstTickTime = tickStart;
 
             const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
             const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
@@ -134,29 +140,34 @@ export default class Manager {
                 const start = performance.now();
                 s.tick(dt, this);
                 const time = performance.now() - start;
-                if (this.tickTotalBySystem.has(s.name)) {
-                    this.tickTotalBySystem.set(s.name, this.tickTotalBySystem.get(s.name) + time);
+                if (this.totalTicksTimeBySystem.has(s.name)) {
+                    this.totalTicksTimeBySystem.set(s.name, this.totalTicksTimeBySystem.get(s.name) + time);
                 } else {
-                    this.tickTotalBySystem.set(s.name, time);
+                    this.totalTicksTimeBySystem.set(s.name, time);
                 }
             });
 
-            this.tickTotal += performance.now() - tickStart;
-            this.ticksCollected += 1;
+            const tickEnd = performance.now();
+            this.totalTicksTime += tickEnd - tickStart;
+            this.totalTicks += 1;
 
-            if (this.ticksCollected > 60*5) {
-                let percentages = "Engine tick time usage by system";
-                let totalAllocatedTime = 0;
-                this.tickTotalBySystem.forEach((time, system) => {
-                    percentages += `\n${system} ${Math.round((time / this.tickTotal) * 100)}%`;
-                    totalAllocatedTime += time;
+            if (this.totalTicks > debugTicksCount) {
+                const FPS = 1000 / ((tickEnd - this.firstTickTime) / debugTicksCount);
+                let percentages = `Average: ${debugNumberFormat.format(FPS)} FPS, ${debugNumberFormat.format(this.totalTicksTime / debugTicksCount)}ms per tick, usage by system:`;
+                let totalAllocatedTime = [...this.totalTicksTimeBySystem.values()].reduce((t, c) => t + c, 0);
+                this.totalTicksTimeBySystem.set("UNKNOWN", this.totalTicksTime - totalAllocatedTime);
+
+                this.totalTicksTimeBySystem.forEach((time, system) => {
+                    const percentage = time / this.totalTicksTime;
+                    const barLength = Math.round(percentage * debugTimePercentageBarLength);
+                    percentages += `\n[${"#".repeat(barLength)}${"_".repeat(debugTimePercentageBarLength - barLength)}] ${system} ${debugNumberFormat.format(percentage * 100)}%`;
                 });
-                percentages += `\nUNKNOWN ${Math.round(((this.tickTotal - totalAllocatedTime) / this.tickTotal) * 100)}%`;
-
                 this.log.debug(percentages);
-                this.ticksCollected = 0;
-                this.tickTotal = 0;
-                this.tickTotalBySystem = new Map();
+
+                this.totalTicks = 0;
+                this.totalTicksTime = 0;
+                this.totalTicksTimeBySystem = new Map();
+                this.firstTickTime = 0;
             }
         } else {
             const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);

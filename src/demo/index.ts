@@ -1,6 +1,5 @@
-import { clamp, DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../engine";
+import { clamp, DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../lib";
 
-import { initializeFPS } from "./fpsSystem";
 import { initializeAnimations } from "./animations";
 
 class Game {
@@ -15,7 +14,6 @@ class Game {
         this.manager.registerSystem(gameSystem);
 
         initializeAnimations(this.manager);
-        initializeFPS(this.manager);
     }
 }
 

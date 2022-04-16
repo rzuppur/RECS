@@ -10,7 +10,7 @@
         "declaration": true
     },
     "include": [
-        "src/engine/**/*"
+      "src/lib/**/*"
     ],
     "exclude": [
         "node_modules",
