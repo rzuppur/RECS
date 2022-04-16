@@ -23,13 +23,13 @@ export class AnimationSystem extends System {
     }
 
     public start(query: Query, manager: Manager): boolean {
-        let y = 0;
-        ["NEAREST", "LINEAR", "EASE"].forEach((type: InterpolateType) => {
+        let y = -40;
+        ["NEAREST", "LINEAR", "EASE", "EASE_IN_OUT", "EASE_IN", "EASE_OUT", "EASE_IN_CUBIC", "EASE_OUT_CUBIC"].forEach((type: InterpolateType) => {
             const background = manager.createEntity();
             manager.setComponent(background, new WorldLocationComponent({ loc: new Vector2(-range / 2, y) }));
             manager.setComponent(background, new DrawableComponent({
                 drawables: [
-                    { type: "RECT", width: range + 10, height: 10, strokeColor: "#666" },
+                    { type: "RECT", width: range + 5, height: 5, strokeColor: "#666" },
                     { type: "TEXT", size: 4, color: "#fff", content: type },
                 ],
             }));
@@ -39,10 +39,10 @@ export class AnimationSystem extends System {
             manager.setComponent(entity, new WorldLocationComponent({ loc: new Vector2(-range / 2, y) }));
             manager.setComponent(entity, new DrawableComponent({
                 drawables: [
-                    { type: "RECT", width: 10, height: 10, color: "#fff" },
+                    { type: "RECT", width: 5, height: 5, color: "#fff" },
                 ],
             }));
-            y += 20;
+            y += 15;
 
             const ease = new InterpolatedValue(-range / 2, type);
             ease.setInterpolate(range / 2);

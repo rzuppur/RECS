@@ -2,7 +2,7 @@ export const clamp = (min: number, value: number, max: number): number => {
     return Math.min(max, Math.max(min, value));
 };
 
-export type InterpolateType = "NEAREST" | "LINEAR" | "EASE";
+export type InterpolateType = "NEAREST" | "LINEAR" | "EASE" | "EASE_IN_OUT" | "EASE_IN" | "EASE_OUT" | "EASE_IN_CUBIC" | "EASE_OUT_CUBIC";
 
 export class InterpolatedValue {
     private currentValue: number;
@@ -78,14 +78,28 @@ export class InterpolatedValue {
                 this.onComplete();
             } else {
                 const delta = this.to - this.from;
+                const x = this.percentage;
                 if (this.type === "NEAREST") {
-                    this.currentValue = this.percentage < 0.5 ? this.from : this.to;
-                }
-                if (this.type === "LINEAR") {
-                    this.currentValue = this.from + delta * this.percentage;
-                }
-                if (this.type === "EASE") {
-                    const position = this.percentage * this.percentage * (3 - (2 * this.percentage));
+                    this.currentValue = x < 0.5 ? this.from : this.to;
+                } else if (this.type === "LINEAR") {
+                    this.currentValue = this.from + delta * x;
+                } else if (this.type === "EASE") {
+                    const position = -(Math.cos(Math.PI * x) - 1) / 2;
+                    this.currentValue = this.from + delta * position;
+                } else if (this.type === "EASE_IN_OUT") {
+                    const position = x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+                    this.currentValue = this.from + delta * position;
+                } else if (this.type === "EASE_IN") {
+                    const position = x * x;
+                    this.currentValue = this.from + delta * position;
+                } else if (this.type === "EASE_OUT") {
+                    const position = 1 - (1 - x) * (1 - x);
+                    this.currentValue = this.from + delta * position;
+                } else if (this.type === "EASE_IN_CUBIC") {
+                    const position = x * x * x;
+                    this.currentValue = this.from + delta * position;
+                } else if (this.type === "EASE_OUT_CUBIC") {
+                    const position = 1 - Math.pow(1 - x, 3);
                     this.currentValue = this.from + delta * position;
                 }
             }
