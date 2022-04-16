@@ -13,7 +13,7 @@ const plugins = [
     }),
 ];
 
-let input = "src/engine/index.ts";
+let input = "src/lib/index.ts";
 
 if (process.env.NODE_ENV === "dev") {
     input = "src/demo/index.ts";

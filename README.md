@@ -73,7 +73,7 @@ class MySystem extends System {
 ```
 
 ## Built in components
-https://github.com/rzuppur/recs/tree/main/src/engine/components
+https://github.com/rzuppur/recs/tree/main/src/lib/components
 
 ## Built in systems
-https://github.com/rzuppur/recs/tree/main/src/engine/systems
+https://github.com/rzuppur/recs/tree/main/src/lib/systems
