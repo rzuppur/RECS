@@ -12,6 +12,7 @@ const debugTimePercentageBarLength = 8;
 export default class Manager {
     private components: Map<string, Component> = new Map();
     private systems: Map<string, System> = new Map();
+    private systemsOrdered: Array<System> = [];
     private entities: EntitiesMap = new Map();
     private queries: Map<string, Query> = new Map();
     private log: Logger;
@@ -64,6 +65,9 @@ export default class Manager {
         } else {
             this.log.error(`Failed to start system [beforeStart]: ${system.name}`);
         }
+
+        const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.name !== "Display").map(([_, system]) => system);
+        this.systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
     }
 
     public getSystem(key: string): System {
@@ -103,9 +107,10 @@ export default class Manager {
         }
 
         const entityComponents = this.getEntityComponents(entity);
+        const queriesNeedToBeUpdated = !entityComponents.has(component.name);
         entityComponents.set(component.name, component);
 
-        this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entity));
+        if (queriesNeedToBeUpdated) this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entity));
     }
 
     public removeComponent(entity: Entity, componentKey: string): void {
@@ -134,9 +139,8 @@ export default class Manager {
             const tickStart = performance.now();
             if (!this.firstTickTime) this.firstTickTime = tickStart;
 
-            const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
-            const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
-            systemsOrdered.forEach((s: System) => {
+            const systems = this.systemsOrdered.filter((system) => system.started);
+            systems.forEach((s: System) => {
                 const start = performance.now();
                 s.tick(dt, this);
                 const time = performance.now() - start;
@@ -170,9 +174,8 @@ export default class Manager {
                 this.firstTickTime = 0;
             }
         } else {
-            const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.started && system.name !== "Display").map(([_, system]) => system);
-            const systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
-            systemsOrdered.forEach((s: System) => {
+            const systems = this.systemsOrdered.filter((system) => system.started);
+            systems.forEach((s: System) => {
                 s.tick(dt, this);
             });
         }
