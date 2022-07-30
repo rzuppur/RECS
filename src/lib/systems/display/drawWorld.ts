@@ -13,8 +13,7 @@ export interface WorldView {
 export default class DrawWorld {
     private canvas: Canvas;
     private _zoom: number = 1;
-    private _offsetX: number = 0;
-    private _offsetY: number = 0;
+    private canvasSize: { width: number, height: number } = { width: 1, height: 1 };
 
     private log: Logger;
 
@@ -31,22 +30,20 @@ export default class DrawWorld {
     }
 
     public get offsetX(): number {
-        return this._offsetX;
+        const midX = this.canvasSize.width * 0.5;
+        return midX / this._zoom - this.view.x;
     }
 
     public get offsetY(): number {
-        return this._offsetY;
+        const midY = this.canvasSize.height * 0.5;
+        return midY / this._zoom - this.view.y;
     }
 
     public tick(dt: number, query: Query): void {
         this.canvas.clear();
 
-        const { width: canvasWidth, height: canvasHeight } = this.canvas.getSize();
-        this._zoom = Math.min(canvasWidth, canvasHeight) / (this.view.radius * 2);
-        const midX = canvasWidth * 0.5;
-        const midY = canvasHeight * 0.5;
-        this._offsetX = midX / this._zoom - this.view.x;
-        this._offsetY = midY / this._zoom - this.view.y;
+        this.canvasSize = this.canvas.getSize();
+        this._zoom = Math.min(this.canvasSize.width, this.canvasSize.height) / (this.view.radius * 2);
 
         // TODO: filter out of view
 
@@ -61,6 +58,11 @@ export default class DrawWorld {
                 sorted.get(z).push({ wL, d });
             }
         });
+
+        // Cache offsets
+        const _offsetX = this.offsetX;
+        const _offsetY = this.offsetY;
+
         Array.from(sorted.keys()).sort().forEach(z => {
             sorted.get(z).forEach(({ wL, d }) => {
                 d.data.drawables.forEach((drawable) => {
@@ -75,7 +77,7 @@ export default class DrawWorld {
                             y += drawable.offset.y;
                         }
                     }
-                    this.canvas.draw(x + this._offsetX, y + this._offsetY, drawable, this._zoom);
+                    this.canvas.draw(x + _offsetX, y + _offsetY, drawable, this._zoom);
                 });
             });
         });
