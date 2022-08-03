@@ -14,12 +14,12 @@ const roundToPixel = (px: number): number => {
     return Math.floor(px);
 };
 
-const circleMagicNumber = 0.551784;
 /**
  * Source:
  * https://www.tinaja.com/glib/ellipse4.pdf
  * https://stackoverflow.com/questions/8714857/very-large-html5-canvas-circle-imprecise
  */
+const circleMagicNumber = 0.551784;
 
 export default class Canvas {
     public onSizeChange: (width: number, height: number) => void = () => {
@@ -102,7 +102,7 @@ export default class Canvas {
     }
 
     private ellipse(x: number, y: number, width: number, height: number, rotation: number): void {
-        const largeLimit = 1e7;
+        const largeLimit = 1e6;
         if (width > largeLimit || height > largeLimit) {
             x = x * this.dpr;
             y = y * this.dpr;
@@ -122,7 +122,7 @@ export default class Canvas {
             };
 
             const path = [];
-            const steps = 1000;
+            const steps = 10000;
             for (let step = 0; step < steps; step += 1) {
                 const angle = step * Math.PI / steps * 2;
                 const forcePoint = step == 0 || step == 250 || step == 500 || step == 750;
@@ -142,6 +142,7 @@ export default class Canvas {
             return;
         }
 
+        /*
         this.ctx.save();
         this.ctx.translate(x * this.dpr, y * this.dpr);
         this.ctx.rotate(rotation);
@@ -154,11 +155,10 @@ export default class Canvas {
         this.ctx.bezierCurveTo(circleMagicNumber, 1, 1, circleMagicNumber, 1, 0);
         this.ctx.closePath();
         this.ctx.restore();
+        */
 
-        /*
         this.ctx.beginPath();
         this.ctx.ellipse(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr), rotation, 0, Math.PI * 2);
-        */
     }
 
     private fillText(text: string, x: number, y: number): void {
