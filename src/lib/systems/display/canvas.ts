@@ -1,6 +1,7 @@
 import { LoggerFactory, Logger } from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
 import { Drawable } from "../../components/drawable";
+import { clamp } from "../../utils/math";
 
 export type CanvasTextMetrics = {
     width: number;
@@ -12,6 +13,13 @@ const roundToSubpixel = (px: number): number => {
 const roundToPixel = (px: number): number => {
     return Math.floor(px);
 };
+
+const circleMagicNumber = 0.551784;
+/**
+ * Source:
+ * https://www.tinaja.com/glib/ellipse4.pdf
+ * https://stackoverflow.com/questions/8714857/very-large-html5-canvas-circle-imprecise
+ */
 
 export default class Canvas {
     public onSizeChange: (width: number, height: number) => void = () => {
@@ -93,16 +101,64 @@ export default class Canvas {
         this.ctx.strokeRect(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
     }
 
-    private fillEllipse(x: number, y: number, width: number, height: number, rotation: number): void {
-        this.ctx.beginPath();
-        this.ctx.ellipse(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr), rotation, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
+    private ellipse(x: number, y: number, width: number, height: number, rotation: number): void {
+        const largeLimit = 1e7;
+        if (width > largeLimit || height > largeLimit) {
+            x = x * this.dpr;
+            y = y * this.dpr;
+            width = width * this.dpr;
+            height = height * this.dpr;
+            const maxSize = Math.max(width, height);
 
-    private strokeEllipse(x: number, y: number, width: number, height: number, rotation: number): void {
+            const si = Math.sin(rotation);
+            const co = Math.cos(rotation);
+            const rotate = (xS: number, yS: number) => {
+                if (rotation === 0) return [xS, yS];
+                xS -= x;
+                yS -= y;
+                const xR = xS * co - yS * si;
+                const yR = xS * si + yS * co;
+                return [xR + x, yR + y]
+            };
+
+            const path = [];
+            const steps = 1000;
+            for (let step = 0; step < steps; step += 1) {
+                const angle = step * Math.PI / steps * 2;
+                const forcePoint = step == 0 || step == 250 || step == 500 || step == 750;
+                const xP = x + width * Math.cos(angle);
+                if (!forcePoint && Math.abs(xP) > maxSize / 50) continue;
+                const yP = y - height * Math.sin(angle);
+                if (!forcePoint && Math.abs(yP) > maxSize / 50 ) continue;
+                const pointClamp = clamp(Math.max(this.width, this.height) * 4, maxSize / 100, 1e7);
+                path.push(rotate(clamp(-pointClamp, xP, pointClamp), clamp(-pointClamp, yP, pointClamp)));
+            }
+
+            this.ctx.moveTo(path[0][0], path[0][1]);
+            this.ctx.beginPath();
+            path.forEach((c) => this.ctx.lineTo(c[0], c[1]));
+            this.ctx.closePath();
+
+            return;
+        }
+
+        this.ctx.save();
+        this.ctx.translate(x * this.dpr, y * this.dpr);
+        this.ctx.rotate(rotation);
+        this.ctx.scale(width * this.dpr, height * this.dpr);
+        this.ctx.beginPath();
+        this.ctx.moveTo(1, 0);
+        this.ctx.bezierCurveTo(1, -circleMagicNumber, circleMagicNumber, -1, 0, -1);
+        this.ctx.bezierCurveTo(-circleMagicNumber, -1, -1, -circleMagicNumber, -1, 0);
+        this.ctx.bezierCurveTo(-1, circleMagicNumber, -circleMagicNumber, 1, 0, 1);
+        this.ctx.bezierCurveTo(circleMagicNumber, 1, 1, circleMagicNumber, 1, 0);
+        this.ctx.closePath();
+        this.ctx.restore();
+
+        /*
         this.ctx.beginPath();
         this.ctx.ellipse(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr), rotation, 0, Math.PI * 2);
-        this.ctx.stroke();
+        */
     }
 
     private fillText(text: string, x: number, y: number): void {
@@ -175,7 +231,8 @@ export default class Canvas {
     public drawEllipse(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", alpha: number = 1): Canvas {
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.fillEllipse(x, y, width, height, rotation);
+        this.ellipse(x, y, width, height, rotation);
+        this.ctx.fill();
         this.ctx.globalAlpha = 1;
         return this;
     }
@@ -184,7 +241,8 @@ export default class Canvas {
         this.ctx.globalAlpha = alpha;
         this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = color;
-        this.strokeEllipse(x, y, width, height, rotation);
+        this.ellipse(x, y, width, height, rotation);
+        this.ctx.stroke();
         this.ctx.globalAlpha = 1;
         return this;
     }
