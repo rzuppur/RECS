@@ -2,6 +2,7 @@ import { LoggerFactory, Logger } from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
 import { Drawable } from "../../components/drawable";
 import { clamp } from "../../utils/math";
+import { boxInBox } from "../../utils/boundingBox";
 
 export type CanvasTextMetrics = {
     width: number;
@@ -32,6 +33,8 @@ export default class Canvas {
 
     private width: number = 1;
     private height: number = 1;
+    private realWidth: number = 1;
+    private realHeight: number = 1;
 
     private offsetX: number = 0;
     private offsetY: number = 0;
@@ -40,6 +43,8 @@ export default class Canvas {
     private smoothing: boolean = true;
     private pathSplitPoints = 5_000;
     private round: (x: number) => number;
+
+    private fontCache: string = "";
 
     private log: Logger;
 
@@ -75,6 +80,8 @@ export default class Canvas {
         // Set actual screen pixels size
         this.canvasEl.width = this.width * this.dpr;
         this.canvasEl.height = this.height * this.dpr;
+        this.realWidth = this.width * this.dpr;
+        this.realHeight = this.height * this.dpr;
 
         // Smoothing will reset after a resize
         this.ctx.imageSmoothingEnabled = this.smoothing;
@@ -93,21 +100,17 @@ export default class Canvas {
 
     private fillRect(x: number, y: number, width: number, height: number): void {
         this.ctx.beginPath();
-        this.ctx.fillRect(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
+        this.ctx.fillRect(this.round(x), this.round(y), this.round(width), this.round(height));
     }
 
     private strokeRect(x: number, y: number, width: number, height: number): void {
         this.ctx.beginPath();
-        this.ctx.strokeRect(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
+        this.ctx.strokeRect(this.round(x), this.round(y), this.round(width), this.round(height));
     }
 
     private ellipse(x: number, y: number, width: number, height: number, rotation: number): void {
         const largeLimit = 1e6;
         if (width > largeLimit || height > largeLimit) {
-            x = x * this.dpr;
-            y = y * this.dpr;
-            width = width * this.dpr;
-            height = height * this.dpr;
             const maxSize = Math.max(width, height);
 
             const si = Math.sin(rotation);
@@ -158,7 +161,7 @@ export default class Canvas {
         */
 
         this.ctx.beginPath();
-        this.ctx.ellipse(this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr), rotation, 0, Math.PI * 2);
+        this.ctx.ellipse(this.round(x), this.round(y), this.round(width), this.round(height), rotation, 0, Math.PI * 2);
     }
 
     private fillText(text: string, x: number, y: number): void {
@@ -166,14 +169,29 @@ export default class Canvas {
     }
 
     private drawImage(image: CanvasImageSource, x: number, y: number, width: number, height: number): void {
-        this.ctx.drawImage(image, this.round(x * this.dpr), this.round(y * this.dpr), this.round(width * this.dpr), this.round(height * this.dpr));
+        this.ctx.drawImage(image, this.round(x), this.round(y), this.round(width), this.round(height));
     }
 
     private set lineWidth(strokeWidth: number) {
         this.ctx.lineWidth = this.round(strokeWidth * this.dpr);
     }
 
-    public mount(parentEl: HTMLElement): Canvas {
+    private set fontString(fontString: string) {
+        if (this.fontCache !== fontString) {
+            this.ctx.font = fontString;
+            this.fontCache = fontString;
+        }
+    }
+
+    private isInView(x: number, y: number, width: number, height: number): [number, number, number, number, boolean] {
+        x = x * this.dpr;
+        y = y * this.dpr;
+        width = width * this.dpr;
+        height = height * this.dpr;
+        return [x, y, width, height, boxInBox(x, y, width, height, 0, 0, this.realWidth, this.realHeight)];
+    }
+
+    public mount(parentEl: HTMLElement): void {
         this.parentEl = parentEl;
         this.parentEl.appendChild(this.canvasEl);
         this.setCanvasLogicalSize(this.parentEl.clientWidth, this.parentEl.clientHeight);
@@ -189,7 +207,6 @@ export default class Canvas {
         resizeObserver.observe(this.parentEl);
 
         this.log.info(`Mounted to <${parentEl.tagName.toLocaleLowerCase()}>`);
-        return this;
     }
 
     public getSize(): { width: number, height: number } {
@@ -205,49 +222,56 @@ export default class Canvas {
         this.ctx.imageSmoothingEnabled = this.smoothing;
     }
 
-    public clear(): Canvas {
+    public clear(): void {
         this.ctx.fillStyle = "#000000";
         this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        return this;
     }
 
-    public drawRect(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", alpha: number = 1): Canvas {
+    public drawRect(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", alpha: number = 1): void {
+        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        if (!inView) return;
+
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.fillRect(x, y, width, height);
+        this.fillRect(xS, yS, widthS, heightS);
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
-    public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
+    public drawRectStroke(x: number, y: number, width: number = 1, height: number = 1, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): void {
+        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        if (!inView) return;
+
         this.ctx.globalAlpha = alpha;
         this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = color;
-        this.strokeRect(x, y, width, height);
+        this.strokeRect(xS, yS, widthS, heightS);
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
-    public drawEllipse(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", alpha: number = 1): Canvas {
+    public drawEllipse(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", alpha: number = 1): void {
+        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        if (!inView) return;
+
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.ellipse(x, y, width, height, rotation);
+        this.ellipse(xS, yS, widthS, heightS, rotation);
         this.ctx.fill();
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
-    public drawEllipseStroke(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): Canvas {
+    public drawEllipseStroke(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): void {
+        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        if (!inView) return;
+
         this.ctx.globalAlpha = alpha;
         this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = color;
-        this.ellipse(x, y, width, height, rotation);
+        this.ellipse(xS, yS, widthS, heightS, rotation);
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
-    public drawPath(x: number, y: number, path: Array<Array<number>>, color: string = "#FFFFFF", alpha: number = 1, zoom: number = 1): Canvas {
+    public drawPath(x: number, y: number, path: Array<Array<number>>, color: string = "#FFFFFF", alpha: number = 1, zoom: number = 1): void {
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
         this.moveTo(x, y);
@@ -257,10 +281,9 @@ export default class Canvas {
         });
         this.ctx.fill();
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
-    public drawPathStroke(x: number, y: number, path: Array<Array<number>>, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1, zoom: number = 1): Canvas {
+    public drawPathStroke(x: number, y: number, path: Array<Array<number>>, strokeColor: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1, zoom: number = 1): void {
         this.ctx.globalAlpha = alpha;
         this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = strokeColor;
@@ -278,28 +301,29 @@ export default class Canvas {
         });
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
     public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): CanvasTextMetrics {
-        this.ctx.font = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
+        this.fontString = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
         const measure = this.ctx.measureText(text);
         return { width: measure.width / this.dpr };
     }
 
-    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400, align: "left" | "center" | "right" = "left"): Canvas {
+    public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400, align: "left" | "center" | "right" = "left"): void {
         this.ctx.fillStyle = color;
         this.ctx.textAlign = align;
-        this.ctx.font = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
+        this.fontString = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
         let offsetY = 0;
         text.split("\n").forEach(line => {
             this.fillText(line, x, y + offsetY);
             offsetY += size * 1.15;
         });
-        return this;
     }
 
-    public drawSprite(x: number, y: number, width: number, height: number, imageSrc: string, alpha: number = 1): Canvas {
+    public drawSprite(x: number, y: number, width: number, height: number, imageSrc: string, alpha: number = 1): void {
+        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        if (!inView) return;
+
         if (!this.spriteMap.has(imageSrc)) {
             const imageEl = new Image();
             imageEl.src = imageSrc;
@@ -307,12 +331,11 @@ export default class Canvas {
         }
         const image = this.spriteMap.get(imageSrc);
         this.ctx.globalAlpha = alpha;
-        this.drawImage(image, x, y, width, height);
+        this.drawImage(image, xS, yS, widthS, heightS);
         this.ctx.globalAlpha = 1;
-        return this;
     }
 
-    public draw(x: number, y: number, drawable: Drawable, zoom = 1): Canvas {
+    public draw(x: number, y: number, drawable: Drawable, zoom = 1): void {
         if (drawable.type === "RECT") {
             if (drawable.color) {
                 this.drawRect(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.color, drawable.alpha);
@@ -345,7 +368,5 @@ export default class Canvas {
         } else {
             this.log.warning(`Unknown drawable type: ${JSON.stringify(drawable)}`);
         }
-
-        return this;
     }
 }

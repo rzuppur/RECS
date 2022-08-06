@@ -45,8 +45,6 @@ export default class DrawWorld {
         this.canvasSize = this.canvas.getSize();
         this._zoom = Math.min(this.canvasSize.width, this.canvasSize.height) / (this.view.radius * 2);
 
-        // TODO: filter out of view
-
         const sorted: Map<number, { wL: WorldLocationComponent, d: DrawableComponent }[]> = new Map();
         query.getMatching().forEach((components, entity) => {
             const wL = Query.getComponent(components, WorldLocationComponent);

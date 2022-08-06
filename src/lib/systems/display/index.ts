@@ -56,7 +56,8 @@ export default class DisplaySystem extends System {
         const mountEl = document.querySelector(this.mountElQuery) as HTMLElement;
         if (!mountEl) return false;
 
-        this.canvas = new Canvas().mount(mountEl);
+        this.canvas = new Canvas();
+        this.canvas.mount(mountEl);
         this.drawWorld = new DrawWorld(this.canvas);
         this.drawScreen = new DrawScreen(this.canvas);
 
