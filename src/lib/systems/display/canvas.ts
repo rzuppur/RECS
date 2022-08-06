@@ -248,7 +248,8 @@ export default class Canvas {
     }
 
     public drawEllipse(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", alpha: number = 1): void {
-        const [_x, _y, _w, _h, inView] = this.isInView(x - width, y - height, width * 2, height * 2);
+        const longestSide = Math.max(width, height); // to account for rotation
+        const [_x, _y, _w, _h, inView] = this.isInView(x - longestSide, y - longestSide, longestSide * 2, longestSide * 2);
         if (!inView) return;
 
         this.ctx.globalAlpha = alpha;
@@ -259,7 +260,8 @@ export default class Canvas {
     }
 
     public drawEllipseStroke(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): void {
-        const [_x, _y, _w, _h, inView] = this.isInView(x - width, y - height, width * 2, height * 2);
+        const longestSide = Math.max(width, height); // to account for rotation
+        const [_x, _y, _w, _h, inView] = this.isInView(x - longestSide, y - longestSide, longestSide * 2, longestSide * 2);
         if (!inView) return;
 
         this.ctx.globalAlpha = alpha;
