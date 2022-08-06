@@ -109,10 +109,9 @@ export default class Canvas {
     }
 
     private ellipse(x: number, y: number, width: number, height: number, rotation: number): void {
-        const largeLimit = 1e6;
+        const largeLimit = 1e6 / this.dpr;
         if (width > largeLimit || height > largeLimit) {
             const maxSize = Math.max(width, height);
-
             const si = Math.sin(rotation);
             const co = Math.cos(rotation);
             const rotate = (xS: number, yS: number) => {
@@ -249,24 +248,24 @@ export default class Canvas {
     }
 
     public drawEllipse(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", alpha: number = 1): void {
-        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        const [_x, _y, _w, _h, inView] = this.isInView(x - width, y - height, width * 2, height * 2);
         if (!inView) return;
 
         this.ctx.globalAlpha = alpha;
         this.ctx.fillStyle = color;
-        this.ellipse(xS, yS, widthS, heightS, rotation);
+        this.ellipse(x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr, rotation);
         this.ctx.fill();
         this.ctx.globalAlpha = 1;
     }
 
     public drawEllipseStroke(x: number, y: number, width: number = 1, height: number = 1, rotation: number = 0, color: string = "#FFFFFF", strokeWidth: number = 1, alpha: number = 1): void {
-        const [xS, yS, widthS, heightS, inView] = this.isInView(x, y, width, height);
+        const [_x, _y, _w, _h, inView] = this.isInView(x - width, y - height, width * 2, height * 2);
         if (!inView) return;
 
         this.ctx.globalAlpha = alpha;
         this.lineWidth = strokeWidth;
         this.ctx.strokeStyle = color;
-        this.ellipse(xS, yS, widthS, heightS, rotation);
+        this.ellipse(x * this.dpr, y * this.dpr, width * this.dpr, height * this.dpr, rotation);
         this.ctx.stroke();
         this.ctx.globalAlpha = 1;
     }
