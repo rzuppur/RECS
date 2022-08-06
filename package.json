@@ -2,7 +2,7 @@
     "name": "@rzuppur/recs",
     "description": "Minimal entity component system for 2D game development in JS/TS",
     "author": "Reino Zuppur",
-    "version": "0.1.63",
+    "version": "0.1.64",
     "licence": "MIT",
     "scripts": {
         "build": "rimraf dist && cross-env NODE_ENV=production rollup --config",

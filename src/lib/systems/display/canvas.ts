@@ -45,6 +45,7 @@ export default class Canvas {
     private round: (x: number) => number;
 
     private fontCache: string = "";
+    private textAlignCache: string = "";
 
     private log: Logger;
 
@@ -54,6 +55,11 @@ export default class Canvas {
 
         this.canvasEl = document.createElement("canvas");
         this.ctx = this.canvasEl.getContext("2d", { alpha: false });
+        // @ts-ignore
+        document.fonts.ready.then(() => {
+            this.fontCache = "";
+            this.textAlignCache = "";
+        });
     }
 
     private setCanvasLogicalSize(width: number, height: number) {
@@ -179,6 +185,12 @@ export default class Canvas {
         if (this.fontCache !== fontString) {
             this.ctx.font = fontString;
             this.fontCache = fontString;
+        }
+    }
+    private set textAlign(align: CanvasTextAlign) {
+        if (this.textAlignCache !== align) {
+            this.ctx.textAlign = align;
+            this.textAlignCache = align;
         }
     }
 
@@ -312,7 +324,7 @@ export default class Canvas {
 
     public drawText(x: number, y: number, text: string, size: number = 16, color: string = "#FFFFFF", font: string = "sans-serif", fontWeight: number = 400, align: "left" | "center" | "right" = "left"): void {
         this.ctx.fillStyle = color;
-        this.ctx.textAlign = align;
+        this.textAlign = align;
         this.fontString = `${fontWeight} ${Math.floor(size * this.dpr)}px ${font}`;
         let offsetY = 0;
         text.split("\n").forEach(line => {
