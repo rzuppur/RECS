@@ -15,7 +15,7 @@ manager.registerComponent(new Component())
 manager.registerSystem(new System())
 
 /* Create entities, returns UUID string */
-const entity: Entity = this.manager.createEntity()
+const entity: Entity = manager.createEntity()
 
 /* Add entity components */
 manager.setComponent(
