@@ -1,6 +1,9 @@
 # RECS
 Minimal entity component system for 2D game development in JS/TS
 
+*Example game based on RECS ([Video link](https://reinozuppur.com/screens/space.mp4))*
+![Space](https://reinozuppur.com/screens/space.jpg "")
+
 ```ts
 import { Engine, Entity } from "@rzuppur/recs";
 
