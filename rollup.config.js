@@ -14,17 +14,24 @@ const plugins = [
 ];
 
 let input = "src/lib/index.ts";
+let outputDir = "dist";
 
-if (process.env.NODE_ENV === "dev") {
+if (process.env.TARGET === "demo") {
     input = "src/demo/index.ts";
+    outputDir = "demo/js";
 
-    plugins.push(livereload({
-        watch: "dist",
-    }));
-    plugins.push(serve({
-        open: false,
-        port: 9081,
-    }));
+    if (process.env.NODE_ENV === "dev") {
+        plugins.push(livereload({
+            watch: "demo",
+        }));
+        plugins.push(serve({
+            open: false,
+            port: 9081,
+            contentBase: "demo",
+        }));
+    } else {
+        plugins.push(esbuild());
+    }
 } else {
     plugins.push(esbuild({minify: true}));
 }
@@ -32,7 +39,7 @@ if (process.env.NODE_ENV === "dev") {
 export default {
     input,
     output: {
-        dir: "dist",
+        dir: outputDir,
         format: "es",
     },
     plugins,
