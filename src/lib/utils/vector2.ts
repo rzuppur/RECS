@@ -19,6 +19,10 @@ export default class Vector2 {
         return new Vector2(this.x / this.length, this.y / this.length);
     }
 
+    public get absolute(): Vector2 {
+        return new Vector2(Math.abs(this.x), Math.abs(this.y));
+    }
+
     public add(v2: Vector2): Vector2 {
         const x = this.x + v2.x;
         const y = this.y + v2.y;
@@ -46,5 +50,14 @@ export default class Vector2 {
      */
     public crossProduct(v2: Vector2): number {
         return this.x * v2.y - this.y * v2.x;
+    }
+
+    /**
+     * Element-wise multiplication
+     */
+    public hadamardProduct(v2: Vector2): Vector2 {
+        const x = this.x * v2.x;
+        const y = this.y * v2.y;
+        return new Vector2(x, y);
     }
 }
