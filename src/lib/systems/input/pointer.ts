@@ -26,6 +26,9 @@ export default class PointerSystem extends System {
     private pointerDragging: boolean = false;
     private pointerClicked: boolean = false;
     private pointerActive: boolean = false;
+    private pointerDragReleased: boolean = false;
+    public pointerClickedEmpty: boolean = false;
+    public pointerEmptyDragReleased: boolean = false;
 
     private didWheel: boolean = false;
     public wheelDeltaX: number = 0;
@@ -70,6 +73,7 @@ export default class PointerSystem extends System {
 
     private onPointerUp() {
         if (this.pointerDown && !this.pointerDragging) this.pointerClicked = true;
+        if (this.pointerDown && this.pointerDragging) this.pointerDragReleased = true;
         this.pointerDown = false;
         this.pointerDragging = false;
         this.dragStartPointable = null;
@@ -207,6 +211,8 @@ export default class PointerSystem extends System {
             }
         });
 
+        this.pointerClickedEmpty = false;
+        this.pointerEmptyDragReleased = false;
         if (eventTargets.length) {
             const targetMaxZ = eventTargets.reduce((prevMax, candidate) => {
                 return (candidate.z >= prevMax.z) ? candidate : prevMax;
@@ -216,6 +222,10 @@ export default class PointerSystem extends System {
             if (this.pointerDown && !this.pointerDragging && !this.dragStartPointable) {
                 this.dragStartPointable = targetMaxZ.p;
             }
+        } else if (this.pointerClicked) {
+            this.pointerClickedEmpty = true;
+        } else if (this.pointerDragReleased) {
+            this.pointerEmptyDragReleased = true;
         }
 
         if (this.pointerDragging && this.dragStartPointable) {
@@ -227,6 +237,7 @@ export default class PointerSystem extends System {
         }
 
         this.pointerClicked = false;
+        this.pointerDragReleased = false;
 
         if (this.didMove) {
             this.didMove = false;
