@@ -1,4 +1,4 @@
-import ts from "@wessberg/rollup-plugin-ts";
+import ts from "rollup-plugin-ts";
 import esbuild from "rollup-plugin-esbuild";
 import replace from "@rollup/plugin-replace";
 import {nodeResolve} from "@rollup/plugin-node-resolve";
@@ -9,7 +9,10 @@ const plugins = [
     ts(),
     nodeResolve(),
     replace({
-        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+        preventAssignment: true,
+        values: {
+            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+        },
     }),
 ];
 
