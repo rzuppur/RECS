@@ -26,7 +26,7 @@ export default class DrawScreen {
                 sorted.get(z).push({ sL, d });
             }
         });
-        Array.from(sorted.keys()).sort().forEach(z => {
+        Array.from(sorted.keys()).sort((a, b) => a - b).forEach(z => {
             sorted.get(z).forEach(({ sL, d }) => {
                 d.data.drawables.forEach((drawable) => {
                     let x = sL.data.loc.x;

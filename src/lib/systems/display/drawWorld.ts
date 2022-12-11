@@ -61,7 +61,7 @@ export default class DrawWorld {
         const _offsetX = this.offsetX;
         const _offsetY = this.offsetY;
 
-        Array.from(sorted.keys()).sort().forEach(z => {
+        Array.from(sorted.keys()).sort((a, b) => a - b).forEach(z => {
             sorted.get(z).forEach(({ wL, d }) => {
                 d.data.drawables.forEach((drawable) => {
                     let x = wL.data.loc.x;
