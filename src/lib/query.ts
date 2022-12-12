@@ -1,7 +1,7 @@
 import { LoggerFactory, Logger } from "./utils/logger";
-import { EntitiesMap, Entity, EntityComponents } from "./model";
-import Manager from "./manager";
-import Component from "./components";
+import type { EntitiesMap, Entity, EntityComponents } from "./model";
+import type Manager from "./manager";
+import type Component from "./components";
 
 export default class Query {
     private matchingEntities: EntitiesMap = new Map();

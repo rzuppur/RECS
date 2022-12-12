@@ -1,12 +1,12 @@
 import System from "../index";
-import Manager from "../../manager";
+import type Manager from "../../manager";
 import Query from "../../query";
 import { LoggerFactory, Logger } from "../../utils/logger";
 import { pointInBox } from "../../utils/boundingBox";
 import PointableComponent from "../../components/pointable";
 import WorldLocationComponent from "../../components/worldLocation";
 import ScreenLocationComponent from "../../components/screenLocation";
-import DisplaySystem from "../display/index";
+import type DisplaySystem from "../display/index";
 
 export default class PointerSystem extends System {
     private displaySystem: DisplaySystem;
@@ -152,7 +152,7 @@ export default class PointerSystem extends System {
     }
 
     public tick(dt: number): void {
-        const { x: offsetX, y: offsetY } = this.displaySystem.getOffset();
+        const { x: offsetX, y: offsetY } = this.displaySystem.getOffset().release();
         const pointerX = this.pointerX - offsetX;
         const pointerY = this.pointerY - offsetY;
         const worldZoom = this.displaySystem.zoom;

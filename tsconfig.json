@@ -11,7 +11,8 @@
         "preserveConstEnums": true,
         "sourceMap": true,
         "moduleResolution": "Node",
-        "declaration": true
+        "declaration": true,
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/lib/**/*"

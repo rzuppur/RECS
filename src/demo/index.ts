@@ -1,4 +1,5 @@
-import { clamp, DisplaySystem, DrawableComponent, Engine, Entity, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../lib";
+import { clamp, DisplaySystem, DrawableComponent, Engine, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../lib";
+import type { Entity } from "../lib";
 
 import { initializeAnimations } from "./animations";
 
@@ -35,12 +36,12 @@ class GameSystem extends System {
 
         this.coordinatesText = manager.createEntity();
         manager.setComponent(this.coordinatesText, new ScreenLocationComponent({
-            loc: new Vector2(0, 0),
+            loc: Vector2.new(),
             z: 10,
         }));
         manager.setComponent(this.coordinatesText, new DrawableComponent({
             drawables: [
-                { type: "TEXT", content: "", color: "#fff", size: 16, font: "monospace", offset: new Vector2(0, 30) },
+                { type: "TEXT", content: "", color: "#fff", size: 16, font: "monospace", offset: Vector2.new(0, 30) },
             ]
         }));
 
@@ -62,7 +63,8 @@ class GameSystem extends System {
         coordinatesTextDrawable.drawables[0].content = `x: ${this.pointerSystem.pointerWorldX.toFixed(2)}\ny: ${this.pointerSystem.pointerWorldY.toFixed(2)}\nzoom: ${this.displaySystem.zoom.toFixed(3)}\n${Array.from(this.keyboardSystem.keysDown).join("+")}`;
 
         const { data: coordinatesTextLocation } = Query.getComponent(textComponents, ScreenLocationComponent);
-        coordinatesTextLocation.loc = new Vector2(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY);
+        coordinatesTextLocation.loc.free();
+        coordinatesTextLocation.loc = Vector2.new(this.pointerSystem.pointerScreenX, this.pointerSystem.pointerScreenY);
     }
 }
 

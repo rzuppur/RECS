@@ -11,6 +11,8 @@ export default abstract class Component {
         this.name = name;
         this.data = data;
     }
+
+    public beforeDestroy(): void {}
 }
 
 export {

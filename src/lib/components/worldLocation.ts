@@ -1,4 +1,5 @@
-import Component, { ComponentData } from "./index";
+import Component from "./index";
+import type { ComponentData } from "./index";
 import Vector2 from "../utils/vector2";
 
 export interface WorldLocationData extends ComponentData {
@@ -11,9 +12,13 @@ export interface WorldLocationData extends ComponentData {
 
 export default class WorldLocationComponent extends Component {
     static key = "WorldLocation";
-    public data: WorldLocationData;
+    declare public data: WorldLocationData;
 
     constructor(data?: WorldLocationData) {
         super(WorldLocationComponent.key, data);
+    }
+
+    beforeDestroy() {
+        this.data.loc.free();
     }
 }

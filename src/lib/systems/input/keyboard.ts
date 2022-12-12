@@ -1,6 +1,6 @@
 import System from "../index";
-import Manager from "../../manager";
-import Query from "../../query";
+import type Manager from "../../manager";
+import type Query from "../../query";
 import { LoggerFactory, Logger } from "../../utils/logger";
 
 export default class KeyboardSystem extends System {

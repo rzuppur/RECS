@@ -1,9 +1,11 @@
-import System from "./systems/index";
-import Component from "./components";
+import type System from "./systems/index";
+import type Component from "./components";
 import { generateUuid } from "./utils/uuid";
 import { LoggerFactory, Logger } from "./utils/logger";
-import { EntitiesMap, Entity, EntityComponents } from "./model";
+import type { EntitiesMap, EntityComponents } from "./model";
+import type { Entity } from "./model";
 import Query from "./query";
+import Vector2 from "./utils/vector2";
 
 const debugNumberFormat = Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const debugTicksCount = 300;
@@ -89,6 +91,8 @@ export default class Manager {
     }
 
     public deleteEntity(entity: Entity): void {
+        const components: EntityComponents = this.entities.get(entity);
+        if (components) [...components.values()].forEach((component) => component.beforeDestroy());
         this.entities.delete(entity);
         this.queries.forEach(query => query.deleteMatch(entity));
     }
@@ -119,6 +123,8 @@ export default class Manager {
         }
 
         const entityComponents = this.getEntityComponents(entity);
+        entityComponents.get(componentKey)?.beforeDestroy();
+
         if (entityComponents.delete(componentKey)) {
             this.queries.forEach(query => query.setEntityIfMatches(entityComponents, entity));
         }
@@ -172,6 +178,8 @@ export default class Manager {
                 this.totalTicksTime = 0;
                 this.totalTicksTimeBySystem = new Map();
                 this.firstTickTime = 0;
+
+                this.log.debug(`Vector2 free ${Vector2.getPoolSize()} / ${Vector2.getPoolSizeTotal()} total`);
             }
         } else {
             const systems = this.systemsOrdered.filter((system) => system.started);

@@ -1,19 +1,10 @@
-import ts from "rollup-plugin-ts";
 import esbuild from "rollup-plugin-esbuild";
-import replace from "@rollup/plugin-replace";
-import {nodeResolve} from "@rollup/plugin-node-resolve";
-import livereload from "rollup-plugin-livereload";
+import dts from "rollup-plugin-dts";
 import serve from "rollup-plugin-serve";
+import livereload from "rollup-plugin-livereload";
 
 const plugins = [
-    ts(),
-    nodeResolve(),
-    replace({
-        preventAssignment: true,
-        values: {
-            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
-        },
-    }),
+    esbuild(),
 ];
 
 let input = "src/lib/index.ts";
@@ -32,18 +23,21 @@ if (process.env.TARGET === "demo") {
             port: 9081,
             contentBase: "demo",
         }));
-    } else {
-        plugins.push(esbuild());
     }
-} else {
-    plugins.push(esbuild({minify: true}));
 }
 
-export default {
+export default [{
     input,
     output: {
         dir: outputDir,
         format: "es",
     },
     plugins,
-};
+}, {
+    input,
+    output: {
+        dir: outputDir,
+        format: "es",
+    },
+    plugins: [dts()],
+}];

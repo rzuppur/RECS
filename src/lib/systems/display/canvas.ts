@@ -1,6 +1,6 @@
 import { LoggerFactory, Logger } from "../../utils/logger";
 import Vector2 from "../../utils/vector2";
-import { Drawable } from "../../components/drawable";
+import type { Drawable } from "../../components/drawable";
 import { clamp } from "../../utils/math";
 import { boxInBox } from "../../utils/boundingBox";
 
@@ -36,8 +36,7 @@ export default class Canvas {
     private realWidth: number = 1;
     private realHeight: number = 1;
 
-    private offsetX: number = 0;
-    private offsetY: number = 0;
+    private offset: Vector2 = Vector2.new();
 
     private dpr: number;
     private smoothing: boolean = true;
@@ -210,8 +209,7 @@ export default class Canvas {
         const resizeObserver = new ResizeObserver(entries => {
             for (let entry of entries) {
                 const bCR = entry.target.getBoundingClientRect();
-                this.offsetX = bCR.x;
-                this.offsetY = bCR.y;
+                this.offset = Vector2.new(bCR.x, bCR.y);
                 this.setCanvasLogicalSize(entry.contentRect.width, entry.contentRect.height);
             }
         });
@@ -225,7 +223,7 @@ export default class Canvas {
     }
 
     public getOffset(): Vector2 {
-        return new Vector2(this.offsetX, this.offsetY);
+        return this.offset.copy();
     }
 
     public setSmoothing(smoothing: boolean): void {

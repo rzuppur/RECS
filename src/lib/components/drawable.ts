@@ -1,4 +1,5 @@
-import Component, { ComponentData } from "./index";
+import Component from "./index";
+import type { ComponentData } from "./index";
 import Vector2 from "../utils/vector2";
 
 interface DrawableBase extends ComponentData {
@@ -85,9 +86,15 @@ export interface DrawableData {
 
 export default class DrawableComponent extends Component {
     static key = "Drawable";
-    public data: DrawableData;
+    declare public data: DrawableData;
 
     constructor(data?: DrawableData) {
         super(DrawableComponent.key, data);
+    }
+
+    beforeDestroy() {
+        for (const drawable of this.data.drawables) {
+            if (drawable.offset) drawable.offset.free();
+        }
     }
 }

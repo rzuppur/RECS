@@ -1,4 +1,4 @@
-import Manager from "../manager";
+import type Manager from "../manager";
 import Query from "../query";
 
 export default abstract class System {

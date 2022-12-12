@@ -1,4 +1,4 @@
-import Component from "./components";
+import type Component from "./components";
 
 export type Entity = string;
 export type EntityComponents = Map<string, Component>; // key: component name

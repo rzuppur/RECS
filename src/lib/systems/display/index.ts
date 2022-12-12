@@ -1,8 +1,10 @@
 import System from "../index";
-import Manager from "../../manager";
-import Canvas, { CanvasTextMetrics } from "./canvas";
+import type Manager from "../../manager";
+import Canvas from "./canvas";
+import type { CanvasTextMetrics } from "./canvas";
 import { LoggerFactory, Logger } from "../../utils/logger";
-import DrawWorld, { WorldView } from "./drawWorld";
+import DrawWorld from "./drawWorld";
+import type { WorldView } from "./drawWorld";
 import DrawScreen from "./drawScreen";
 import DrawableComponent from "../../components/drawable";
 import ScreenLocationComponent from "../../components/screenLocation";
@@ -86,12 +88,12 @@ export default class DisplaySystem extends System {
         this.canvas.setSmoothing(value);
     }
 
-    public worldLocationToScreen(world: Vector2): Vector2 {
-        return new Vector2((world.x + this.offsetX) * this.zoom, (world.y + this.offsetY) * this.zoom);
+    public worldLocationToScreen(worldLocation: Vector2): Vector2 {
+        return worldLocation.add(Vector2.new(this.offsetX, this.offsetY).release()).release().multiply(this.zoom);
     }
 
-    public screenLocationToWorld(screen: Vector2): Vector2 {
-        return new Vector2((screen.x / this.zoom) - this.offsetX, (screen.y / this.zoom) - this.offsetY);
+    public screenLocationToWorld(screenLocation: Vector2): Vector2 {
+        return screenLocation.divide(this.zoom).release().subtract(Vector2.new(this.offsetX, this.offsetY).release());
     }
 
     public measureText(text: string, size: number = 16, font: string = "sans-serif", fontWeight: number = 400): CanvasTextMetrics {

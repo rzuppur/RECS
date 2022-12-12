@@ -1,4 +1,5 @@
-import { Component, ComponentData, DrawableComponent, Entity, Manager, Query, System, Vector2, WorldLocationComponent, InterpolatedValue, InterpolateType } from "../lib";
+import { Component, DrawableComponent, Manager, Query, System, Vector2, WorldLocationComponent, InterpolatedValue } from "../lib";
+import type { ComponentData, Entity, InterpolateType } from "../lib";
 
 export interface AnimationData extends ComponentData {
     id: string;
@@ -24,9 +25,18 @@ export class AnimationSystem extends System {
 
     public start(query: Query, manager: Manager): boolean {
         let y = -40;
-        ["NEAREST", "LINEAR", "EASE", "EASE_IN_OUT", "EASE_IN", "EASE_OUT", "EASE_IN_CUBIC", "EASE_OUT_CUBIC"].forEach((type: InterpolateType) => {
+        [
+            "NEAREST",
+            "EASE_IN_CUBIC",
+            "EASE_IN",
+            "LINEAR",
+            "EASE",
+            "EASE_IN_OUT",
+            "EASE_OUT",
+            "EASE_OUT_CUBIC",
+        ].forEach((type: InterpolateType) => {
             const background = manager.createEntity();
-            manager.setComponent(background, new WorldLocationComponent({ loc: new Vector2(-range / 2, y) }));
+            manager.setComponent(background, new WorldLocationComponent({ loc: Vector2.new(-range / 2, y) }));
             manager.setComponent(background, new DrawableComponent({
                 drawables: [
                     { type: "RECT", width: range + 5, height: 5, strokeColor: "#666" },
@@ -36,7 +46,7 @@ export class AnimationSystem extends System {
 
             const entity = manager.createEntity();
             manager.setComponent(entity, new AnimationComponent({ id: type }));
-            manager.setComponent(entity, new WorldLocationComponent({ loc: new Vector2(-range / 2, y) }));
+            manager.setComponent(entity, new WorldLocationComponent({ loc: Vector2.new(-range / 2, y) }));
             manager.setComponent(entity, new DrawableComponent({
                 drawables: [
                     { type: "RECT", width: 5, height: 5, color: "#fff" },
@@ -60,7 +70,8 @@ export class AnimationSystem extends System {
         this.query.getMatching().forEach((components, entity) => {
             const ease = this.demoEntities.get(entity);
             const { data: location } = Query.getComponent(components, WorldLocationComponent);
-            location.loc = new Vector2(ease.get(), location.loc.y);
+            location.loc.free();
+            location.loc = Vector2.new(ease.get(), location.loc.y);
             const { data: drawable } = Query.getComponent(components, DrawableComponent);
             drawable.drawables[0].color = ease.easing ? "#ff0" : "#fff";
         });

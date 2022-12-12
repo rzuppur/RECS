@@ -1,5 +1,5 @@
 import { LoggerFactory, Logger } from "../../utils/logger";
-import Canvas from "./canvas";
+import type Canvas from "./canvas";
 import DrawableComponent from "../../components/drawable";
 import ScreenLocationComponent from "../../components/screenLocation";
 import Query from "../../query";
