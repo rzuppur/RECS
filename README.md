@@ -12,21 +12,16 @@ const engine = new Engine(elementToMountTo);
 const manager = engine.manager;
 
 /* Register custom components (see below) */
-manager.registerComponent(new Component())
+manager.registerComponent(new Component());
 
 /* Register custom systems (see below) */
-manager.registerSystem(new System())
+manager.registerSystem(new System());
 
 /* Create entities, returns UUID string */
-const entity: Entity = manager.createEntity()
+const entity: Entity = manager.createEntity();
 
 /* Add entity components */
-manager.setComponent(
-  entity: Entity,
-  component: new Component({
-    data,
-  }),
-)
+manager.setComponent(entity, new Component({ data }));
 ```
 
 ## Creating a custom component

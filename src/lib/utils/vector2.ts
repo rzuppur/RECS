@@ -2,8 +2,8 @@ const pool: Vector2[] = [];
 let poolTotal = 0;
 
 export default class Vector2 {
-    private _x: number;
-    private _y: number;
+    protected _x: number;
+    protected _y: number;
 
     public get x(): number {
         return this._x;

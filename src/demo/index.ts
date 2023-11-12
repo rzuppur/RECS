@@ -1,7 +1,7 @@
-import { clamp, DisplaySystem, DrawableComponent, Engine, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../lib";
 import type { Entity } from "../lib";
-
+import { clamp, DisplaySystem, DrawableComponent, Engine, KeyboardSystem, Manager, PointerSystem, Query, ScreenLocationComponent, System, Vector2 } from "../lib";
 import { initializeAnimations } from "./animations";
+import { demoDrawables } from "./drawables";
 
 class Game {
     private readonly engine: Engine;
@@ -44,6 +44,8 @@ class GameSystem extends System {
                 { type: "TEXT", content: "", color: "#fff", size: 16, font: "monospace", offset: Vector2.new(0, 30) },
             ]
         }));
+
+        demoDrawables(manager);
 
         return super.start(query, manager);
     }

@@ -14,7 +14,7 @@ export class AnimationComponent extends Component {
     }
 }
 
-const range = 80;
+const range = 70;
 
 export class AnimationSystem extends System {
     private demoEntities: Map<Entity, InterpolatedValue> = new Map();
@@ -24,6 +24,14 @@ export class AnimationSystem extends System {
     }
 
     public start(query: Query, manager: Manager): boolean {
+        const title = manager.createEntity();
+        manager.setComponent(title, new WorldLocationComponent({ loc: Vector2.new(-range / 2, -40) }));
+        manager.setComponent(title, new DrawableComponent({
+            drawables: [
+                { type: "TEXT", size: 8, fontWeight: 700, color: "#fff", content: "INTERPOLATION", offset: Vector2.new(0, -10) },
+            ],
+        }))
+
         let y = -40;
         [
             "NEAREST",
@@ -66,7 +74,7 @@ export class AnimationSystem extends System {
         return super.start(query, manager);
     }
 
-    public tick(dt: number, manager: Manager): void {
+    public tick(): void {
         this.query.getMatching().forEach((components, entity) => {
             const ease = this.demoEntities.get(entity);
             const { data: location } = Query.getComponent(components, WorldLocationComponent);

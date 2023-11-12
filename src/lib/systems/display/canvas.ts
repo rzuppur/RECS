@@ -369,9 +369,9 @@ export default class Canvas {
                 this.drawPathStroke(x * zoom, y * zoom, drawable.path, drawable.strokeColor, drawable.strokeWidth, drawable.alpha, drawable.type === "PATH_FIXED_SIZE" ? 1 : zoom);
             }
         } else if (drawable.type === "TEXT") {
-            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size * zoom, drawable.color, drawable.font, drawable.fontWeight, drawable.align);
+            this.drawText(x * zoom, y * zoom, drawable.content, (drawable.size ?? 16) * zoom, drawable.color, drawable.font, drawable.fontWeight, drawable.align);
         } else if (drawable.type === "TEXT_FIXED_SIZE") {
-            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size, drawable.color, drawable.font, drawable.fontWeight, drawable.align);
+            this.drawText(x * zoom, y * zoom, drawable.content, drawable.size ?? 16, drawable.color, drawable.font, drawable.fontWeight, drawable.align);
         } else if (drawable.type === "SPRITE") {
             this.drawSprite(x * zoom, y * zoom, drawable.width * zoom, drawable.height * zoom, drawable.imageSrc, drawable.alpha);
         } else if (drawable.type === "SPRITE_FIXED_SIZE") {

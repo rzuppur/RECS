@@ -62,7 +62,7 @@ interface DrawableTextFixed extends DrawableBase {
 
 interface DrawablePath extends DrawableBase {
     type: "PATH";
-    path: Array<Array<number>>; // "[[X1, Y1], [X2, Y2], ... , [Xn, Yn]]"
+    path: Array<[number, number]>; // "[[X1, Y1], [X2, Y2], ... , [Xn, Yn]]"
     color?: string;
     strokeColor?: string;
     strokeWidth?: number;
