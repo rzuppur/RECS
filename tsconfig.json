@@ -15,7 +15,7 @@
         "allowSyntheticDefaultImports": true
     },
     "include": [
-        "src/demo/**/*"
+        "src/demo/**/*",
         "src/lib/**/*"
     ],
     "exclude": [
