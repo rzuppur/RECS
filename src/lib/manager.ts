@@ -68,8 +68,13 @@ export default class Manager {
             this.log.error(`Failed to start system [beforeStart]: ${system.name}`);
         }
 
-        const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.name !== "Display").map(([_, system]) => system);
-        this.systemsOrdered = [...systemsWithoutDisplay, this.systems.get("Display")];
+        const displaySystem = this.systems.get("Display");
+        if (displaySystem) {
+            const systemsWithoutDisplay = [...this.systems].filter(([_, system]) => system.name !== "Display").map(([_, system]) => system);
+            this.systemsOrdered = [...systemsWithoutDisplay, displaySystem];
+        } else {
+            this.systemsOrdered = [...this.systems].map(([_, system]) => system);
+        }
     }
 
     public getSystem(key: string): System {

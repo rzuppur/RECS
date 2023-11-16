@@ -2,7 +2,7 @@
     "name": "@rzuppur/recs",
     "description": "Minimal entity component system for 2D game development in JS/TS",
     "author": "Reino Zuppur",
-    "version": "0.1.83",
+    "version": "0.1.84",
     "licence": "MIT",
     "type": "module",
     "scripts": {
