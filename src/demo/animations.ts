@@ -75,14 +75,14 @@ export class AnimationSystem extends System {
     }
 
     public tick(): void {
-        this.query.getMatching().forEach((components, entity) => {
+        for (const [entity, components] of this.query.getMatching()) {
             const ease = this.demoEntities.get(entity);
             const { data: location } = Query.getComponent(components, WorldLocationComponent);
             location.loc.free();
             location.loc = Vector2.new(ease.get(), location.loc.y);
             const { data: drawable } = Query.getComponent(components, DrawableComponent);
             drawable.drawables[0].color = ease.easing ? "#ff0" : "#fff";
-        });
+        }
     }
 }
 

@@ -16,7 +16,8 @@ export default class DrawScreen {
 
     public tick(dt: number, query: Query): void {
         const sorted: Map<number, { sL: ScreenLocationComponent, d: DrawableComponent }[]> = new Map();
-        query.getMatching().forEach((components, entity) => {
+
+        for (const [entity, components] of query.getMatching()) {
             const sL = Query.getComponent(components, ScreenLocationComponent);
             const d = Query.getComponent(components, DrawableComponent);
             const z = sL.data.z ?? 0;
@@ -25,7 +26,7 @@ export default class DrawScreen {
             } else {
                 sorted.get(z).push({ sL, d });
             }
-        });
+        }
         Array.from(sorted.keys()).sort((a, b) => a - b).forEach(z => {
             sorted.get(z).forEach(({ sL, d }) => {
                 d.data.drawables.forEach((drawable) => {

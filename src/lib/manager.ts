@@ -1,8 +1,7 @@
 import type System from "./systems/index";
 import type Component from "./components";
-import { generateUuid } from "./utils/uuid";
 import { LoggerFactory, Logger } from "./utils/logger";
-import type { EntitiesMap, EntityComponents } from "./model";
+import type { EntitiesArray, EntityComponents } from "./model";
 import type { Entity } from "./model";
 import Query from "./query";
 import Vector2 from "./utils/vector2";
@@ -12,10 +11,11 @@ const debugTicksCount = 300;
 const debugTimePercentageBarLength = 8;
 
 export default class Manager {
+    private nextEntityId = 0;
     private components: Map<string, Component> = new Map();
     private systems: Map<string, System> = new Map();
     private systemsOrdered: Array<System> = [];
-    private entities: EntitiesMap = new Map();
+    private entities: EntitiesArray = [];
     private queries: Map<string, Query> = new Map();
     private log: Logger;
     private debug: boolean;
@@ -98,15 +98,14 @@ export default class Manager {
     }
 
     public createEntity(): Entity {
-        const uuid = generateUuid();
-        this.entities.set(uuid, new Map());
-        return uuid;
+        this.entities[this.nextEntityId] = new Map();
+        return this.nextEntityId++;
     }
 
     public deleteEntity(entity: Entity): void {
-        const components: EntityComponents = this.entities.get(entity);
+        const components: EntityComponents = this.entities[entity];
         if (components) [...components.values()].forEach((component) => component.beforeDestroy());
-        this.entities.delete(entity);
+        delete this.entities[entity];
         this.queries.forEach(query => query.deleteMatch(entity));
     }
 
@@ -144,12 +143,12 @@ export default class Manager {
     }
 
     public getEntityComponents(entity: Entity): EntityComponents {
-        const entityComponents = this.entities.get(entity);
+        const entityComponents = this.entities[entity];
         if (!entityComponents) this.log.fail(`entity does not exist: ${entity}`);
         return entityComponents;
     }
 
-    public getEntities(): EntitiesMap {
+    public getEntities(): EntitiesArray {
         return this.entities;
     }
 
@@ -159,16 +158,16 @@ export default class Manager {
             if (!this.firstTickTime) this.firstTickTime = tickStart;
 
             const systems = this.systemsOrdered.filter((system) => system.started);
-            systems.forEach((s: System) => {
+            for (const system of systems) {
                 const start = performance.now();
-                s.tick(dt, this);
+                system.tick(dt, this);
                 const time = performance.now() - start;
-                if (this.totalTicksTimeBySystem.has(s.name)) {
-                    this.totalTicksTimeBySystem.set(s.name, this.totalTicksTimeBySystem.get(s.name) + time);
+                if (this.totalTicksTimeBySystem.has(system.name)) {
+                    this.totalTicksTimeBySystem.set(system.name, this.totalTicksTimeBySystem.get(system.name) + time);
                 } else {
-                    this.totalTicksTimeBySystem.set(s.name, time);
+                    this.totalTicksTimeBySystem.set(system.name, time);
                 }
-            });
+            }
 
             const tickEnd = performance.now();
             this.totalTicksTime += tickEnd - tickStart;
@@ -196,9 +195,9 @@ export default class Manager {
             }
         } else {
             const systems = this.systemsOrdered.filter((system) => system.started);
-            systems.forEach((s: System) => {
-                s.tick(dt, this);
-            });
+            for (const system of systems) {
+                system.tick(dt, this);
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ manager.registerComponent(new Component());
 /* Register custom systems (see below) */
 manager.registerSystem(new System());
 
-/* Create entities, returns UUID string */
+/* Create entities, returns id */
 const entity: Entity = manager.createEntity();
 
 /* Add entity components */
@@ -55,17 +55,17 @@ class MySystem extends System {
     }
 
     public start(query: Query, manager: Manager): boolean {
-        // Add custom initialization code here IF needed
+        // Add custom initialization code here if needed
         return super.start(query, manager);
     }
 
     public tick(dt: number /* ms since last tick */): void {
-        this.query.getMatching().forEach((components, entity) => {
+        for (const [entity, components] of this.query.getMatching()) {
             const p = Query.getComponent(components, PointableComponent);
             if (p.data.clicked) {
                 console.log("clicked", entity);
             }
-        });
+        }
     }
 }
 ```

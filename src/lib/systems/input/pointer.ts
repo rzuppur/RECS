@@ -170,7 +170,7 @@ export default class PointerSystem extends System {
 
         const eventTargets: { z: number; p: PointableComponent; }[] = [];
 
-        this.query.getMatching().forEach((components, entity) => {
+        for (const [entity, components] of this.query.getMatching()) {
             const p = Query.getComponent(components, PointableComponent);
             if (!this.pointerDragging) {
                 p.data.dragged = false;
@@ -213,7 +213,7 @@ export default class PointerSystem extends System {
                     eventTargets.push({ z: screenZ, p });
                 }
             }
-        });
+        }
 
         this.pointerClickedEmpty = false;
         this.pointerEmptyDragReleased = false;

@@ -46,7 +46,7 @@ export default class DrawWorld {
         this._zoom = Math.min(this.canvasSize.width, this.canvasSize.height) / (this.view.radius * 2);
 
         const sorted: Map<number, { wL: WorldLocationComponent, d: DrawableComponent }[]> = new Map();
-        query.getMatching().forEach((components, entity) => {
+        for (const [entity, components] of query.getMatching()) {
             const wL = Query.getComponent(components, WorldLocationComponent);
             const d = Query.getComponent(components, DrawableComponent);
             const z = wL.data.z ?? 0;
@@ -55,7 +55,7 @@ export default class DrawWorld {
             } else {
                 sorted.get(z).push({ wL, d });
             }
-        });
+        }
 
         // Cache offsets
         const _offsetX = this.offsetX;

@@ -2,7 +2,7 @@
     "name": "@rzuppur/recs",
     "description": "Small entity component system based framework for 2D game development in Typescript",
     "author": "Reino Zuppur",
-    "version": "0.1.88",
+    "version": "0.1.89",
     "licence": "MIT",
     "type": "module",
     "scripts": {

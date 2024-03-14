@@ -30,7 +30,7 @@ interface GravityComponentData extends ComponentData {
 
 class GravityComponent extends recs.Component {
     static key = "GravityComponent";
-    public data: GravityComponentData;
+    declare public data: GravityComponentData;
 
     constructor(data?: GravityComponentData) {
         super(GravityComponent.key, data);
@@ -54,7 +54,7 @@ class GravitySystem extends recs.System {
         const allBodies = this.query.getMatching();
 
         for (let i = 0; i < stepsPerTick; i++) {
-            allBodies.forEach((components, bodyEntity) => {
+            for (const [bodyEntity, components] of allBodies) {
 
                 // Get current body components
                 const { data: bodyPhysicsData } = recs.Query.getComponent(components, GravityComponent);
@@ -62,8 +62,8 @@ class GravitySystem extends recs.System {
                 const bodyLocation = bodyLocationData.loc;
 
                 // Loop over all other bodies
-                allBodies.forEach((otherComponents, otherBodyEntity) => {
-                    if (bodyEntity === otherBodyEntity) return;
+                for (const [otherBodyEntity, otherComponents] of allBodies) {
+                    if (bodyEntity === otherBodyEntity) continue;
 
                     // Get other body components
                     const { data: { loc: otherLocation } } = recs.Query.getComponent(otherComponents, recs.WorldLocationComponent);
@@ -78,11 +78,11 @@ class GravitySystem extends recs.System {
                     // Add acceleration to velocity
                     const acceleration = new recs.Vector2(force * Math.cos(angle), force * Math.sin(angle));
                     bodyPhysicsData.vel = bodyPhysicsData.vel.add(acceleration.multiply(timeScale));
-                });
+                }
 
                 // Apply velocity
                 bodyLocationData.loc = bodyLocationData.loc.add(bodyPhysicsData.vel.multiply(timeScale));
-            });
+            }
         }
 
         if (++gravityTicks >= runForTicks) {

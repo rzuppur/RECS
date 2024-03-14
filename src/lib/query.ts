@@ -1,10 +1,10 @@
 import { LoggerFactory, Logger } from "./utils/logger";
-import type { EntitiesMap, Entity, EntityComponents } from "./model";
+import type { EntitiesArray, Entity, EntityComponents } from "./model";
 import type Manager from "./manager";
 import type Component from "./components";
 
 export default class Query {
-    private matchingEntities: EntitiesMap = new Map();
+    private matchingEntities: EntitiesArray = [];
     private readonly componentKeys: string[];
     private readonly manager: Manager;
     private log: Logger;
@@ -40,7 +40,7 @@ export default class Query {
     public findAllMatching(): void {
         this.manager.getEntities().forEach((components: EntityComponents, entity: Entity) => {
             if (this.match(components)) {
-                this.matchingEntities.set(entity, components);
+                this.matchingEntities[entity] = components;
             }
         });
     }
@@ -50,21 +50,21 @@ export default class Query {
      */
     public setEntityIfMatches(components: EntityComponents, entity: Entity): void {
         if (this.match(components)) {
-            this.matchingEntities.set(entity, components);
+            this.matchingEntities[entity] = components;
         } else {
-            this.matchingEntities.delete(entity);
+            delete this.matchingEntities[entity];
         }
     }
 
     /**
      * Return all matching entities map with components
      */
-    public getMatching(): EntitiesMap {
-        return this.matchingEntities;
+    public getMatching(): Array<[Entity, EntityComponents]> {
+        return [...this.matchingEntities.entries()].filter(x => x[1]);
     }
 
     public deleteMatch(entity: Entity): boolean {
-        return this.matchingEntities.delete(entity);
+        return delete this.matchingEntities[entity];
     }
 
     /**
