@@ -8,7 +8,8 @@ export enum LOG_LEVEL {
 export class LoggerFactory {
     private static level: LOG_LEVEL = LOG_LEVEL.ERROR;
 
-    private constructor() {}
+    private constructor() {
+    }
 
     public static setLevel(level: LOG_LEVEL) {
         this.level = level;
@@ -17,7 +18,7 @@ export class LoggerFactory {
     public static getLogger(name: string): Logger {
         return new Logger(name, this.level)
     }
-};
+}
 
 export class Logger {
     protected name: string;

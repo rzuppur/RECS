@@ -15,6 +15,7 @@ class Game {
         this.manager.registerSystem(gameSystem);
 
         initializeAnimations(this.manager);
+        this.engine.start();
     }
 }
 

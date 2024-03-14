@@ -15,6 +15,7 @@
         "allowSyntheticDefaultImports": true
     },
     "include": [
+        "src/benchmark/**/*",
         "src/demo/**/*",
         "src/lib/**/*"
     ],

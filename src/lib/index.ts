@@ -4,6 +4,7 @@ import { clamp, InterpolatedValue } from "./utils/math";
 import type { InterpolateType } from "./utils/math";
 export { Vector2, clamp, InterpolatedValue };
 export type { InterpolateType };
+export { Logger, LoggerFactory } from "./utils/logger";
 
 // core
 import Engine from "./engine";

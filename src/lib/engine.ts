@@ -11,12 +11,12 @@ import DisplaySystem from "./systems/display";
 export default class Engine {
     private step: number = 0;
     private lastTickTime: number = -1;
+    private running: boolean = false;
 
     private readonly mountElQuery: string;
     private log: Logger;
 
     public manager: Manager;
-    public running: boolean = true;
 
     constructor(mountElQuery = "body", debug: boolean = false) {
         LoggerFactory.setLevel(debug ? LOG_LEVEL.DEBUG : LOG_LEVEL.WARNING);
@@ -27,9 +27,6 @@ export default class Engine {
 
         this.manager = new Manager(debug);
         this.registerDefaultSystems();
-
-        this.log.info("Entering main loop");
-        window.requestAnimationFrame(this.tick.bind(this));
     }
 
     private registerDefaultSystems(): void {
@@ -53,10 +50,18 @@ export default class Engine {
 
             window.requestAnimationFrame(this.tick.bind(this));
             this.lastTickTime = now;
-
-        } else {
-            this.log.warning("Main loop stopped");
-            this.lastTickTime = -1;
         }
+    }
+
+    public start() {
+        this.log.info("Running");
+        this.running = true;
+        window.requestAnimationFrame(this.tick.bind(this));
+    }
+
+    public stop() {
+        this.log.info("Stopped");
+        this.lastTickTime = -1;
+        this.running = false;
     }
 }

@@ -24,6 +24,20 @@ if (process.env.TARGET === "demo") {
             contentBase: "demo",
         }));
     }
+} else if (process.env.TARGET === "benchmark") {
+    input = "src/benchmark/index.ts";
+    outputDir = "benchmark/js";
+
+    if (process.env.NODE_ENV === "dev") {
+        plugins.push(livereload({
+            watch: "benchmark",
+        }));
+        plugins.push(serve({
+            open: false,
+            port: 9081,
+            contentBase: "benchmark",
+        }));
+    }
 }
 
 export default [{

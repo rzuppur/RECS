@@ -1,14 +1,16 @@
 {
     "name": "@rzuppur/recs",
-    "description": "Minimal entity component system for 2D game development in JS/TS",
+    "description": "Small entity component system based framework for 2D game development in Typescript",
     "author": "Reino Zuppur",
-    "version": "0.1.84",
+    "version": "0.1.88",
     "licence": "MIT",
     "type": "module",
     "scripts": {
         "build": "rimraf dist && cross-env NODE_ENV=production rollup --config",
         "build:demo": "rimraf demo/js && cross-env NODE_ENV=production TARGET=demo rollup --config",
-        "dev": "cross-env NODE_ENV=dev TARGET=demo rollup --config -w",
+        "dev": "npm run dev:demo",
+        "dev:benchmark": "cross-env NODE_ENV=dev TARGET=benchmark rollup --config -w",
+        "dev:demo": "cross-env NODE_ENV=dev TARGET=demo rollup --config -w",
         "prepublishOnly": "npm run build"
     },
     "devDependencies": {

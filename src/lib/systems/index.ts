@@ -6,6 +6,7 @@ export default abstract class System {
 
     public readonly componentsQueryKey: string;
     public readonly name: string;
+    public beforeStart?(manager: Manager): boolean;
     public started: boolean = false;
 
     /**
@@ -15,15 +16,6 @@ export default abstract class System {
     protected constructor(name: string, componentsQuery: string[]) {
         this.name = name;
         this.componentsQueryKey = Query.getComponentsQuery(componentsQuery);
-    }
-
-    /**
-     * Called by manager.ts -> registerSystem
-     *
-     * Returns boolean indicating success
-     */
-    public beforeStart(manager: Manager): boolean {
-        return true;
     }
 
     /**

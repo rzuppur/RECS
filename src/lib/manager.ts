@@ -56,16 +56,24 @@ export default class Manager {
         this.systems.set(system.name, system);
         const query = this.registerQuery(system.componentsQueryKey);
 
-        if (system.beforeStart(this)) {
-            setTimeout(() => {
-                if (system.start(query, this)) {
-                    this.log.debug(`Started system: ${system.name}`);
-                } else {
-                    this.log.error(`Failed to start system: ${system.name}`);
-                }
-            });
+        if (system.beforeStart) {
+            if (system.beforeStart(this)) {
+                setTimeout(() => {
+                    if (system.start(query, this)) {
+                        this.log.debug(`Started system: ${system.name}`);
+                    } else {
+                        this.log.error(`Failed to start system: ${system.name}`);
+                    }
+                });
+            } else {
+                this.log.error(`Failed to start system [beforeStart]: ${system.name}`);
+            }
         } else {
-            this.log.error(`Failed to start system [beforeStart]: ${system.name}`);
+            if (system.start(query, this)) {
+                this.log.debug(`Started system: ${system.name}`);
+            } else {
+                this.log.error(`Failed to start system: ${system.name}`);
+            }
         }
 
         const displaySystem = this.systems.get("Display");

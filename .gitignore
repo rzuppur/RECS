@@ -3,4 +3,5 @@ src/**/*.js
 src/**/*.js.map
 node_modules
 dist
+benchmark/js
 demo/js

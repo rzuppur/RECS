@@ -70,7 +70,7 @@ export default class Canvas {
          * Rounding to pixel is more performant in some cases, but causes jagged edges on low DPI screens.
          * High DPI screens need to render more pixels and usually do not need antialiasing since the individual pixels are not visible.
          */
-        if (this.dpr > 2) {
+        if (this.dpr >= 2) {
             this.log.info("High resolution screen detected, will round to pixel");
             this.round = roundToPixel;
         } else {

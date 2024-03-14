@@ -131,6 +131,10 @@ export default class PointerSystem extends System {
         this.pointerDeltaY = 0;
     }
 
+    public beforeStart(): boolean {
+        return true;
+    }
+
     public start(query: Query, manager: Manager): boolean {
         // todo: listen only on canvas area
 
